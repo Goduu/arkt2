@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import rough from "roughjs/bin/rough";
-import { Color } from "@/components/diagram/flow-editor/node-controls/types";
-import { colorToHex, DEFAULT_STROKE_COLOR } from "@/lib/utils";
-import { useElementSize } from "@/components/ui/useElementSize";
+import { Color } from "@/components/colors/types";
+import { colorToHex, DEFAULT_STROKE_COLOR } from "@/components/colors/utils";
 import { Options } from "roughjs/bin/core";
+import { useElementSize } from "./hooks/useElementSize";
+import { useTheme } from "next-themes";
 
 type Side = "top" | "right" | "bottom" | "left";
 
@@ -34,6 +35,7 @@ export function SketchySideBorder({
 }: SketchySideBorderProps): React.JSX.Element {
   const { ref, size } = useElementSize<HTMLDivElement>();
   const svgRef = React.useRef<SVGSVGElement | null>(null);
+  const { theme } = useTheme();
 
   const isHorizontal = side === "top" || side === "bottom";
 
@@ -70,7 +72,7 @@ export function SketchySideBorder({
     } catch {
       // ignore
     }
-  }, [size.width, size.height, isHorizontal, strokeColor, strokeWidth, roughness, seed, strokeLineDash, strokeLineDashOffset]);
+  }, [size.width, size.height, isHorizontal, strokeColor, strokeWidth, roughness, seed, strokeLineDash, strokeLineDashOffset, theme]);
 
   const positionClasses = (() => {
     if (side === "top") return "absolute left-0 right-0 top-0";

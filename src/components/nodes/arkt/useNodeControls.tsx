@@ -1,13 +1,14 @@
 import useNodesStateSynced from "../../yjs/useNodesStateSynced";
+import { ArktNode, ArktNodeData } from "./types";
 
 export const useNodeControls = (id: string) => {
     const [, setNodes,] = useNodesStateSynced();
 
-    const onLabelChange = (label: string) => {
+    const onNodeUpdate = (nodeData: Partial<ArktNodeData>) => {
         setNodes(nodes => {
             return nodes.map(node => {
-                if (node.id === id) {
-                    return { ...node, data: { ...node.data, label } };
+                if (node.id === id && node.type === "arktNode") {
+                    return { ...node, data: { ...node.data as ArktNodeData, ...nodeData } } satisfies ArktNode;
                 }
                 return node;
             });
@@ -15,6 +16,6 @@ export const useNodeControls = (id: string) => {
     };
 
     return {
-        onLabelChange,
+        onNodeUpdate,
     };
 };

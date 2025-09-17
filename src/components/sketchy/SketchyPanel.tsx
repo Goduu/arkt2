@@ -23,6 +23,7 @@ export type SketchyPanelProps = React.PropsWithChildren<{
 export function SketchyPanel({ className, strokeWidth = 2, roughness = 1.5, strokeColor, hoverEffect = false, children, strokeLineDash, strokeLineDashOffset, fillColor, fillWeight, fillStyle, seed }: SketchyPanelProps): React.JSX.Element {
   const { ref, size } = useElementSize<HTMLDivElement>();
   const [hovered, setHovered] = React.useState(false);
+  // No explicit theme dependency here because nested Sketchy components listen to theme changes
 
   return (
     <div

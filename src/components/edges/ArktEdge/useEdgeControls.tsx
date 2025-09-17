@@ -4,24 +4,30 @@ import { DEFAULT_ALGORITHM } from "./constants";
 import { useCallback } from "react";
 import { Edge } from "@xyflow/react";
 import { DEFAULT_PATH_ID } from "@/components/yjs/constants";
+import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR } from "@/components/colors/utils";
 
 export const useEdgeControls = (id: string) => {
     const [, setEdges,] = useEdgesStateSynced();
 
-    const onLabelChange = (label: string) => {
+    const onEdgeDataUpdate = (newEdgeData: Partial<ArktEdgeData>) => {
         setEdges((edges) => {
             return edges.map(edge => {
                 if (edge.id !== id) {
                     return edge;
                 }
+
                 return {
                     ...edge,
                     data: {
                         ...edge.data,
-                        label,
-                        pathId: edge.data?.pathId || DEFAULT_PATH_ID,
-                        points: edge.data?.points || [],
-                        algorithm: edge.data?.algorithm || DEFAULT_ALGORITHM,
+                        label: newEdgeData.label || edge.data?.label || "",
+                        pathId: newEdgeData.pathId || edge.data?.pathId || DEFAULT_PATH_ID,
+                        points: newEdgeData.points || edge.data?.points || [],
+                        algorithm: newEdgeData.algorithm || edge.data?.algorithm || DEFAULT_ALGORITHM,
+                        fontSize: newEdgeData.fontSize || edge.data?.fontSize || 12,
+                        labelFill: newEdgeData.labelFill || edge.data?.labelFill || DEFAULT_FILL_COLOR,
+                        strokeColor: newEdgeData.strokeColor || edge.data?.strokeColor || DEFAULT_STROKE_COLOR,
+                        strokeWidth: newEdgeData.strokeWidth || edge.data?.strokeWidth || 2,
                     } satisfies ArktEdgeData
                 };
             });
@@ -53,7 +59,7 @@ export const useEdgeControls = (id: string) => {
     );
 
     return {
-        onLabelChange,
+        onEdgeUpdate: onEdgeDataUpdate,
         onControlPointsChange,
     };
 };

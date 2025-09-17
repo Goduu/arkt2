@@ -13,7 +13,7 @@ const ydoc = new Doc();
 // Head over to https://github.com/yjs/y-websocket-server for more information
 // on how to set up your own signaling server.
 
-const signalingServerUrl = (process.env.NEXT_PUBLIC_YJS_SIGNALING as string | undefined) || 'wss://signaling.yjs.dev'
+const signalingServerUrl = (process.env.NEXT_PUBLIC_YJS_SIGNALING as string | undefined) || 'ws://localhost:4444'
 
 // Function to get room name from URL or use default
 function getRoomName(): string {
@@ -35,6 +35,10 @@ export async function getProvider() {
 
     const { WebrtcProvider } = await import('y-webrtc');
     new IndexeddbPersistence(roomName, ydoc);
+
+    if(roomName === 'local') {
+        return null;
+    }
 
     provider = new WebrtcProvider(
         roomName,

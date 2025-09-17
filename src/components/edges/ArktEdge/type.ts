@@ -28,6 +28,8 @@ export type ArktEdgeData = {
     algorithm: Algorithm
     points: ControlPointData[]
     label?: string
+    fontSize: number
+    labelFill: Color
 }
 
 export type ArktEdge = Edge<ArktEdgeData>;

@@ -1,0 +1,207 @@
+"use client"
+
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup, SidebarGroupAction, SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader, SidebarMenu, SidebarMenuButton,
+    SidebarMenuItem, SidebarRail,
+    SidebarSeparator,
+    SidebarTrigger
+} from "@/components/ui/sidebar"
+import {
+    Home, FileText, Settings,
+    Plus,
+    LineSquiggle
+} from "lucide-react"
+import Link from "next/link"
+import { Collapsible } from "@/components/ui/collapsible"
+import Image from "next/image"
+import { usePathname } from "next/navigation"
+import { useTheme } from "next-themes"
+import { useMounted } from "@/app/useMounted"
+import { useAppStore } from "../store"
+import SidenavTemplatesList from "./SidenavTemplatesList"
+import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced"
+
+export function AppSidebar() {
+    // const { nodeTemplates, setPendingSpawn, setPendingCommand } = useAppStore()
+    const activateCommand = useAppStore((s) => s.activateCommand);
+    const [templates] = useTemplatesStateSynced();
+
+    const { resolvedTheme } = useTheme()
+    const mounted = useMounted()
+
+    const pathName = usePathname();
+    const isHomePage = pathName === "/design";
+    const isSettingsPage = pathName === "/design/settings";
+
+    if (isSettingsPage) {
+        return (
+            <Sidebar collapsible="icon" side="left" className="overflow-hidden" variant="sidebar">
+                <SidebarHeader>
+                    <Link href="/" className="flex gap-4 px-2 items-center w-full justify-start group-data-[collapsible=icon]:justify-center">
+                        {mounted && <Image src={`/arkt-logo-${resolvedTheme}.svg`} alt="ArkT" width={32} height={32} />}
+                        <span className="text-sm font-semibold group-data-[collapsible=icon]:hidden">ArkT</span>
+                    </Link>
+                </SidebarHeader>
+
+                <SidebarContent>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <Collapsible defaultOpen className="group/collapsible">
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild tooltip="Home" isActive={isHomePage}>
+                                            <Link href="/design">
+                                                <Home />
+                                                <span>Home</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild tooltip="Settings" isActive={isSettingsPage}>
+                                            <Link href="/design/settings">
+                                                <Settings />
+                                                <span>Settings</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                </Collapsible>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+
+
+                </SidebarContent>
+
+                <SidebarFooter>
+                    <SidebarTrigger className="opacity-50 hover:opacity-100" />
+                </SidebarFooter>
+
+                <SidebarRail />
+            </Sidebar >
+        )
+    }
+
+    return (
+        <Sidebar collapsible="icon" side="left" className="overflow-hidden" variant="sidebar">
+            <SidebarHeader>
+                <Link href="/" className="flex gap-4 px-2 items-center w-full justify-start group-data-[collapsible=icon]:justify-center">
+                    {/* <div className="size-6 rounded-md bg-primary text-primary-foreground inline-flex items-center justify-center font-semibold shrink-0">A</div> */}
+                    {mounted && <Image src={`/arkt-logo-${resolvedTheme}.svg`} alt="ArkT" width={32} height={32} />}
+                    <span className="text-sm font-semibold group-data-[collapsible=icon]:hidden">ArkT</span>
+                </Link>
+            </SidebarHeader>
+
+            <SidebarContent>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <Collapsible defaultOpen className="group/collapsible">
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild tooltip="Home" isActive={isHomePage}>
+                                        <Link href="/design">
+                                            <Home />
+                                            <span>Home</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                {/* <SidebarMenuItem>
+                                    <SidebarMenuButton data-testid="sidebar-diagrams-button" tooltip="Diagrams" onClick={() => setPendingCommand({ type: "openDiagrams" })}>
+                                        <Layers />
+                                        <span>Diagrams</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem> */}
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton tooltip="Templates" onClick={() => activateCommand("open-templates-manager")}>
+                                        <FileText />
+                                        <span>Templates</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild tooltip="Settings" isActive={isSettingsPage}>
+                                        <Link href="/design/settings">
+                                            <Settings />
+                                            <span>Settings</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </Collapsible>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarSeparator />
+
+                <SidebarGroup>
+                    <SidebarGroupLabel>Add</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        {/* <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    data-testid="add-text"
+                                    tooltip="Add Text"
+                                    onClick={() => setPendingCommand({ type: "addText" })}
+                                >
+                                    <Type />
+                                    <span>Add text</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem> */}
+                        <SidebarMenuItem>
+                            <SidebarMenuButton tooltip="Add Line" onClick={() => activateCommand("freehand-mode")}>
+                                <LineSquiggle />
+                                <span>Add line</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        {/* <SidebarMenuItem>
+                                <SidebarMenuButton data-testid="add-node" tooltip="Add Node" onClick={() => setPendingCommand({ type: "addNode" })}>
+                                    <Layers />
+                                    <span>Add node</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem> */}
+                        {/* <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    data-testid="sidebar-add-virtual-node-button"
+                                    tooltip="Add Virtual Node"
+                                    onClick={() => setPendingCommand({ type: "addVirtual" })}
+                                >
+                                    <LinkIcon />
+                                    <span>Add virtual node</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem> */}
+
+                        <SidebarSeparator />
+
+                        <SidebarGroup className="flex-1">
+                            <SidebarGroupLabel className="-ml-2">Templates</SidebarGroupLabel>
+                            <SidebarGroupAction title="Create Template" onClick={() => activateCommand("open-create-template")}>
+                                <Plus /> <span className="sr-only">Create Template</span>
+                            </SidebarGroupAction>
+                        </SidebarGroup>
+                        <SidebarMenuItem className="group-data-[collapsible=icon]:block hidden">
+                            <SidebarMenuButton tooltip="Create Template" onClick={() => activateCommand("open-create-template")}>
+                                <Plus /> <span>Create Template</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidenavTemplatesList
+                            nodeTemplates={templates}
+                            onSpawn={() => { }}
+                        />
+                        {/* </SidebarMenu>  */}
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
+
+            <SidebarFooter>
+                <SidebarTrigger className="opacity-50 hover:opacity-100" />
+            </SidebarFooter>
+
+            <SidebarRail />
+        </Sidebar >
+    )
+}

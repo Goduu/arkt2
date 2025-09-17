@@ -83,7 +83,6 @@ function useNodesStateSynced(): [
 
   // here we are observing the nodesMap and updating the nodes state whenever the map changes.
   useEffect(() => {
-    console.log("conas", Array.from(nodesMap.values()))
     const observer = () => {
       const nodeIdSet = new Set(Array.from(nodesMap.values()).filter(node => node.data.pathId === currentDiagramId).map(node => node.id));
       const nodesList = Array.from(nodeIdSet).map(id => nodesMap.get(id)).filter(n => n !== undefined);

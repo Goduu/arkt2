@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { drag, D3DragEvent } from 'd3-drag';
 import { select } from 'd3-selection';
 import { useUpdateNodeInternals } from "@xyflow/react";
+import { useNodeControls } from "./arkt/useNodeControls";
 
 export const useRotationHandler = (id: string, selected: boolean) => {
-    const [rotation, setRotation] = useState(0);
     const rotateControlRef = useRef<HTMLDivElement>(null);
     const updateNodeInternals = useUpdateNodeInternals();
+    const { onNodeUpdate } = useNodeControls(id);
 
 
     useEffect(() => {
@@ -24,7 +25,7 @@ export const useRotationHandler = (id: string, selected: boolean) => {
 
         // on double click set rotation to 0
         rotateControlRef.current.addEventListener('dblclick', () => {
-            setRotation(0);
+            onNodeUpdate({ rotation: 0 });
             updateNodeInternals(id);
         });
 
@@ -34,7 +35,7 @@ export const useRotationHandler = (id: string, selected: boolean) => {
             const dy = evt.y - 100;
             const rad = Math.atan2(dx, dy);
             const deg = rad * (180 / Math.PI);
-            setRotation(180 - deg);
+            onNodeUpdate({ rotation: 180 - deg });
             updateNodeInternals(id);
         });
 
@@ -42,11 +43,11 @@ export const useRotationHandler = (id: string, selected: boolean) => {
         // clean up
         return () => {
             rotateControlRef.current?.removeEventListener('dblclick', () => {
-                setRotation(0);
+                onNodeUpdate({ rotation: 0 });
                 updateNodeInternals(id);
             });
         };
     }, [id, updateNodeInternals]);
 
-    return { rotateControlRef, rotation, setRotation };
+    return { rotateControlRef };
 };

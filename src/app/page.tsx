@@ -1,103 +1,107 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { JSX } from "react";
+import { FeaturesCarousel } from "@/components/home/features/FeaturesCarousel";
+import { StartNowButton } from "@/components/home/StartNowButton";
+import { Shield } from "lucide-react";
+import Footer from "./Footer";
+import { Steps } from "@/components/home/Steps";
+import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
+import { useTheme } from "next-themes";
+import { ModeToggle } from "@/components/ModeToggle";
+import { useMounted } from "./useMounted";
+import Dot from "@/components/ui/dot";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+export default function HomeLanding(): JSX.Element {
+    const { resolvedTheme, theme } = useTheme();
+    const mounted = useMounted();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    return (
+        <Dot >
+            <div className="min-h-screen w-full flex flex-col items-center">
+                {/* Hero */}
+                <ModeToggle className="absolute top-4 right-4" />
+                <section className="container pt-12 md:pt-16 lg:pt-20 w-full max-w-9xl">
+                    <div className="h-52 items-start flex">
+                        {mounted && resolvedTheme && (
+                            <Image src={`/logo-h-${resolvedTheme || theme}.svg`} alt="ArkT" width={550} height={208} className="h-full" />
+                        )}
+                    </div>
+                    <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+                        <div className="flex flex-col gap-5">
+                            <SketchyPanel className="p-5">
+                                <div className="flex flex-col gap-4 py-1">
+                                    <p className="text-xs uppercase tracking-widest opacity-70">
+                                        Sketch your architecture. Think in systems.
+                                    </p>
+                                    <h1 className="text-3xl font-semibold leading-tight md:text-5xl">
+                                        Design multi‑level system diagrams with a sketchy feel
+                                    </h1>
+                                    <p className="text-sm md:text-base text-accent-foreground">
+                                        Map complex architectures, explore deep links, and reason about change—fast.
+                                    </p>
+                                    <div className="flex flex-col gap-3 sm:flex-row">
+                                        <StartNowButton aria-label="(top CTA)" />
+                                        <a href="#features" className="w-full sm:w-auto">
+                                            <Button variant="outline" className="w-full sm:w-auto" aria-label="See features">
+                                                See features
+                                            </Button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </SketchyPanel>
+                        </div>
+                        <div className="relative">
+                            <SketchyPanel className="aspect-[16/10] w-full">
+                                <div className="flex h-full items-center justify-center px-6 py-7">
+                                    <Image src="/screen.png" alt="ArkT" width={1000} height={1000} className=" w-full" />
+                                </div>
+                            </SketchyPanel>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Trust/Privacy Ribbon */}
+                <section className="container mt-10 w-full max-w-9xl">
+                    <SketchyPanel className="p-4">
+                        <p className="group text-center text-xs md:text-base flex items-center justify-center gap-2">
+                            <Shield className="hidden md:block size-4 group-hover:scale-150 transition-transform duration-300" />
+                            <span className="font-semibold">Local‑first:</span> your data is stored in your browser. Export anytime to keep full control.
+                        </p>
+                    </SketchyPanel>
+                </section>
+
+                {/* Features */}
+                <section id="features" className="container mt-12 md:mt-16 w-full max-w-9xl">
+                    <div className="mb-6 flex items-end justify-between">
+                        <h2 className="text-2xl font-semibold md:text-3xl">Why builders love ArkT</h2>
+                        <StartNowButton aria-label="(features)" />
+                    </div>
+                    <FeaturesCarousel />
+                </section>
+
+                {/* How it works */}
+                <Steps />
+
+                {/* CTA Banner */}
+                <section className="container my-12 md:my-16 w-full max-w-9xl">
+                    <SketchyPanel className="p-6">
+                        <div className="flex flex-col items-center gap-4 text-center md:flex-row md:justify-between md:text-left overflow-hidden h-36 md:h-full">
+                            <div>
+                                <h3 className="text-xl font-semibold md:text-2xl">Build your first diagram in minutes</h3>
+                                <p className="text-sm opacity-80">Stay fast, stay playful, stay in control.</p>
+                            </div>
+                            <StartNowButton aria-label="(bottom CTA)" />
+                        </div>
+                    </SketchyPanel>
+                </section>
+                <Footer />
+            </div >
+        </Dot>
+
+    );
 }
+
+

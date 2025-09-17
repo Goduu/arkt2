@@ -5,6 +5,9 @@ import { pathOptions, pointsToPath } from './path';
 import type { Points } from './types';
 import type { FreehandNodeType } from './types';
 import { NodeUnion } from '../types';
+import { DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
+import useUserDataStateSynced from '@/components/yjs/useUserStateSynced';
+import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
 
 function processPoints(
     points: [number, number, number][],
@@ -45,11 +48,12 @@ function processPoints(
         position: { x: x1, y: y1 },
         width,
         height,
-        data: { pathId: 'home', points: flowPoints, initialSize: { width, height } },
+        data: { points: flowPoints, initialSize: { width, height } },
     };
 }
 
 export function Freehand({ setNodes }: { setNodes: React.Dispatch<React.SetStateAction<NodeUnion[]>> }) {
+    const { currentUserData } = useUserDataStateSynced()
     const { screenToFlowPosition, getViewport } = useReactFlow<
         FreehandNodeType,
         Edge
@@ -82,10 +86,16 @@ export function Freehand({ setNodes }: { setNodes: React.Dispatch<React.SetState
     function handlePointerUp(e: PointerEvent) {
         (e.target as HTMLDivElement).releasePointerCapture(e.pointerId);
 
+        const processedPoints = processPoints(points, screenToFlowPosition);
         const newNode: FreehandNodeType = {
             id: crypto.randomUUID(),
             type: 'freehand',
-            ...processPoints(points, screenToFlowPosition),
+            ...processedPoints,
+            data: {
+                ...processedPoints.data,
+                fillColor: DEFAULT_STROKE_COLOR,
+                pathId: currentUserData?.currentDiagramId || DEFAULT_PATH_ID
+            }
         };
         setNodes((currentNodes) => [...currentNodes, newNode]);
         setPoints([]);

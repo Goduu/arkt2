@@ -1,7 +1,6 @@
 import { EdgeLabelRenderer } from "@xyflow/react";
 import { cn } from "../../utils";
-import { getTailwindTextClass } from "../../colors/utils";
-import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR } from "../../colors/constants";
+import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR, getTailwindTextClass } from "../../colors/utils";
 import SketchyShape from "../../sketchy/SketchyShape";
 import { AutoWidthInput } from "@/components/ui/auto-width-input";
 import { useEdgeControls } from "./useEdgeControls";
@@ -19,7 +18,7 @@ type EdgeLabelProps = {
 export const EdgeLabel = ({ id, labelText, isEditing, labelX, labelY, onBlur, onDoubleClick }: EdgeLabelProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const { onLabelChange } = useEdgeControls(id);
+    const { onEdgeUpdate } = useEdgeControls(id);
 
     useEffect(() => {
         if (isEditing) {
@@ -92,7 +91,7 @@ export const EdgeLabel = ({ id, labelText, isEditing, labelX, labelY, onBlur, on
                             value={labelText}
                             onChange={(e) => {
                                 const next = e.target.value;
-                                onLabelChange(next);
+                                onEdgeUpdate({ label: next });
                             }}
                             readOnly={!isEditing}
                             spellCheck={false}

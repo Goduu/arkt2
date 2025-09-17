@@ -10,6 +10,7 @@ import {
 import { Color } from "../colors/types";
 import { colorToHex } from "../colors/utils";
 import { cn } from "../utils";
+import { useTheme } from "next-themes";
 
 export type SketchyShapeKind = "rectangle" | "ellipse" | "diamond";
 
@@ -50,6 +51,7 @@ export function SketchyShape(props: SketchyShapeProps): JSX.Element {
     fillWeight = 1,
     hachureGap = 5,
   } = props;
+  const { theme } = useTheme();
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -72,7 +74,7 @@ export function SketchyShape(props: SketchyShapeProps): JSX.Element {
       fill: resolvedFill,
       stroke: colorToHex(strokeColor, "#111827"),
     };
-  }, [fillColor, strokeColor]);
+  }, [fillColor, strokeColor, theme]);
 
   const roughOptions = useMemo((): RoughOptions => {
 
@@ -157,7 +159,7 @@ export function SketchyShape(props: SketchyShapeProps): JSX.Element {
       console.error("Failed to render sketchy shape:", error);
       // Optionally render a fallback shape or leave empty
     }
-  }, [dimensions, kind, roughOptions, borderInset]);
+  }, [dimensions, kind, roughOptions, borderInset, theme]);
 
   return (
     <svg

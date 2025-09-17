@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -15,6 +15,7 @@ import {
   useReactFlow,
   OnNodesChange,
   applyNodeChanges,
+  OnSelectionChangeFunc,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -23,7 +24,6 @@ import { ConnectionLine } from '../../components/edges/ConnectionLine';
 import { DEFAULT_ALGORITHM } from '../../components/edges/ArktEdge/constants';
 import { ArktNodeComponent } from '../../components/nodes/arkt/ArktNode';
 import { ArktEdge, ControlPointData } from '../../components/edges/ArktEdge/type';
-import { DEFAULT_STROKE_COLOR } from '../../components/colors/constants';
 import Cursors from '../../components/yjs/Cursors';
 import useCursorStateSynced from '../../components/yjs/useCursorStateSynced';
 import useNodesStateSynced from '../../components/yjs/useNodesStateSynced';
@@ -41,9 +41,12 @@ import { SegmentBreadCrumb } from '../../components/SegmentBreadCrumb';
 import { EditableEdgeComponent } from '../../components/edges/ArktEdge';
 import { nanoid } from 'nanoid';
 import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
+import { EdgeControls } from '@/components/controls/EdgeControls';
+import { NodeControls } from '@/components/controls/node-controls/NodeControls';
+import { DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
 
 const nodeTypes = {
-  custom: ArktNodeComponent,
+  arktNode: ArktNodeComponent,
   freehand: FreehandNode,
 };
 
@@ -66,8 +69,26 @@ export default function FlowEditor() {
   const { currentUserData, usersData } = useUserDataStateSynced();
   const currentPath = currentUserData?.currentDiagramId || DEFAULT_PATH_ID;
   const [isDrawing, setIsDrawing] = useState(false);
-
   const [cursors, onMouseMove] = useCursorStateSynced();
+  const [selectedEdges, setSelectedEdges] = useState<ArktEdge[]>([]);
+  const [selectedNodes, setSelectedNodes] = useState<NodeUnion[]>([]);
+  const freehandModeCommand = useAppStore((s) => s.commandMap["freehand-mode"]);
+  const { removeCommand } = useAppStore();
+
+  useEffect(() => {
+    if (freehandModeCommand.status === "pending") {
+      setIsDrawing(true);
+      removeCommand("freehand-mode");
+    }
+  }, [freehandModeCommand]);
+
+  const handleSelectionChange: OnSelectionChangeFunc<NodeUnion, ArktEdge> = (selection) => {
+    const edges = selection.edges
+    setSelectedEdges(edges);
+    const nodes = selection.nodes
+    setSelectedNodes(nodes);
+  }
+
 
   const onConnect: OnConnect = useCallback(
     (connection) => {
@@ -85,6 +106,8 @@ export default function FlowEditor() {
           pathId: currentPath || DEFAULT_PATH_ID,
           strokeColor: DEFAULT_STROKE_COLOR,
           strokeWidth: 2,
+          fontSize: 12,
+          labelFill: { family: "base", indicative: "low" },
           points: connectionLinePath.map(
             (point, i) =>
             ({
@@ -152,6 +175,7 @@ export default function FlowEditor() {
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStart={onSelectionDragStart}
+        onSelectionChange={handleSelectionChange}
         onNodesDelete={onNodesDelete}
         onEdgesDelete={onEdgesDelete}
         nodeTypes={nodeTypes}
@@ -170,14 +194,20 @@ export default function FlowEditor() {
 
         {isDrawing && <Freehand setNodes={setNodes} />}
         <Background />
-        <Panel position="top-right">
+        <Panel position="top-left">
+          <Button onClick={() => {
+            setNodes([]);
+            setEdges([]);
+          }}>
+            Reset
+          </Button>
           <Button
             className='cursor-pointer'
             onClick={() => {
               console.log('currentPath', currentPath)
               setNodes([...nodes, {
                 id: nanoid(),
-                type: 'custom',
+                type: 'arktNode',
                 width: 90,
                 height: 60,
                 data: {
@@ -201,6 +231,13 @@ export default function FlowEditor() {
         <MiniMap />
         <Cursors cursors={cursors} />
       </ReactFlow>
+      <EdgeControls
+        selectedEdges={selectedEdges}
+        onChange={(edge) => {
+          setEdges(edges.map((e) => (e.id === edge.id ? edge : e)));
+        }}
+      />
+      <NodeControls />
     </div>
 
   );

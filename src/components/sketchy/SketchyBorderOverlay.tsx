@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import SketchyShape from "./SketchyShape";
-import { DEFAULT_STROKE_COLOR } from "../colors/constants";
 import { Color } from "../colors/types";
+import { DEFAULT_STROKE_COLOR } from "../colors/utils";
 
 type SketchyBorderOverlayProps = {
   width: number;
