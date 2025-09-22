@@ -7,7 +7,7 @@ import { useElementSize } from "../sketchy/hooks/useElementSize";
 type InputProps = React.ComponentProps<"input"> & SketchyPanelProps & {
   hideStroke?: boolean;
 }
-function Input({
+const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   hideStroke = false,
   strokeColor,
   fillColor,
@@ -17,10 +17,10 @@ function Input({
   fillStyle,
   seed,
   ...props
-}: InputProps) {
+}: InputProps, forwardedRef) {
 
   if (hideStroke) {
-    return <InputBase {...props} />
+    return <InputBase {...props} ref={forwardedRef} />
   }
 
   return (
@@ -35,20 +35,31 @@ function Input({
       seed={seed}
       {...props}
       className={cn(
-        "scrollbar-hide",
-        props.className ? `p-0 ${props.className}` : "p-0"
+        "scrollbar-hide py-2",
+        props.className && `${props.className}`
       )}
     >
-      <InputBase {...props} />
+      <InputBase {...props} ref={forwardedRef} />
     </SketchyPanel>
   )
-}
+})
 
-const InputBase = (props: React.ComponentProps<"input">) => {
+const InputBase = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(function InputBase(props, forwardedRef) {
   const { ref } = useElementSize<HTMLInputElement>()
+  const setRefs = React.useCallback((node: HTMLInputElement | null) => {
+    // assign to internal measurement ref
+    // then to forwarded ref
+    // ensure both refs receive node
+    ;(ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+    if (typeof forwardedRef === "function") {
+      forwardedRef(node)
+    } else if (forwardedRef) {
+      ;(forwardedRef as React.MutableRefObject<HTMLInputElement | null>).current = node
+    }
+  }, [ref, forwardedRef])
   return (
     <input
-      ref={ref}
+      ref={setRefs}
       type={props.type}
       data-slot="input"
       className={cn(
@@ -71,6 +82,6 @@ const InputBase = (props: React.ComponentProps<"input">) => {
       {...props}
     />
   )
-}
+})
 
 export { Input }

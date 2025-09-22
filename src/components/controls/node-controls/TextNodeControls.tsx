@@ -1,25 +1,20 @@
-import { ColorSelector } from "@/components/diagram/ColorSelector";
 import { FC } from "react";
-import type { Color } from "./types";
-import { TAILWIND_FILL_COLORS } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { FontSizeSelector } from "@/components/diagram/edges/FontSizeSelector";
+import { FontSizeSelector } from "../FontSizeSelector";
+import { ColorSelector } from "../ColorSelector";
+import { TAILWIND_FILL_COLORS } from "@/components/colors/utils";
+import { ArktTextNode } from "@/components/nodes/text/types";
+import { useTextNodeControls } from "@/components/nodes/text/useTextNodeControls";
 
 type TextNodeControlsProps = {
-    label: string;
-    fillColor: Color;
-    textColor: Color;
-    fontSize?: number;
-    commit: (partial?: Partial<{ label: string; fillColor: Color; textColor: Color; fontSize: number }>) => void;
+    node: ArktTextNode;
 };
 
 export const TextNodeControls: FC<TextNodeControlsProps> = ({
-    label,
-    fillColor,
-    textColor,
-    fontSize = 15,
-    commit,
+    node,
 }) => {
+    const { label, fillColor, strokeColor, fontSize } = node.data;
+    const { onNodeUpdate } = useTextNodeControls(node.id);
     return (
         <div data-testid="text-controls">
             <div className="flex gap-4 flex-col">
@@ -28,14 +23,14 @@ export const TextNodeControls: FC<TextNodeControlsProps> = ({
                     <Input
                         className="w-full px-2 bg-transparent"
                         value={label}
-                        onChange={(e) => commit({ label: e.target.value })}
+                        onChange={(e) => onNodeUpdate({ label: e.target.value })}
                         data-testid="text-controls-label"
                     />
                 </div>
                 <div data-testid="text-fontsize-group">
                     <FontSizeSelector
-                        selectedFontSize={fontSize}
-                        onChange={(v) => commit({ fontSize: v })}
+                        selectedFontSize={fontSize ?? 15}
+                        onChange={(v) => onNodeUpdate({ fontSize: v })}
                     />
                 </div>
                 <div data-testid="fill-color-group">
@@ -43,16 +38,16 @@ export const TextNodeControls: FC<TextNodeControlsProps> = ({
                         label="Fill color"
                         defaultOptions={TAILWIND_FILL_COLORS}
                         value={fillColor}
-                        shade={"300"}
-                        onChange={(next) => commit({ fillColor: next })}
+                        indicative={"low"}
+                        onChange={(next) => onNodeUpdate({ fillColor: next })}
                     />
                 </div>
                 <div data-testid="text-color-group">
                     <ColorSelector
-                        label="Text color"
-                        value={textColor}
-                        shade={"700"}
-                        onChange={(next) => commit({ textColor: next })}
+                        label="Stroke color"
+                        value={strokeColor}
+                        indicative={"high"}
+                        onChange={(next) => onNodeUpdate({ strokeColor: next })}
                     />
                 </div>
             </div>

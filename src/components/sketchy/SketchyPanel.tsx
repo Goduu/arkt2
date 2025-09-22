@@ -48,7 +48,7 @@ export function SketchyPanel({ className, strokeWidth = 2, roughness = 1.5, stro
           fillStyle={fillStyle}
         />
       </div>
-      <div className="relative overflow-auto p-2">
+      <div className="relative overflow-auto p-1">
         {children}
       </div>
     </div>

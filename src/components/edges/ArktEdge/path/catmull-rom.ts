@@ -1,8 +1,8 @@
-import type { ControlPointData } from '../ControlPoint';
 import { Position, type XYPosition } from '@xyflow/react';
 
 import { isControlPoint } from './utils';
 import { getControlWithCurvature } from './bezier';
+import { ControlPointData } from '../type';
 
 export function getCatmullRomPath(
   points: XYPosition[],

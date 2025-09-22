@@ -9,4 +9,5 @@ export type TemplateData = {
     strokeColor: Color;
     fillColor: Color;
     updatedAt: number;
+    lastUsedAt?: number;
 }

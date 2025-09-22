@@ -30,7 +30,7 @@ export function FontSizeSelector({ selectedFontSize, onChange }: FontSizeSelecto
 
 const FONT_SIZES = [
     { size: 10, label: "S", },
-    { size: 15, label: "M", },
-    { size: 20, label: "L", },
-    { size: 30, label: "XL", },
+    { size: 12, label: "M", },
+    { size: 15, label: "L", },
+    { size: 20, label: "XL", },
 ]

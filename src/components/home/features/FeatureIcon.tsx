@@ -4,6 +4,7 @@ import { getIconByKey } from "@/lib/icons/iconRegistry";
 import { cn } from "@/lib/utils";
 import { getTailwindTextClass } from "@/components/colors/utils";
 import { useMounted } from "@/app/useMounted";
+import { useTheme } from "next-themes";
 
 type FeatureIconProps = {
     icon: string;
@@ -15,6 +16,7 @@ export const FeatureIcon = ({ icon, className, iconBgColor, iconSize = 24 }: Fea
     const iconDefinition = getIconByKey(icon);
     const Icon = iconDefinition?.Icon;
     const mounted = useMounted();
+    const { theme } = useTheme();
     if (!Icon || !mounted) return null;
 
     const getSketchClass = (size: number) => {
@@ -39,7 +41,7 @@ export const FeatureIcon = ({ icon, className, iconBgColor, iconSize = 24 }: Fea
             />
             <Icon size={iconSize} name={icon}
                 className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-                    getTailwindTextClass({ family: iconBgColor, indicative: "high" }),
+                    getTailwindTextClass({ family: iconBgColor, indicative: "high" }, theme),
                     className)}
             />
         </div>

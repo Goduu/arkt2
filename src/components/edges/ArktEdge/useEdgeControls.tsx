@@ -15,12 +15,12 @@ export const useEdgeControls = (id: string) => {
                 if (edge.id !== id) {
                     return edge;
                 }
-
+                
                 return {
                     ...edge,
                     data: {
                         ...edge.data,
-                        label: newEdgeData.label || edge.data?.label || "",
+                        label: newEdgeData.label !== undefined ? newEdgeData.label : edge.data?.label || "",
                         pathId: newEdgeData.pathId || edge.data?.pathId || DEFAULT_PATH_ID,
                         points: newEdgeData.points || edge.data?.points || [],
                         algorithm: newEdgeData.algorithm || edge.data?.algorithm || DEFAULT_ALGORITHM,

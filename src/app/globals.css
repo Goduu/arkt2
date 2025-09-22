@@ -119,6 +119,12 @@ body,
   border: none;
 }
 
+/* Re-enable pointer events for the rotation handle within freehand nodes */
+.react-flow__node-freehand .rotatable-node__handle {
+  pointer-events: auto;
+  z-index: 20;
+}
+
 .freehand-overlay {
   position: absolute;
   top: 0;

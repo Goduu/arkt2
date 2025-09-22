@@ -19,13 +19,13 @@ export function StrokeWidth({ selectedWidth, onChange }: StrokeTypeSelectorProps
                 }}
             >
                 <ToggleGroupItem value="2" aria-label="2">
-                    <div className="w-3 h-0.5 bg-black rounded-xl"/>
+                    <div className="w-3 h-0.5 bg-current rounded-xl"/>
                 </ToggleGroupItem>
                 <ToggleGroupItem value="3" aria-label="3">
-                    <div className="w-3 h-1 bg-black rounded-xl"/>
+                    <div className="w-3 h-1 bg-current rounded-xl"/>
                 </ToggleGroupItem>
                 <ToggleGroupItem value="4" aria-label="4">
-                    <div className="w-3 h-1.5 bg-black rounded-xl"/>
+                    <div className="w-3 h-1.5 bg-current rounded-xl"/>
                 </ToggleGroupItem>
             </ToggleGroup>
         </div>

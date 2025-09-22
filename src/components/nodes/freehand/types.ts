@@ -7,6 +7,8 @@ export type FreehandNodeData = {
     pathId: string;
     points: Points;
     fillColor: Color;
+    strokeColor: Color;
+    rotation: number;
     initialSize: { width: number; height: number };
 }
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { getTailwindBgClass, SUPPORTED_TAILWIND_FAMILIES, TAILWIND_STROKE_COLORS } from "../colors/utils";
 import { TailwindFamily, TailwindIndicative } from "../colors/types";
 import { Color } from "../colors/types";
+import { useTheme } from "next-themes";
 
 type ColorSelectorProps = {
     label?: string;
@@ -18,6 +19,7 @@ type ColorSelectorProps = {
 export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIND_STROKE_COLORS, indicative = "high", disabled = false }: ColorSelectorProps) {
     const [selectedColor, setSelectedColor] = useState(value?.family);
     const allColors = SUPPORTED_TAILWIND_FAMILIES;
+    const { theme } = useTheme();
 
     const handleColorClick = (color: TailwindFamily) => {
         setSelectedColor(color);
@@ -31,7 +33,7 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button disabled={disabled} variant="ghost" size="icon" className="size-10" fillColor={{ family: selectedColor as TailwindFamily, indicative }}>
-                            <div className={`size-6 rounded-full border border-slate-200 ${selectedColor && getTailwindBgClass({ family: selectedColor, indicative })}`} />
+                            <div className={`size-6 rounded-full border border-slate-200 ${selectedColor && getTailwindBgClass({ family: selectedColor, indicative }, theme)}`} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent>
@@ -51,7 +53,7 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
                                     <div
                                         className={cn(
                                             `size-6 rounded-full border border-slate-200`,
-                                            getTailwindBgClass({ family: color as TailwindFamily, indicative })
+                                            getTailwindBgClass({ family: color as TailwindFamily, indicative }, theme)
                                         )}
                                     />
                                 </Button>
@@ -77,7 +79,7 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
                         <div
                             className={cn(
                                 `size-6 rounded-full border border-slate-200`,
-                                getTailwindBgClass({ family: color, indicative })
+                                getTailwindBgClass({ family: color, indicative }, theme)
                             )}
                         />
                     </Button>

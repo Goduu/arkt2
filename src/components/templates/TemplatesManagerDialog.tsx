@@ -4,19 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JSX, useEffect, useState } from "react";
 import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
-import { TemplateView } from "./TemplateView";
+import { TemplatePreview } from "./TemplatePreview";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
-import { useAppStore } from "@/app/design/store";
+import { useCommandStore } from "@/app/design/commandStore";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-type Props = {
-  isOpen: boolean;
-  onClose: () => void;
-};
-
-export function TemplatesManagerDialog({ isOpen, onClose }: Props): JSX.Element | null {
+export function TemplatesManagerDialog(): JSX.Element | null {
+  const [isOpen, setIsTemplatesManagerOpen] = useState<boolean>(false);
   const [templates] = useTemplatesStateSynced();
   const [query, setQuery] = useState<string>("");
-  const activateCommand = useAppStore((s) => s.activateCommand);
+  const activateCommand = useCommandStore((s) => s.activateCommand);
+  const { removeCommand } = useCommandStore();
+  const openTemplatesManagerCommand = useCommandStore((s) => s.commandMap["open-templates-manager"]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -24,22 +23,30 @@ export function TemplatesManagerDialog({ isOpen, onClose }: Props): JSX.Element 
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (openTemplatesManagerCommand.status === "pending") {
+      setIsTemplatesManagerOpen(true);
+      removeCommand("open-templates-manager");
+    }
+  }, [openTemplatesManagerCommand]);
 
   const list = Object.values(templates)
     .sort((a, b) => b.updatedAt - a.updatedAt)
     .filter((t) => t.name.toLowerCase().includes(query.trim().toLowerCase()));
 
+  const handleClose = () => {
+    setIsTemplatesManagerOpen(false);
+  }
+
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40">
-      <div className="w-[880px] max-w-[95vw] rounded-xs border bg-background">
-        <div className="flex items-center justify-between px-3 py-2 border-b">
-          <div className="text-sm font-medium">Templates</div>
-          <div className="flex items-center gap-2">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="w-[880px] max-w-[95vw] p-0" showCloseButton>
+        <DialogHeader className="px-3 py-2 pr-10 border-b">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-sm font-medium">Templates</DialogTitle>
             <Button size="sm" variant="outline" onClick={() => activateCommand("open-create-template")}>New template</Button>
-            <Button size="icon" variant="ghost" onClick={onClose}>×</Button>
           </div>
-        </div>
+        </DialogHeader>
         <div className="p-4 space-y-3 text-sm">
           <div className="flex items-center gap-2 w-full">
             <Input
@@ -49,7 +56,7 @@ export function TemplatesManagerDialog({ isOpen, onClose }: Props): JSX.Element 
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[60vh] overflow-auto pr-1">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto pr-1">
             {list.map((tpl) => (
               <SketchyPanel key={tpl.id} className="w-full h-full" hoverEffect>
                 <button
@@ -63,7 +70,7 @@ export function TemplatesManagerDialog({ isOpen, onClose }: Props): JSX.Element 
                     <div className="text-[10px] text-muted-foreground">{new Date(tpl.updatedAt).toLocaleString()}</div>
                   </div>
                   <div className="p-4 flex items-center justify-center">
-                    <TemplateView
+                    <TemplatePreview
                       name={tpl.name}
                       fillColor={tpl.fillColor}
                       strokeColor={tpl.strokeColor}
@@ -77,12 +84,12 @@ export function TemplatesManagerDialog({ isOpen, onClose }: Props): JSX.Element 
               <div className="col-span-full text-center text-sm text-muted-foreground py-12">No templates found.</div>
             )}
           </div>
-          <div className="flex justify-end">
-            <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
-          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={handleClose}>Close</Button>
+          </DialogFooter>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
 
   );
 }

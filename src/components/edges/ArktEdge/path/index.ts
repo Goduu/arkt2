@@ -4,11 +4,12 @@ import { getLinearPath, getLinearControlPoints } from './linear';
 import { getCatmullRomPath, getCatmullRomControlPoints } from './catmull-rom';
 import { Algorithm } from '../constants';
 import { ControlPointData } from '../type';
+import { getStepPath } from './step';
 
 export function getControlPoints(
   points: (ControlPointData | XYPosition)[],
   algorithm: Algorithm = Algorithm.BezierCatmullRom,
-  sides = { fromSide: Position.Left, toSide: Position.Right }
+  sides = { fromSide: Position.Left, toSide: Position.Right },
 ) {
   switch (algorithm) {
     case Algorithm.Linear:

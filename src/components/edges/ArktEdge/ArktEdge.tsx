@@ -10,6 +10,7 @@ import { ArktEdge, ControlPointData } from './type';
 import { getEdgeParams, getEdgePath } from './path/utils';
 import { EdgeLabel } from './EdgeLabel';
 import { useEdgeControls } from './useEdgeControls';
+import { colorToHex, DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
 
 const useIdsForInactiveControlPoints = (points: ControlPointData[]) => {
   const ids = useRef<string[]>([]);
@@ -75,7 +76,8 @@ export function EditableEdgeComponent({
   const controlPoints = getControlPoints(pathPoints, data?.algorithm, {
     fromSide: sourcePos,
     toSide: targetPos,
-  });
+  }
+  );
   const path = getPath(pathPoints, data?.algorithm, {
     fromSide: sourcePos,
     toSide: targetPos,
@@ -93,6 +95,8 @@ export function EditableEdgeComponent({
   const labelCoordX = centralPlacedPoint?.x ?? labelX;
   const labelCoordY = centralPlacedPoint?.y ?? labelY;
 
+  const strokeColor = colorToHex(data?.strokeColor ?? DEFAULT_STROKE_COLOR);
+
   return (
     <>
       <BaseEdge
@@ -102,18 +106,22 @@ export function EditableEdgeComponent({
         markerEnd={markerEnd}
         style={{
           ...style,
-          strokeWidth: 2,
-          stroke: color,
+          strokeWidth: data?.strokeWidth || 2,
+          stroke: strokeColor,
         }}
       />
       <EdgeLabel
         id={id}
+        fontSize={data?.fontSize ?? 12}
         labelText={data?.label || ""}
         isEditing={isEditing}
         labelX={labelCoordX}
         labelY={labelCoordY}
+        selected={selected}
+        fillColor={data?.labelFill}
+        strokeColor={data?.strokeColor}
         onBlur={() => setIsEditing(false)}
-        onDoubleClick={() => setIsEditing(true)}
+        onClick={() => setIsEditing(true)}
       />
       {shouldShowPoints &&
         controlPointsWithIds.map((point, index) => {

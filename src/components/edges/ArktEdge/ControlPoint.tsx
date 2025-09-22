@@ -160,7 +160,6 @@ export const ControlPoint = (
         }
       }}
       onPointerDown={(e) => {
-        console.log("pointer down", index);
         if (e.button === 2) return;
         updatePosition({ x, y });
         setDragging(true);
@@ -169,4 +168,9 @@ export const ControlPoint = (
       onPointerUp={() => setDragging(false)}
     />
   );
+}
+
+export enum ControlDirection {
+  Horizontal = 'horizontal',
+  Vertical = 'vertical',
 }

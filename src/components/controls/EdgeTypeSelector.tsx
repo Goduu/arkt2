@@ -1,5 +1,5 @@
 import { Spline } from "lucide-react";
-import { IoAnalyticsOutline, TbLine } from "@/lib/icons/Icons";
+import { TbLine } from "@/lib/icons/Icons";
 import { Algorithm } from "../edges/ArktEdge/constants";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
@@ -43,8 +43,8 @@ export const EDGE_TYPES: EdgeTypeOption[] = [
     },
     {
         value: Algorithm.CatmullRom,
-        label: "Step",
-        icon: IoAnalyticsOutline,
+        label: "Catmull-Rom",
+        icon: Spline,
     },
 ]
 

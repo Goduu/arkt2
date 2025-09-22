@@ -19,7 +19,7 @@ import {
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import { useAppStore } from './store';
+import { useCommandStore } from './commandStore';
 import { ConnectionLine } from '../../components/edges/ConnectionLine';
 import { DEFAULT_ALGORITHM } from '../../components/edges/ArktEdge/constants';
 import { ArktNodeComponent } from '../../components/nodes/arkt/ArktNode';
@@ -39,15 +39,18 @@ import { NodeUnion } from '../../components/nodes/types';
 import useUserDataStateSynced from '../../components/yjs/useUserStateSynced';
 import { SegmentBreadCrumb } from '../../components/SegmentBreadCrumb';
 import { EditableEdgeComponent } from '../../components/edges/ArktEdge';
-import { nanoid } from 'nanoid';
 import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
 import { EdgeControls } from '@/components/controls/EdgeControls';
 import { NodeControls } from '@/components/controls/node-controls/NodeControls';
 import { DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
+import { useDraggableNode } from '@/components/nodes/useDraggableNode';
+import { StatusIcon } from './StatusIcon';
+import { ArchTextNodeComponent } from '@/components/nodes/text/ArchTextNode';
 
 const nodeTypes = {
   arktNode: ArktNodeComponent,
   freehand: FreehandNode,
+  text: ArchTextNodeComponent,
 };
 
 export const edgeTypes = {
@@ -63,22 +66,22 @@ export default function FlowEditor() {
   const { getNodes } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
   const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
-  const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
-  const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+  const { takeSnapshot } = useUndoRedo();
   const { rebuildIndex, updateHelperLines, HelperLines } = useHelperLines();
-  const { currentUserData, usersData } = useUserDataStateSynced();
+  const { currentUserData } = useUserDataStateSynced();
   const currentPath = currentUserData?.currentDiagramId || DEFAULT_PATH_ID;
   const [isDrawing, setIsDrawing] = useState(false);
   const [cursors, onMouseMove] = useCursorStateSynced();
-  const [selectedEdges, setSelectedEdges] = useState<ArktEdge[]>([]);
-  const [selectedNodes, setSelectedNodes] = useState<NodeUnion[]>([]);
-  const freehandModeCommand = useAppStore((s) => s.commandMap["freehand-mode"]);
-  const { removeCommand } = useAppStore();
-
+  const [, setSelectedEdges] = useState<ArktEdge[]>([]);
+  const [, setSelectedNodes] = useState<NodeUnion[]>([]);
+  const freehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
+  const { draggingNodesRef, mouseMoveHandler, dropHandler } = useDraggableNode();
+  
+  useCopyPaste();
+  
   useEffect(() => {
     if (freehandModeCommand.status === "pending") {
       setIsDrawing(true);
-      removeCommand("freehand-mode");
     }
   }, [freehandModeCommand]);
 
@@ -89,10 +92,17 @@ export default function FlowEditor() {
     setSelectedNodes(nodes);
   }
 
+  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    onMouseMove(event);
+    if (draggingNodesRef.current.length > 0) {
+      mouseMoveHandler(event);
+    }
+  }, [onMouseMove]);
+
 
   const onConnect: OnConnect = useCallback(
     (connection) => {
-      const { connectionLinePath } = useAppStore.getState();
+      const { connectionLinePath } = useCommandStore.getState();
       // We add a new edge based on the selected DEFAULT_ALGORITHM
       // and transfer all the control points from the connectionLinePath
       // in case the user has added any while creating the connection
@@ -171,7 +181,7 @@ export default function FlowEditor() {
         onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onPointerMove={onMouseMove}
+        onPointerMove={handleMouseMove}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStart={onSelectionDragStart}
@@ -190,9 +200,10 @@ export default function FlowEditor() {
         selectNodesOnDrag={!isDrawing}
         fitView
         fitViewOptions={fitViewOptions}
+        onClick={draggingNodesRef.current.length > 0 ? dropHandler : undefined}
       >
 
-        {isDrawing && <Freehand setNodes={setNodes} />}
+        {isDrawing && <Freehand setNodes={setNodes} setIsDrawing={setIsDrawing} />}
         <Background />
         <Panel position="top-left">
           <Button onClick={() => {
@@ -200,24 +211,6 @@ export default function FlowEditor() {
             setEdges([]);
           }}>
             Reset
-          </Button>
-          <Button
-            className='cursor-pointer'
-            onClick={() => {
-              console.log('currentPath', currentPath)
-              setNodes([...nodes, {
-                id: nanoid(),
-                type: 'arktNode',
-                width: 90,
-                height: 60,
-                data: {
-                  pathId: currentPath || DEFAULT_PATH_ID,
-                  label: "New Node"
-                },
-                position: { x: 0, y: 0 },
-              }]);
-            }}>
-            Add Node
           </Button>
           <Button
             className={`xy-theme__button ${isDrawing ? 'active' : ''}`}
@@ -230,13 +223,11 @@ export default function FlowEditor() {
         <HelperLines />
         <MiniMap />
         <Cursors cursors={cursors} />
+        <div className='absolute bottom-2 left-2'>
+          <StatusIcon />
+        </div>
       </ReactFlow>
-      <EdgeControls
-        selectedEdges={selectedEdges}
-        onChange={(edge) => {
-          setEdges(edges.map((e) => (e.id === edge.id ? edge : e)));
-        }}
-      />
+      <EdgeControls />
       <NodeControls />
     </div>
 

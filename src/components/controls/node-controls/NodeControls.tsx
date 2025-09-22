@@ -3,17 +3,23 @@
 import { BasicNodeControl } from "./BasicNodeControl";
 import { ControlWrapper } from "../ControlWrapper";
 import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
-import { ArktNodeData } from "@/components/nodes/arkt/types";
+import { ArktNode, ArktNodeData } from "@/components/nodes/arkt/types";
+import { TextNodeControls } from "./TextNodeControls";
+import { ArktTextNode } from "@/components/nodes/text/types";
+import { FreehandNodeControls } from "./FreehandNodeControls";
+import { FreehandNodeType } from "@/components/nodes/freehand/types";
 
 export function NodeControls() {
   const [nodes, setNodes] = useNodesStateSynced();
   const selectedNodes = nodes.filter((node) => node.selected);
   const selectedNode = selectedNodes[0];
-  const isBasicNode = selectedNode?.type === "arktNode"
+  const isArktNode = selectedNode?.type === "arktNode"
+  const isArchTextNode = selectedNode?.type === "text"
+  const isFreehandNode = selectedNode?.type === "freehand"
 
   const handleNodeChange = (next: Partial<ArktNodeData> | undefined) => {
     if (!next) return;
-    console.log("handleNodeChange", next);
+
     setNodes((nodes) => nodes.map((n) => {
       if (!n.id || !selectedNode.id || n.type !== "arktNode") return n;
       if (n.id === selectedNode.id) {
@@ -23,14 +29,23 @@ export function NodeControls() {
     }))
   }
 
-  if (!selectedNode) return null;
+  const isVirtualNode = selectedNode?.data && "virtualOf" in selectedNode.data && selectedNode.data.virtualOf;
+
+  if (!selectedNode || isVirtualNode) return null;
+
   return (
     <ControlWrapper title="Node options" testId="node-options">
-      {isBasicNode && (
+      {isArktNode && (
         <BasicNodeControl
-          node={selectedNode}
+          node={selectedNode as ArktNode}
           onChange={handleNodeChange}
         />
+      )}
+      {isArchTextNode && (
+        <TextNodeControls node={selectedNode as ArktTextNode} />
+      )}
+      {isFreehandNode && (
+        <FreehandNodeControls node={selectedNode as FreehandNodeType} />
       )}
     </ControlWrapper>
 

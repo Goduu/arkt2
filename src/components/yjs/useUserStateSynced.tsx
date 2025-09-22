@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import ydoc from './ydoc';
+import { getAncestorIdsFromNode, getNodePathLabelsFromId } from './nodePathUtils';
+import { NodeUnion } from '../nodes/types';
+import { ArktNode } from '../nodes/arkt/types';
+import { FitView } from '@xyflow/react';
 
 const usersDataMap = ydoc.getMap<UserData>('usersData');
 
@@ -16,7 +20,7 @@ export type UserData = {
   timestamp: number;
 };
 
-export function useUserDataStateSynced() {
+export function useUserDataStateSynced(fitView?: FitView) {
   const [usersData, setUsersData] = useState<UserData[]>([]);
 
   // Flush any data that have gone stale.
@@ -55,6 +59,7 @@ export function useUserDataStateSynced() {
         currentDiagramPath: currentUserData?.currentDiagramPath || [{ id: newDiagramId, label: newDiagramLabel }],
         timestamp: Date.now(),
       });
+      fitView?.();
     },
     []
   );
@@ -70,6 +75,7 @@ export function useUserDataStateSynced() {
       currentDiagramPath: currentUserData?.currentDiagramPath || [],
       timestamp: Date.now(),
     });
+    fitView?.();
   }, []);
 
   // Drill to a specific index within the currentDiagramPath array (inclusive)
@@ -85,9 +91,38 @@ export function useUserDataStateSynced() {
         currentDiagramPath: nextPath,
         timestamp: Date.now(),
       });
+      fitView?.();
       return;
     }
     // If we don't have user data yet, no-op
+  }, []);
+
+  // Drill directly to a node by id, rebuilding full path from home (excluding the home segment itself)
+  const onDiagramDrillToNode = useCallback((targetNodeId: string) => {
+    const nodesMap = ydoc.getMap<NodeUnion>('nodes');
+
+    const node = nodesMap.get(targetNodeId);
+    const isArktNode = (n: NodeUnion | undefined): n is ArktNode => !!n && (n as ArktNode).type === 'arktNode';
+    if (!isArktNode(node)) return;
+
+    const ancestorIds = getAncestorIdsFromNode(node); // [parentId, grandParentId, ...]
+    const labelsAll = getNodePathLabelsFromId(targetNodeId); // [DEFAULT, rootLabel, ..., parentLabel, nodeLabel]
+
+    // Exclude DEFAULT and the current node label for ancestor labels
+    const ancestorLabelsRootToParent = labelsAll.slice(1, -1); // [rootLabel, ..., parentLabel]
+    const ancestorIdsRootToParent = [...ancestorIds].reverse(); // [rootAncestorId, ..., parentId]
+
+    const ancestorPairs = ancestorIdsRootToParent.map((id, idx) => ({ id, label: ancestorLabelsRootToParent[idx] }));
+    const currentPair = { id: targetNodeId, label: labelsAll[labelsAll.length - 1] };
+    const fullPath = [...ancestorPairs, currentPair];
+
+    usersDataMap.set(ydoc.clientID.toString(), {
+      id: ydoc.clientID.toString(),
+      currentDiagramId: targetNodeId,
+      currentDiagramPath: fullPath,
+      timestamp: Date.now(),
+    });
+    fitView?.();
   }, []);
 
   useEffect(() => {
@@ -117,7 +152,8 @@ export function useUserDataStateSynced() {
     onDiagramDrillDown,
     onDiagramDrillUp,
     onDiagramDrillToIndex,
-    onChangeNodeLabel
+    onChangeNodeLabel,
+    onDiagramDrillToNode
   }
 }
 

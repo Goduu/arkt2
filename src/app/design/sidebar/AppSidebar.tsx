@@ -14,7 +14,10 @@ import {
 import {
     Home, FileText, Settings,
     Plus,
-    LineSquiggle
+    LineSquiggle,
+    Layers,
+    LinkIcon,
+    Type
 } from "lucide-react"
 import Link from "next/link"
 import { Collapsible } from "@/components/ui/collapsible"
@@ -22,14 +25,16 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { useMounted } from "@/app/useMounted"
-import { useAppStore } from "../store"
+import { useCommandStore } from "../commandStore"
 import SidenavTemplatesList from "./SidenavTemplatesList"
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced"
+import { useNewDraftNode } from "@/components/nodes/arkt/utils"
 
 export function AppSidebar() {
     // const { nodeTemplates, setPendingSpawn, setPendingCommand } = useAppStore()
-    const activateCommand = useAppStore((s) => s.activateCommand);
+    const activateCommand = useCommandStore((s) => s.activateCommand);
     const [templates] = useTemplatesStateSynced();
+    const { getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
 
     const { resolvedTheme } = useTheme()
     const mounted = useMounted()
@@ -91,7 +96,6 @@ export function AppSidebar() {
         <Sidebar collapsible="icon" side="left" className="overflow-hidden" variant="sidebar">
             <SidebarHeader>
                 <Link href="/" className="flex gap-4 px-2 items-center w-full justify-start group-data-[collapsible=icon]:justify-center">
-                    {/* <div className="size-6 rounded-md bg-primary text-primary-foreground inline-flex items-center justify-center font-semibold shrink-0">A</div> */}
                     {mounted && <Image src={`/arkt-logo-${resolvedTheme}.svg`} alt="ArkT" width={32} height={32} />}
                     <span className="text-sm font-semibold group-data-[collapsible=icon]:hidden">ArkT</span>
                 </Link>
@@ -141,39 +145,40 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupLabel>Add</SidebarGroupLabel>
                     <SidebarGroupContent>
-                        {/* <SidebarMenu>
+                        <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton
                                     data-testid="add-text"
                                     tooltip="Add Text"
-                                    onClick={() => setPendingCommand({ type: "addText" })}
+                                    onClick={() => activateCommand("add-node", { nodes: [getNewDraftTextNode()] })}
                                 >
                                     <Type />
                                     <span>Add text</span>
                                 </SidebarMenuButton>
-                            </SidebarMenuItem> */}
+                            </SidebarMenuItem>
+                            </SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton tooltip="Add Line" onClick={() => activateCommand("freehand-mode")}>
                                 <LineSquiggle />
                                 <span>Add line</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
-                        {/* <SidebarMenuItem>
-                                <SidebarMenuButton data-testid="add-node" tooltip="Add Node" onClick={() => setPendingCommand({ type: "addNode" })}>
-                                    <Layers />
-                                    <span>Add node</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem> */}
-                        {/* <SidebarMenuItem>
-                                <SidebarMenuButton
-                                    data-testid="sidebar-add-virtual-node-button"
-                                    tooltip="Add Virtual Node"
-                                    onClick={() => setPendingCommand({ type: "addVirtual" })}
-                                >
-                                    <LinkIcon />
-                                    <span>Add virtual node</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem> */}
+                        <SidebarMenuItem>
+                            <SidebarMenuButton data-testid="add-node" tooltip="Add Node" onClick={() => activateCommand("add-node", { nodes: [getNewDraftNode()] })}>
+                                <Layers />
+                                <span>Add node</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                data-testid="sidebar-add-virtual-node-button"
+                                tooltip="Add Virtual Node"
+                                onClick={() => activateCommand("open-add-virtual-dialog")}
+                            >
+                                <LinkIcon />
+                                <span>Add virtual node</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
 
                         <SidebarSeparator />
 
@@ -190,7 +195,6 @@ export function AppSidebar() {
                         </SidebarMenuItem>
                         <SidenavTemplatesList
                             nodeTemplates={templates}
-                            onSpawn={() => { }}
                         />
                         {/* </SidebarMenu>  */}
                     </SidebarGroupContent>

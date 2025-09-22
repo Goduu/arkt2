@@ -1,7 +1,7 @@
-import type { ControlPointData } from '../ControlPoint';
 import type { XYPosition } from '@xyflow/react';
 
 import { isControlPoint } from './utils';
+import { ControlPointData } from '../type';
 
 export function getLinearPath(points: XYPosition[]) {
   if (points.length < 1) return '';

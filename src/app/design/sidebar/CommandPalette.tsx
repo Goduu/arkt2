@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
-// import { useAppStore } from "@/lib/store";
 import {
   CommandDialog,
   CommandEmpty,
@@ -16,13 +15,15 @@ import {
 } from "@/components/ui/command";
 import { Type, LineSquiggle, Layers, Link as LinkIcon, Settings, Bot, Download, Upload, Plus, FileText } from "lucide-react";
 import { TemplateIcon } from "@/components/templates/TemplateIcon";
+import { useCommandStore } from "../commandStore";
+import { useNewDraftNode } from "@/components/nodes/arkt/utils";
+import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced";
 
 export function CommandPalette(): JSX.Element {
   const router = useRouter();
-  const nodeTemplates = () => {}
-  // const setPendingCommand = useAppStore((s) => s.setPendingCommand);
-  // const setPendingSpawn = useAppStore((s) => s.setPendingSpawn);
-  // const nodeTemplates = useAppStore((s) => s.nodeTemplates);
+  const [nodeTemplates,] = useTemplatesStateSynced()
+  const activateCommand = useCommandStore((s) => s.activateCommand);
+  const { getNewDraftNode } = useNewDraftNode();
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -71,7 +72,7 @@ export function CommandPalette(): JSX.Element {
           <CommandItem
             value="add line"
             onSelect={() => {
-              // setPendingCommand({ type: "addLine" });
+              activateCommand("freehand-mode");
               setOpen(false);
             }}
           >
@@ -82,7 +83,7 @@ export function CommandPalette(): JSX.Element {
           <CommandItem
             value="add node"
             onSelect={() => {
-              // setPendingCommand({ type: "addNode" });
+              activateCommand("add-node", { nodes: [getNewDraftNode()] });
               setOpen(false);
             }}
           >
@@ -93,7 +94,7 @@ export function CommandPalette(): JSX.Element {
           <CommandItem
             value="add virtual node"
             onSelect={() => {
-              // setPendingCommand({ type: "addVirtual" });
+              activateCommand("open-add-virtual-dialog");
               setOpen(false);
             }}
           >
@@ -104,7 +105,7 @@ export function CommandPalette(): JSX.Element {
           <CommandItem
             value="create template"
             onSelect={() => {
-              // setPendingCommand({ type: "openCreateTemplate" });
+              activateCommand("open-create-template");
               setOpen(false);
             }}
           >
@@ -115,7 +116,7 @@ export function CommandPalette(): JSX.Element {
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Navigation">
-          <CommandItem
+          {/* <CommandItem
             value="open diagrams"
             onSelect={() => {
               // setPendingCommand({ type: "openDiagrams" });
@@ -125,11 +126,11 @@ export function CommandPalette(): JSX.Element {
             <Layers className="mr-2 h-4 w-4" />
             <span>Open diagrams</span>
             <CommandShortcut>⇧D</CommandShortcut>
-          </CommandItem>
+          </CommandItem> */}
           <CommandItem
             value="open templates"
             onSelect={() => {
-              // setPendingCommand({ type: "openTemplates" });
+              activateCommand("open-templates-manager");
               setOpen(false);
             }}
           >
@@ -189,15 +190,16 @@ export function CommandPalette(): JSX.Element {
               key={t.id}
               value={`template ${t.name} __${t.id}`}
               onSelect={() => {
-                // setPendingSpawn({ templateId: t.id });
+                activateCommand("add-node", { nodes: [getNewDraftNode(t)] });
                 setOpen(false);
               }}
+              className="[&_svg]:!size-4"
             >
                 <TemplateIcon
-                  className="size-5 relative flex items-center justify-center shrink-0"
-                  iconKey={t.data.iconKey}
-                  fillColor={t.data.fillColor}
-                  strokeColor={t.data.strokeColor}
+                  className="size-4 relative flex items-center justify-center shrink-0 p-0"
+                  iconKey={t.iconKey}
+                  fillColor={t.fillColor}
+                  strokeColor={t.strokeColor}
                 />
                 {t.name}
             </CommandItem>

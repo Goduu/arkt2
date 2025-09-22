@@ -5,10 +5,15 @@ import { cn } from "@/lib/utils";
 import SketchyShape from "@/components/sketchy/SketchyShape";
 import { TemplateIcon } from "@/components/templates/TemplateIcon";
 import { TemplateData } from "./types";
+import { useTheme } from "next-themes";
+import { getTailwindTextClass } from "../colors/utils";
 
-type TemplateViewProps = Omit<TemplateData, "id" | "updatedAt">
+type TemplatePreviewProps = Omit<TemplateData, "id" | "updatedAt">
 
-export function TemplateView(props: TemplateViewProps): React.JSX.Element {
+export function TemplatePreview(props: TemplatePreviewProps): React.JSX.Element {
+
+  const { theme } = useTheme();
+  const textColorClass = getTailwindTextClass(props.strokeColor, theme);
 
   return (
     <div
@@ -19,6 +24,7 @@ export function TemplateView(props: TemplateViewProps): React.JSX.Element {
       <div
         className={cn(
           "absolute inset-0 w-full z-20 h-full text-sm px-3 py-5 font-medium whitespace-pre-wrap break-words select-none truncate",
+          textColorClass
         )}
       >
         {props.name}

@@ -66,10 +66,10 @@ export async function getProvider() {
 
     try {
         provider.on('status', (event: { connected: boolean }) => {
-            console.log('WebRTC status:', event);
+            console.info('WebRTC status:', event);
         });
         provider.on('peers', (event: unknown) => {
-            console.log('WebRTC peers:', event);
+            console.info('WebRTC peers:', event);
         });
     } catch {
         console.error('Error initializing WebRTC provider');

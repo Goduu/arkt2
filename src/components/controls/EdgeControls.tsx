@@ -4,36 +4,36 @@ import { MarkerType } from "@xyflow/react";
 import { ColorSelector } from "./ColorSelector";
 import { EdgeMarker } from "./EdgeMarker";
 import { FontSizeSelector } from "./FontSizeSelector";
-import { colorToHex, DEFAULT_STROKE_COLOR, TAILWIND_FILL_COLORS } from "../colors/utils";
+import { colorToHex, TAILWIND_FILL_COLORS } from "../colors/utils";
 import { ControlWrapper } from "./ControlWrapper";
 import { EdgeTypeSelector } from "./EdgeTypeSelector";
 import { StrokeWidth } from "./StrokeWidth";
-import { ArktEdge } from "../edges/ArktEdge/type";
 import { useEdgeControls } from "../edges/ArktEdge/useEdgeControls";
 import { Color } from "../colors/types";
+import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
 
-type Props = {
-  selectedEdges: ArktEdge[];
-  onChange: (edge: ArktEdge) => void;
-};
 
-export function EdgeControls({ selectedEdges, onChange }: Props) {
-  const { strokeColor, algorithm, strokeWidth, fontSize, labelFill } = selectedEdges[0]?.data || {};
+export function EdgeControls() {
+  const [edges, ] = useEdgesStateSynced();
+  const selectedEdges = edges.filter((edge) => edge.selected);
+  const selectedEdge = selectedEdges[0];
+  const { strokeColor, algorithm, strokeWidth, fontSize, labelFill } = selectedEdge?.data || {};
   const { markerStart, markerEnd } = selectedEdges[0] ?? {};
-  const { onEdgeUpdate } = useEdgeControls(selectedEdges[0]?.id ?? "");
+  const { onEdgeUpdate } = useEdgeControls(selectedEdge?.id ?? "");
+  const {onEdgeDataUpdate} = useEdgeControls(selectedEdge?.id ?? "");
 
-  const commitMarkers = (direction: "start" | "end" | "both" | "") => {
-    if (!selectedEdges) return;
+  // const commitMarkers = (direction: "start" | "end" | "both" | "") => {
+  //   if (!selectedEdge) return;
 
-    const next: ArktEdge = {
-      ...selectedEdges[0],
-      markerStart: (direction === "start" || direction === "both") ?
-        getDefaultMarker(strokeColor ?? DEFAULT_STROKE_COLOR) : undefined,
-      markerEnd: (direction === "end" || direction === "both") ?
-        getDefaultMarker(strokeColor ?? DEFAULT_STROKE_COLOR) : undefined,
-    };
-    onChange(next);
-  };
+  //   const next: ArktEdge = {
+  //     ...selectedEdge,
+  //     markerStart: (direction === "start" || direction === "both") ?
+  //       getDefaultMarker(strokeColor ?? DEFAULT_STROKE_COLOR, theme) : undefined,
+  //     markerEnd: (direction === "end" || direction === "both") ?
+  //       getDefaultMarker(strokeColor ?? DEFAULT_STROKE_COLOR, theme) : undefined,
+  //   };
+  //   onEdgeUpdate(next);
+  // };
 
   if (!selectedEdges.length) return null;
 
@@ -43,14 +43,14 @@ export function EdgeControls({ selectedEdges, onChange }: Props) {
       <div className="grid grid-cols-2 gap-4">
         <EdgeTypeSelector
           selectedStrokeType={algorithm}
-          onChange={() => { }}
+          onChange={(algorithm) => onEdgeUpdate({ algorithm })}
         />
         <StrokeWidth onChange={(width) => onEdgeUpdate({ strokeWidth: width })} selectedWidth={strokeWidth ?? 2} />
         <EdgeMarker
           value={markerStart && markerEnd ? "both" : markerStart ? "start" : markerEnd ? "end" : ""}
           onChange={(dir) => {
             if (dir === null) return;
-            commitMarkers(dir);
+            // commitMarkers(dir);
           }}
         />
         {/* TODO: separate animated to another component
@@ -92,10 +92,10 @@ export function EdgeControls({ selectedEdges, onChange }: Props) {
   );
 }
 
-export const getDefaultMarker = (strokeColor: Color) => {
+export const getDefaultMarker = (strokeColor: Color, theme?: string) => {
   return {
     type: MarkerType.ArrowClosed,
-    color: colorToHex(strokeColor, "#4b5563"),
+    color: colorToHex(strokeColor, "#4b5563", theme),
     width: 15,
     height: 15,
   };

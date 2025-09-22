@@ -9,9 +9,11 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import useUserDataStateSynced from "./yjs/useUserStateSynced";
+import { useReactFlow } from "@xyflow/react";
 
 export function SegmentBreadCrumb() {
-    const { currentUserData, onDiagramDrillToIndex } = useUserDataStateSynced();
+    const { fitView } = useReactFlow();
+    const { currentUserData, onDiagramDrillToIndex } = useUserDataStateSynced(fitView);
     const path = currentUserData?.currentDiagramPath || [];
 
     type Item = {

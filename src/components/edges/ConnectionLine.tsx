@@ -3,7 +3,8 @@ import { MarkerType, type ConnectionLineComponentProps } from '@xyflow/react';
 
 import { getPath } from './ArktEdge';
 import { Algorithm, COLORS, DEFAULT_ALGORITHM } from './ArktEdge/constants';
-import { useAppStore } from '@/app/design/store';
+import { useCommandStore } from '@/app/design/commandStore';
+import { colorToHex, DEFAULT_STROKE_COLOR } from '../colors/utils';
 
 // The distance between points when free drawing
 const DISTANCE = DEFAULT_ALGORITHM === Algorithm.BezierCatmullRom ? 50 : 25;
@@ -17,7 +18,7 @@ export function ConnectionLine({
   toPosition,
   connectionStatus,
 }: ConnectionLineComponentProps) {
-  const { connectionLinePath, setConnectionLinePath } = useAppStore();
+  const { connectionLinePath, setConnectionLinePath } = useCommandStore();
   const [freeDrawing, setFreeDrawing] = useState(false);
 
   // Check how far the cursor is from the last point in the path
@@ -70,7 +71,7 @@ export function ConnectionLine({
     <g>
       <path
         fill="none"
-        stroke={COLORS[DEFAULT_ALGORITHM]}
+        stroke={colorToHex(DEFAULT_STROKE_COLOR)}
         strokeWidth={2}
         className={connectionStatus === 'valid' ? '' : 'animated'}
         d={path}

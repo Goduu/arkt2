@@ -3,8 +3,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import useNodesStateSynced from "../../yjs/useNodesStateSynced";
-import { ArktNodeData } from "./types";
+import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
+import { NODE_MIN_HEIGHT, NODE_MIN_WIDTH } from "./utils";
 
 type AutoResizeTextareaProps = {
   nodeId: string;
@@ -16,6 +16,7 @@ type AutoResizeTextareaProps = {
   readOnly?: boolean;
   tabIndex?: number;
   /** Called with the required content box size (including provided padding classes) */
+  onSizeChange?: (size: { width: number; height: number }) => void;
   /** Tailwind padding classes to be applied around the textarea and included in measurement (e.g., "px-3 py-2"). */
   paddingClassName?: string;
   /** Minimum content box size (including padding) */
@@ -31,8 +32,8 @@ type AutoResizeTextareaProps = {
  * with white-space: pre to respect explicit line breaks without wrapping.
  */
 export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.Element {
-  const { nodeId, className, disabled, value, onChange, onBlur, readOnly, tabIndex, paddingClassName, minWidth = 120, minHeight = 60, style } = props;
-  const [, setNodes,] = useNodesStateSynced();
+  const { nodeId, className, disabled, value, onChange, onBlur, readOnly, tabIndex, paddingClassName, minWidth = 20, minHeight = 20, style } = props;
+  const [nodes, setNodes,] = useNodesStateSynced();
 
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const wrapperRef = React.useRef<HTMLDivElement | null>(null);
@@ -56,27 +57,32 @@ export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.El
     const requiredWidth = Math.ceil(ta.scrollWidth + paddingX);
     const requiredHeight = Math.ceil(ta.scrollHeight + paddingY);
 
-    const w = Math.max(minWidth, requiredWidth);
-    const h = Math.max(minHeight, requiredHeight);
+    const width = Math.max(minWidth, requiredWidth);
+    const height = Math.max(minHeight, requiredHeight);
     const last = lastSizeRef.current;
-    if (w !== last.width || h !== last.height) {
-      lastSizeRef.current = { width: w, height: h };
-      setNodes((nodes) => {
-        return nodes.map(node => {
-          if (node.id === nodeId) {
-            return {
-              ...node,
-              width: w,
-              height: h,
-              style: { ...node.style, width: w, height: h },
-              data: { ...node.data } as ArktNodeData
-            };
-          }
-          return node;
-        });
-      })
+    if (width !== last.width || height !== last.height) {
+      lastSizeRef.current = { width: width, height: height };
+      const currentNode = nodes.find(node => node.id === nodeId);
+      const currentWidth = currentNode?.style?.width as number | undefined;
+      const currentHeight = currentNode?.style?.height as number | undefined;
+      const nextWidth = Math.max(NODE_MIN_WIDTH, width);
+      const nextHeight = Math.max(NODE_MIN_HEIGHT, height);
+      const shouldUpdate = (typeof currentWidth !== 'number' || nextWidth > currentWidth) || (typeof currentHeight !== 'number' || nextHeight > currentHeight);
+      if (!shouldUpdate) return;
+      setNodes((nodes) => nodes.map((node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            width: nextWidth,
+            height: nextHeight,
+            style: { ...node.style, width: nextWidth, height: nextHeight }
+          };
+        }
+        return node;
+      }));
+
     }
-  }, [value, minWidth, minHeight]);
+  }, [value, minWidth, minHeight, nodes]);
 
   return (
     <>
@@ -85,7 +91,7 @@ export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.El
         <Textarea
           name="auto-resize-textarea"
           data-testid="auto-resize-textarea"
-          // hideStroke
+          hideStroke
           className={cn(
             "w-full bg-transparent outline-none text-sm font-medium resize-none",
             className,

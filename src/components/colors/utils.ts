@@ -69,10 +69,14 @@ export const TAILWIND_TEXT_COLORS: TailwindFamily[] = [
 
 export type TailwindShades = "300" | "500" | "700" | null;
 
-function isDarkThemePreferred(): boolean {
+function isDarkThemePreferred(theme?: string): boolean {
   if (typeof window === "undefined") return false;
   try {
-    // Prefer explicit theme class when using next-themes
+    // Prefer explicit theme parameter when provided
+    if (theme === "dark") return true;
+    if (theme === "light") return false;
+    
+    // Fallback to DOM detection
     if (typeof document !== "undefined" && document.documentElement) {
       if (document.documentElement.classList.contains("dark")) return true;
       if (document.documentElement.classList.contains("light")) return false;
@@ -91,19 +95,19 @@ function shadeFromIndicative(indicative: TailwindIndicative | null | undefined, 
   return isDark ? "700" : "300";
 }
 
-function resolveShade(color?: Color): TailwindShades {
+function resolveShade(color?: Color, theme?: string): TailwindShades {
   if (!color) return "500";
-  const isDark = isDarkThemePreferred();
+  const isDark = isDarkThemePreferred(theme);
   return shadeFromIndicative(color.indicative, isDark);
 }
 
 // Returns a concrete Tailwind class name. Using explicit literals ensures Tailwind can see and compile them.
-export function getTailwindBgClass(color?: Color): string {
+export function getTailwindBgClass(color?: Color, theme?: string): string {
   if (!color) return "bg-white";
   const { family } = color;
-  const shade = resolveShade(color);
+  const shade = resolveShade(color, theme);
   if (family === "base") {
-    const isDark = isDarkThemePreferred();
+    const isDark = isDarkThemePreferred(theme);
     const indicative = color.indicative;
     // For base, pick white/black depending on indicative and theme
     // light: high -> black, low -> white, middle -> black
@@ -218,12 +222,12 @@ export function getTailwindBgClass(color?: Color): string {
 }
 
 // Returns a concrete Tailwind text color class name using explicit literals.
-export function getTailwindTextClass(color?: Color): string {
+export function getTailwindTextClass(color?: Color, theme?: string): string {
   if (!color) return "text-black";
   const { family } = color;
-  const shade = resolveShade(color);
+  const shade = resolveShade(color, theme);
   if (family === "base") {
-    const isDark = isDarkThemePreferred();
+    const isDark = isDarkThemePreferred(theme);
     const indicative = color.indicative;
     if (!indicative || indicative === "middle") {
       return isDark ? "text-white" : "text-black";
@@ -334,12 +338,12 @@ export function getTailwindTextClass(color?: Color): string {
 }
 
 // Returns a concrete Tailwind border color class name using explicit literals.
-export function getTailwindBorderClass(color?: Color): string {
+export function getTailwindBorderClass(color?: Color, theme?: string): string {
   if (!color) return "border-black";
   const { family } = color;
-  const shade = resolveShade(color);
+  const shade = resolveShade(color, theme);
   if (family === "base") {
-    const isDark = isDarkThemePreferred();
+    const isDark = isDarkThemePreferred(theme);
     const indicative = color.indicative;
     if (!indicative || indicative === "middle") {
       return isDark ? "border-white" : "border-black";
@@ -473,12 +477,12 @@ export const TAILWIND_HEX: Record<string, { 300: string; 500: string; 700: strin
   rose: { 300: "#fda4af", 500: "#f43f5e", 700: "#be123c" },
 };
 
-export function colorToHex(c?: Color, fallback: string = "#ffffff"): string {
+export function colorToHex(c?: Color, fallback: string = "#ffffff", theme?: string): string {
   if (!c) return fallback;
 
   const family = (c.family || "").toLowerCase();
   if (family === "base") {
-    const isDark = isDarkThemePreferred();
+    const isDark = isDarkThemePreferred(theme);
     const indicative = c.indicative;
     if (!indicative || indicative === "middle") return isDark ? "#ffffff" : "#000000";
     if (indicative === "high") return isDark ? "#ffffff" : "#000000";
@@ -488,7 +492,7 @@ export function colorToHex(c?: Color, fallback: string = "#ffffff"): string {
   if (family === "white") return "#ffffff";
   if (family === "black") return "#000000";
 
-  const computedShade = resolveShade(c) ?? "500";
+  const computedShade = resolveShade(c, theme) ?? "500";
   const palette = TAILWIND_HEX[family];
 
   if (!palette) return fallback;

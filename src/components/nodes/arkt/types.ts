@@ -1,4 +1,5 @@
 import { Color } from "@/components/colors/types";
+import { IconKey } from "@/lib/icons/iconRegistry";
 import { Node } from "@xyflow/react";
 
 export type ArktNodeData = {
@@ -7,18 +8,19 @@ export type ArktNodeData = {
     description: string;
     fillColor: Color;
     textColor: Color;
-    iconKey: string;
+    iconKey?: IconKey;
     githubLink: string;
-    templateId: string;
     rotation: number;
-    strokeWidth: number;
-    virtualOf: string;
     fontSize: number;
-    expandGroupId: string;
     isDraft: boolean;
+    strokeWidth: number;
     strokeColor: Color;
+    strokeLineDash?: number[];
+    templateId?: string;
+    virtualOf?: string;
+    expandGroupId?: string;
     isEphemeralExpansion: boolean;
     originalId: string;
 };
 
-export type ArktNode = Node<ArktNodeData>;
+export type ArktNode = Node<ArktNodeData, 'arktNode'>;

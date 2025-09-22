@@ -58,7 +58,7 @@ export function SketchySideBorder({
 
       const roughOptions: Options = {
         roughness,
-        stroke: colorToHex(strokeColor, "#111827"),
+        stroke: colorToHex(strokeColor, "#111827", theme),
         strokeWidth,
       };
       if (Array.isArray(strokeLineDash)) roughOptions.strokeLineDash = strokeLineDash;

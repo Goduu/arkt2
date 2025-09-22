@@ -3,6 +3,7 @@ import { Color } from "../colors/types";
 import { getTailwindTextClass } from "../colors/utils";
 import SketchyShape from "../sketchy/SketchyShape";
 import { cn } from "../utils";
+import { useTheme } from "next-themes";
 
 type TemplateIconProps = {
     iconKey?: IconKey,
@@ -19,10 +20,10 @@ export const TemplateIcon = ({
 }: TemplateIconProps) => {
     const iconDefinition = getIconByKey(iconKey);
     const Icon = iconDefinition?.Icon;
+    const { theme } = useTheme();
 
-    const iconColorClass = getTailwindTextClass(strokeColor);
+    const iconColorClass = getTailwindTextClass(strokeColor, theme);
     const seed = (iconKey?.length ?? 0) + (strokeColor?.family.length ?? 7);
-
 
     return (
         <div
@@ -44,7 +45,7 @@ export const TemplateIcon = ({
             />
 
             {/* Centered icon */}
-            <div className="relative inset-0 z-10 flex items-center justify-center">
+            <div className="relative inset-0 z-10 flex items-center justify-center [&_svg]:!size-4">
                 {Icon && <Icon className={cn("h-4 w-4", iconColorClass)} aria-label={iconDefinition?.label} />}
             </div>
             {/* Fallback intrinsic size so the wrapper has dimensions when no size classes are passed */}

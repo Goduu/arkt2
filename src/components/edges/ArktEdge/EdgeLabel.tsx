@@ -1,10 +1,11 @@
 import { EdgeLabelRenderer } from "@xyflow/react";
 import { cn } from "../../utils";
 import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR, getTailwindTextClass } from "../../colors/utils";
-import SketchyShape from "../../sketchy/SketchyShape";
 import { AutoWidthInput } from "@/components/ui/auto-width-input";
 import { useEdgeControls } from "./useEdgeControls";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
+import { Color } from "@/components/colors/types";
 
 type EdgeLabelProps = {
     id: string;
@@ -12,86 +13,92 @@ type EdgeLabelProps = {
     isEditing: boolean;
     labelX: number;
     labelY: number;
+    fillColor?: Color;
+    strokeColor?: Color;
+    fontSize?: number;
+    selected?: boolean;
     onBlur: () => void;
-    onDoubleClick: () => void;
+    onClick: () => void;
 }
-export const EdgeLabel = ({ id, labelText, isEditing, labelX, labelY, onBlur, onDoubleClick }: EdgeLabelProps) => {
+export const EdgeLabel = (
+    { id,
+        labelText,
+        isEditing,
+        labelX,
+        labelY,
+        fillColor = DEFAULT_FILL_COLOR,
+        strokeColor = DEFAULT_STROKE_COLOR,
+        fontSize = 12,
+        selected,
+        onBlur,
+        onClick
+    }: EdgeLabelProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const { theme } = useTheme();
 
     const { onEdgeUpdate } = useEdgeControls(id);
 
+    const showLabel = (labelText && labelText.length > 0) || selected;
+    const textClass = getTailwindTextClass(strokeColor, theme)
+
+    // Keep a local draft to avoid committing to the global store on each keystroke,
+    // which can cause remounts and caret to jump to end.
+    const [draft, setDraft] = useState<string>(labelText || "");
+
+    // Sync draft when external label changes and we're not actively editing
     useEffect(() => {
-        if (isEditing) {
-            // Focus and select on the next frame to ensure the input is mounted/styled
-            const rafId = requestAnimationFrame(() => {
-                inputRef.current?.focus();
-                // Select the entire text for immediate typing overwrite
-                inputRef.current?.setSelectionRange(0, labelText.length);
-            });
-            return () => cancelAnimationFrame(rafId);
+        if (!isEditing) {
+            setDraft(labelText || "");
         }
-    }, [isEditing, labelText.length]);
-
-    const showLabel = (labelText && labelText.length > 0) || isEditing;
-    const textClass = getTailwindTextClass(DEFAULT_STROKE_COLOR)
-
+    }, [labelText, isEditing]);
 
     return (
         <EdgeLabelRenderer>
             <div
                 style={{
                     position: "absolute",
-                    transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+                    left: `${labelX}px`,
+                    top: `${labelY}px`,
+                    transform: `translate(-50%, -50%)`,
                     pointerEvents: "all",
                 }}
-                className={cn("nodrag z-30 size-10 bg-red-500", showLabel ? "opacity-100" : "opacity-100")}
-                data-testid="arch-edge-label"
+                className={cn("nodrag z-30 w-auto", showLabel ? "opacity-100" : "opacity-10")}
+                data-testid="arkt-edge-label"
             >
                 <div
-                    className={cn("relative", getTailwindTextClass(DEFAULT_STROKE_COLOR))}
-                    onDoubleClick={(e) => { e.stopPropagation(); onDoubleClick(); }}
+                    className={cn("relative", getTailwindTextClass(DEFAULT_STROKE_COLOR, theme))}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (isEditing) return
+                        inputRef.current?.focus();
+                        onClick();
+                    }}
                 >
-                    <SketchyShape
-                        className="absolute inset-0 pointer-events-none -z-10 w-full h-full"
-                        kind={"rectangle"}
-                        fillColor={DEFAULT_FILL_COLOR}
-                        strokeColor={DEFAULT_STROKE_COLOR}
-                        strokeWidth={2}
-                        roughness={1}
-                        fillStyle={"solid"}
-                        seed={id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0)}
-                    />
                     {showLabel && (
                         <AutoWidthInput
                             ref={inputRef}
-                            hideStroke
                             className={cn(
-                                "outline-none m-0 py-0 z-10",
+                                "outline-none m-0 py-0 z-10 w-full",
                                 isEditing ? "w-auto nodrag nowheel pointer-events-auto" : "w-auto pointer-events-none",
-                                textClass
+                                textClass,
                             )}
-                            onBlur={onBlur}
+                            fillColor={fillColor}
+                            strokeColor={strokeColor}
+                            style={{ fontSize: fontSize }}
                             onClick={(e) => e.stopPropagation()}
                             onMouseDown={(e) => { if (isEditing) e.stopPropagation(); }}
                             onPointerDown={(e) => { if (isEditing) e.stopPropagation(); }}
-                            onKeyDown={(e) => {
-                                e.stopPropagation();
-                                if (isEditing) {
-                                    if (e.key === "Escape") {
-                                        e.preventDefault();
-                                        (e.target as HTMLInputElement).blur();
-                                    }
-                                    if (e.key === "Enter") {
-                                        e.preventDefault();
-                                        (e.target as HTMLInputElement).blur();
-                                    }
-                                }
-                            }}
                             type="text"
-                            value={labelText}
+                            value={draft}
                             onChange={(e) => {
                                 const next = e.target.value;
-                                onEdgeUpdate({ label: next });
+                                setDraft(next);
+                            }}
+                            onBlur={() => {
+                                if (isEditing) {
+                                    onEdgeUpdate({ label: draft || "" });
+                                    onBlur()
+                                }
                             }}
                             readOnly={!isEditing}
                             spellCheck={false}
@@ -99,8 +106,6 @@ export const EdgeLabel = ({ id, labelText, isEditing, labelX, labelY, onBlur, on
                         />
                     )}
                 </div>
-
-
             </div>
         </EdgeLabelRenderer>
     )

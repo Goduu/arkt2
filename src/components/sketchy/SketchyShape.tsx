@@ -69,10 +69,10 @@ export function SketchyShape(props: SketchyShapeProps): JSX.Element {
   }, [width, height]);
 
   const colors = useMemo(() => {
-    const resolvedFill = fillColor ? colorToHex(fillColor, "#ffffff") : "transparent";
+    const resolvedFill = fillColor ? colorToHex(fillColor, "#ffffff", theme) : "transparent";
     return {
       fill: resolvedFill,
-      stroke: colorToHex(strokeColor, "#111827"),
+      stroke: colorToHex(strokeColor, "#111827", theme),
     };
   }, [fillColor, strokeColor, theme]);
 
@@ -83,6 +83,7 @@ export function SketchyShape(props: SketchyShapeProps): JSX.Element {
       roughness,
       stroke: colors.stroke,
       strokeWidth,
+      strokeLineDash,
       fill: colors.fill,
       fillStyle,
       fillWeight,

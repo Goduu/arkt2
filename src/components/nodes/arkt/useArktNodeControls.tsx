@@ -1,7 +1,7 @@
 import useNodesStateSynced from "../../yjs/useNodesStateSynced";
 import { ArktNode, ArktNodeData } from "./types";
 
-export const useNodeControls = (id: string) => {
+export const useArktNodeControls = (id: string) => {
     const [, setNodes,] = useNodesStateSynced();
 
     const onNodeUpdate = (nodeData: Partial<ArktNodeData>) => {
