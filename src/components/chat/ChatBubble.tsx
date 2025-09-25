@@ -14,7 +14,6 @@ import { MessageList } from "./MessageList";
 import type { ChatMessageItem } from "./MessageList";
 import { ActionBar } from "./ActionBar";
 import { ChatInput } from "./ChatInput";
-import { useAiCreateStreaming } from "./useAiCreateStreaming";
 import { AiSettingsDialog } from "./chatHistory/AiSettingsDialog";
 import { MentionOption } from "./chatHistory/types";
 import { useMentionOptions } from "./hooks/useMentionOptions";
@@ -26,6 +25,8 @@ import { saveInteractionMetrics } from "@/lib/ai/usageHistory";
 import { useUserDataStateSynced } from "../yjs/useUserStateSynced";
 import { DEFAULT_PATH_ID } from "../yjs/constants";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
+import { useTheme } from "next-themes";
+import { useMounted } from "@/app/useMounted";
 
 type Message = ChatMessageItem
 
@@ -53,6 +54,8 @@ export function ChatBubble() {
     const addChatMessage = useChatStore((s) => s.addChatMessage);
     const setChatMessageMeta = useChatStore((s) => s.setChatMessageMeta);
     const renameChat = useChatStore((s) => s.renameChat);
+    const { resolvedTheme } = useTheme()
+    const mounted = useMounted()
 
     // AI transport and streaming
     const transport = useMemo(() => new DefaultChatTransport({ api: "/api/ai-create" }), []);
@@ -235,7 +238,7 @@ export function ChatBubble() {
     }, [usage, modelUsed, toolEvents, setChatMessageMeta]);
 
     // Handle streaming and application effects via extracted hook
-    useAiCreateStreaming({ sdkMessages, toolEvents, endedAt, setNodes, setEdges, assistantChatIdRef, assistantMsgIdRef });
+    // useAiCreateStreaming({ sdkMessages, toolEvents, endedAt, setNodes, setEdges, assistantChatIdRef, assistantMsgIdRef });
 
     const messageListProps = useMemo(() => ({
         messages: derivedMessages.slice(-4),
@@ -269,7 +272,7 @@ export function ChatBubble() {
             )}
 
             {/* Input Container */}
-            <div className={cn("flex items-center justify-center gap-0 bg-background rounded-xs shadow-xs border-gray-200 overflow-hidden transition-all duration-300 ease-in-out", !isOpen && "w-15")}>
+            <div className={cn("flex items-center justify-center gap-0 rounded-xs shadow-xs border-gray-200 overflow-hidden transition-all duration-300 ease-in-out", !isOpen && "w-15")}>
                 <Button
                     variant="ghost"
                     size="icon"
@@ -281,7 +284,7 @@ export function ChatBubble() {
                     }}
                     className="flex-shrink-0"
                 >
-                    <Image src="/arkt-logo.svg" alt="ArkT" width={32} height={32} />
+                    {mounted && <Image src={`/arkt-logo-${resolvedTheme}.svg`} alt="ArkT" width={32} height={32} />}
                 </Button>
                 {isOpen && (
                     <div

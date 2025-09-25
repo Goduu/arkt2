@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import SketchyShape from "./SketchyShape";
+import SketchyShape, { SketchyShapeKind } from "./SketchyShape";
 import { Color } from "../colors/types";
 import { DEFAULT_STROKE_COLOR } from "../colors/utils";
 
@@ -18,6 +18,7 @@ type SketchyBorderOverlayProps = {
   fillWeight?: number
   strokeLineDash?: number[];
   strokeLineDashOffset?: number;
+  kind?: SketchyShapeKind;
 };
 
 export function SketchyBorderOverlay({
@@ -33,12 +34,13 @@ export function SketchyBorderOverlay({
   seed = 1,
   strokeLineDash,
   strokeLineDashOffset,
+  kind,
 }: SketchyBorderOverlayProps): React.JSX.Element | null {
   if (!width || !height) return null;
 
   return (
     <SketchyShape
-      kind="rectangle"
+      kind={kind ?? "rectangle"}
       width={width}
       height={height}
       strokeColor={strokeColor ?? DEFAULT_STROKE_COLOR}

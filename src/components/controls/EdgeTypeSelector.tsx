@@ -9,7 +9,7 @@ type EdgeTypeSelectorProps = {
     options?: EdgeTypeOption[];
 }
 
-export function EdgeTypeSelector({ selectedStrokeType, onChange, options = EDGE_TYPES }: EdgeTypeSelectorProps) {
+export function EdgeTypeSelector({ selectedStrokeType, onChange, options = EDGE_ALGORITHMS }: EdgeTypeSelectorProps) {
 
     return (
         <div data-testid="edge-type-group">
@@ -30,7 +30,7 @@ export function EdgeTypeSelector({ selectedStrokeType, onChange, options = EDGE_
     );
 }
 
-export const EDGE_TYPES: EdgeTypeOption[] = [
+export const EDGE_ALGORITHMS: EdgeTypeOption[] = [
     {
         value: Algorithm.Linear,
         label: "Straight",

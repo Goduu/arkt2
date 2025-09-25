@@ -44,7 +44,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
     <div
       ref={containerRef}
       className={cn(
-        "rounded-xs",
+        "rounded-xs group",
         "group w-full h-full relative overflow-visible",
       )}
       style={{
@@ -111,11 +111,11 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       <div ref={rotateControlRef} />
 
       <div className={(iconKey) && "-top-3 absolute left-1/2 -translate-x-1/2"}>
-        <Handle type="source" position={Position.Top} id="top" />
+        <Handle type="source" position={Position.Top} id="top" className="opacity-5 group-hover:opacity-100" />
       </div>
-      <Handle type="source" position={Position.Bottom} id="bottom" />
-      <Handle type="source" position={Position.Left} id="left" />
-      <Handle type="source" position={Position.Right} id="right" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-5 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Left} id="left" className="opacity-5 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Right} id="right" className="opacity-5 group-hover:opacity-100" />
     </div>
   );
 }

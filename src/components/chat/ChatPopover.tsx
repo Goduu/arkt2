@@ -1,4 +1,4 @@
-import { useAppStore } from "@/lib/store";
+import { useChatStore } from "@/app/design/chatStore";
 import { Edit, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 export const ChatHistoryPopover = () => {
   const [chatSearch, setChatSearch] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
-  const { aiChats, setCurrentChat, currentChatId, createChat } = useAppStore();
-  const renameChat = useAppStore((s) => s.renameChat);
+  const { aiChats, setCurrentChat, currentChatId, createChat } = useChatStore();
+  const renameChat = useChatStore((s) => s.renameChat);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState<string>("");
 
@@ -88,16 +88,16 @@ export const ChatHistoryPopover = () => {
                             />
                           ) : (
                             <Button
-                              strokeColor={{ family: "white", shade: null }}
+                              strokeColor={{ family: "white", indicative: "middle" }}
                               className="w-full"
                               size="sm"
-                              fillColor={{ family: isActive ? "lime" : "white", shade: "300" }}
+                              fillColor={{ family: isActive ? "lime" : "white", indicative: "low" }}
                             >
                               <div className="font-medium truncate">{chat.title}</div>
                             </Button>
                           )}
                           <Button
-                            fillColor={{ family: "lime", shade: "300" }}
+                            fillColor={{ family: "lime", indicative: "low" }}
                             data-testid="chat-rename"
                             variant="ghost"
                             size="sm"
@@ -132,10 +132,10 @@ const NewChatCommandItem = ({ onNewChat }: NewChatCommandItemProps) => {
   return (
     <CommandItem onSelect={onNewChat}>
       <Button
-        strokeColor={{ family: "white", shade: null }}
+        strokeColor={{ family: "white", indicative: "middle" }}
         className="w-full"
         size="sm"
-        fillColor={{ family: "sky", shade: "300" }}
+        fillColor={{ family: "sky", indicative: "low" }}
       >
         <div className="flex items-center gap-2 font-bold truncate">
           <Plus className="size-5 text-slate-900" />

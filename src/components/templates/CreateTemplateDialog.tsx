@@ -118,7 +118,7 @@ export function CreateTemplateDialog(): React.JSX.Element | null {
             </div>
             <div>
               <label className="block text-xs text-muted-foreground mb-1">Description</label>
-              <Textarea rows={2} className="w-full px-2 py-1" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <Textarea rows={2} className="w-full px-2 py-1" value={description} onChange={(e) => "target" in e && setDescription(e.target.value)} />
               {isDuplicateName && (
                 <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
               )}

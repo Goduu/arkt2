@@ -7,12 +7,7 @@ import { ExternalLink, Loader2, RefreshCw, Copy, Download, Settings } from "luci
 import { cn } from "@/lib/utils";
 import CodeHighlighter from "@/components/ui/CodeHighlighter";
 import Link from "next/link";
-
-type GithubFileDialogProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    url?: string;
-};
+import { useCommandStore } from "@/app/design/commandStore";
 
 function toRawGithubUrl(input?: string): { raw?: string; fileName?: string } {
     if (!input) return {};
@@ -41,12 +36,25 @@ function toRawGithubUrl(input?: string): { raw?: string; fileName?: string } {
     return {};
 }
 
-export function GithubFileDialog({ open, onOpenChange, url }: GithubFileDialogProps) {
+export function GithubFileDialog() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [url, setUrl] = useState<string>();
+    const openGithubFileDialogCommand = useCommandStore((state) => state.commandMap["open-integration-dialog"]);
+    const removeCommand = useCommandStore((state) => state.removeCommand);
+
     const { raw, fileName } = useMemo(() => toRawGithubUrl(url), [url]);
     const [content, setContent] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [unauthorized, setUnauthorized] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (openGithubFileDialogCommand.status === "pending" && openGithubFileDialogCommand.data?.type === "github") {
+            setIsOpen(true);
+            setUrl(openGithubFileDialogCommand.data?.url);
+            removeCommand("open-integration-dialog");
+        }
+    }, [openGithubFileDialogCommand])
 
     const load = async () => {
         if (!raw) return;
@@ -54,20 +62,10 @@ export function GithubFileDialog({ open, onOpenChange, url }: GithubFileDialogPr
         setError(null);
         setUnauthorized(false);
         try {
-            // Try public/raw first
-            let res = await fetch(raw, { cache: "no-store" });
-            if (res.status === 404 || res.status === 401 || res.status === 403) {
-                // Attempt via server proxy (uses user's GitHub token if connected)
-                res = await fetch("/api/github/fetch-file", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ url }),
-                    cache: "no-store",
-                });
-                if (res.status === 401) {
-                    setUnauthorized(true);
-                    throw new Error("GitHub authorization required to access this file.");
-                }
+            // Use cached GET route that falls back to authenticated fetch when needed
+            const res = await fetch(`/api/github/raw?url=${encodeURIComponent(url || "")}`);
+            if (res.status === 401) {
+                setUnauthorized(true);
             }
             if (!res.ok) throw new Error(`Failed to fetch file (${res.status})`);
             const text = await res.text();
@@ -82,10 +80,10 @@ export function GithubFileDialog({ open, onOpenChange, url }: GithubFileDialogPr
     useEffect(() => {
         setContent(null);
         setError(null);
-        if (open && raw) {
+        if (isOpen && raw) {
             load();
         }
-    }, [open, raw]);
+    }, [isOpen, raw]);
 
     const handleCopy = async () => {
         if (!content) return;
@@ -107,7 +105,7 @@ export function GithubFileDialog({ open, onOpenChange, url }: GithubFileDialogPr
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
             <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">

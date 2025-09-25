@@ -2,13 +2,13 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { AutoWidthInput } from "@/components/ui/auto-width-input";
 import { Color } from "@/components/colors/types";
 import { useReactFlow } from "@xyflow/react";
 import { NodeProps } from "@xyflow/system";
 import { ArktTextNode } from "./types";
 import { DEFAULT_FILL_COLOR, getTailwindTextClass } from "@/components/colors/utils";
 import SketchyShape from "@/components/sketchy/SketchyShape";
+import { AutoGrowInput } from "@/components/ui/AutoGrowInput";
 
 export type ArchTextNodeData = {
     label: string;
@@ -39,6 +39,13 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
     const fontSize = Number(props.data.fontSize ?? 15);
     const width = label.length * fontSize / 2;
 
+	// Toggle node draggability based on editing state
+	React.useEffect(() => {
+		rf.setNodes((prev) =>
+			prev.map((n) => (n.id === id ? { ...n, draggable: !isEditing } : n))
+		);
+	}, [id, isEditing, rf]);
+
     return (
         <div
             ref={outerRef}
@@ -59,7 +66,7 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
             }}
         >
             {/* Sketchy background behind content, sized to measured node bounds */}
-            <div className="pointer-events-none absolute inset-0 -z-10">
+            {/* <div className="pointer-events-none absolute inset-0 -z-10">
                 <SketchyShape
                     kind="rectangle"
                     fillColor={fillColor}
@@ -72,7 +79,7 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                     className="w-full h-full"
                     seed={fillColor?.family.length ?? 0}
                 />
-            </div>
+            </div> */}
 
             {/* Rotated content only, keep handles unrotated for correct edge geometry */}
             <div
@@ -81,8 +88,11 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
             >
 
                 <div className={cn(props.selected ? "border border-violet-500" : "")} ref={paddingWrapperRef} data-testid={props.selected ? "text-node-selected" : undefined}>
-                    <AutoWidthInput
+                    <AutoGrowInput
                         strokeColor={textColor}
+                        fillStyle="zigzag"
+                        fillWeight={1}
+                        roughness={1.6}
                         fillColor={fillColor ?? DEFAULT_FILL_COLOR}
                         ref={inputRef}
                         className={cn(
@@ -106,13 +116,13 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                                 }
                             }
                         }}
-                        type="text"
                         value={label}
-                        onChange={(e) => {
-                            const next = e.target.value;
+                        onChange={(next) => {
+                            if (typeof next !== "string") return
                             rf.setNodes((prev) => prev.map((n) => (n.id === id ? { ...n, data: { ...n.data, label: next } } : n)));
                         }}
                         onBlur={() => {
+                            console.log("onBlur");
                             if (isEditing) {
                                 setIsEditing(false);
                             }

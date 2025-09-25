@@ -1,6 +1,7 @@
+import { IntegrationNode } from "./arkt/integrations/type";
 import { ArktNode } from "./arkt/types";
 import { FreehandNodeType } from "./freehand/types";
 import { ArktTextNode } from "./text/types";
 
-export type NodeUnion = ArktNode | FreehandNodeType | ArktTextNode
+export type NodeUnion = ArktNode | FreehandNodeType | ArktTextNode | IntegrationNode
 

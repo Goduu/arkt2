@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { normalizeDiagramInput, RawDiagramInput } from "../diagram/flow-editor/functions/normalize";
-import { createClipboardGroup, createDraftNodesFromClipboard, filterDraftNodes } from "../diagram/flow-editor/utils/copyPasteUtils";
 import { UIMessage } from "ai";
 import useNodesStateSynced from "../yjs/useNodesStateSynced";
 import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
@@ -21,8 +19,7 @@ export function useAiCreateStreaming(params: {
     const { sdkMessages, assistantChatIdRef, assistantMsgIdRef } = params;
     const [, setNodes] = useNodesStateSynced();
     const [, setEdges] = useEdgesStateSynced();
-    const {templates} = useTemplatesStateSynced();
-    const { clipboardGroupRef, currentDiagramId, diagrams, draftNodeIdsRef, setIsPasteMode } = useChatStore();
+    const [templates] = useTemplatesStateSynced();
 
     function isRawDiagramInput(value: unknown): value is RawDiagramInput {
         if (typeof value !== "object" || value === null) return false;

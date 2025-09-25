@@ -5,7 +5,8 @@ import { Options as RoughOptions } from "roughjs/bin/core";
 import {
   JSX, useRef,
   useMemo,
-  useLayoutEffect
+  useLayoutEffect,
+  memo
 } from "react";
 import { Color } from "../colors/types";
 import { colorToHex } from "../colors/utils";
@@ -14,7 +15,7 @@ import { useTheme } from "next-themes";
 
 export type SketchyShapeKind = "rectangle" | "ellipse" | "diamond";
 
-type SketchyShapeProps = {
+export type SketchyShapeProps = {
   width?: number;
   height?: number;
   kind: SketchyShapeKind;
@@ -33,7 +34,7 @@ type SketchyShapeProps = {
   hachureGap?: number;
 };
 
-export function SketchyShape(props: SketchyShapeProps): JSX.Element {
+export const SketchyShape = memo(function SketchyShape(props: SketchyShapeProps): JSX.Element {
   const {
     width = 100,
     height = 100,
@@ -172,6 +173,8 @@ export function SketchyShape(props: SketchyShapeProps): JSX.Element {
       preserveAspectRatio="none"
     />
   );
-}
+});
+
+SketchyShape.displayName = "SketchyShape";
 
 export default SketchyShape;

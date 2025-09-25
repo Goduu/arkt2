@@ -1,11 +1,11 @@
 import { EdgeLabelRenderer } from "@xyflow/react";
 import { cn } from "../../utils";
 import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR, getTailwindTextClass } from "../../colors/utils";
-import { AutoWidthInput } from "@/components/ui/auto-width-input";
 import { useEdgeControls } from "./useEdgeControls";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { Color } from "@/components/colors/types";
+import { AutoGrowInput } from "../../ui/AutoGrowInput";
 
 type EdgeLabelProps = {
     id: string;
@@ -62,11 +62,11 @@ export const EdgeLabel = (
                     transform: `translate(-50%, -50%)`,
                     pointerEvents: "all",
                 }}
-                className={cn("nodrag z-30 w-auto", showLabel ? "opacity-100" : "opacity-10")}
+                className={cn("nodrag z-30 w-auto px-0.5 ", showLabel ? "opacity-100" : "opacity-10")}
                 data-testid="arkt-edge-label"
             >
                 <div
-                    className={cn("relative", getTailwindTextClass(DEFAULT_STROKE_COLOR, theme))}
+                    className={cn("relative overflow-hidden", getTailwindTextClass(DEFAULT_STROKE_COLOR, theme))}
                     onClick={(e) => {
                         e.stopPropagation();
                         if (isEditing) return
@@ -75,24 +75,26 @@ export const EdgeLabel = (
                     }}
                 >
                     {showLabel && (
-                        <AutoWidthInput
+                        <AutoGrowInput
                             ref={inputRef}
+                            fillStyle="solid"
                             className={cn(
-                                "outline-none m-0 py-0 z-10 w-full",
-                                isEditing ? "w-auto nodrag nowheel pointer-events-auto" : "w-auto pointer-events-none",
+                                "outline-none m-0 py-0 z-10",
+                                isEditing ? "w-full nodrag nowheel pointer-events-auto" : "w-full pointer-events-none",
                                 textClass,
                             )}
+                            placeholder="+label"
                             fillColor={fillColor}
                             strokeColor={strokeColor}
                             style={{ fontSize: fontSize }}
                             onClick={(e) => e.stopPropagation()}
                             onMouseDown={(e) => { if (isEditing) e.stopPropagation(); }}
                             onPointerDown={(e) => { if (isEditing) e.stopPropagation(); }}
-                            type="text"
                             value={draft}
-                            onChange={(e) => {
-                                const next = e.target.value;
-                                setDraft(next);
+                            fontSize={fontSize}
+                            onChange={(value) => {
+                                if (typeof value !== "string") return
+                                setDraft(value);
                             }}
                             onBlur={() => {
                                 if (isEditing) {
@@ -100,7 +102,6 @@ export const EdgeLabel = (
                                     onBlur()
                                 }
                             }}
-                            readOnly={!isEditing}
                             spellCheck={false}
                             data-testid="text-inline-input"
                         />

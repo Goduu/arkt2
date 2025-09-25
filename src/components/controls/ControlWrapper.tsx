@@ -25,6 +25,7 @@ export function ControlWrapper({ children, title, testId }: ControlWrapperProps)
                 <Accordion
                     type="single"
                     collapsible
+                    defaultValue={testId}
                 >
                     <AccordionItem value={testId}>
                         <AccordionTrigger
@@ -35,7 +36,7 @@ export function ControlWrapper({ children, title, testId }: ControlWrapperProps)
                                 <div className="text-sm font-medium">{title}</div>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="relative overflow-scroll">
+                        <AccordionContent className="relative overflow-scroll" >
                             <div
                                 className="p-3 space-y-3 text-sm overflow-hidden"
                                 data-testid={`${testId}-content`}

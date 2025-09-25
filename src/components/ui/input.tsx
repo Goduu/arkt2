@@ -35,7 +35,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
       seed={seed}
       {...props}
       className={cn(
-        "scrollbar-hide py-2",
+        "py-2",
         props.className && `${props.className}`
       )}
     >
@@ -66,7 +66,7 @@ const InputBase = React.forwardRef<HTMLInputElement, React.ComponentProps<"input
         "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/0 flex h-6 w-full min-w-0 bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         "focus:outline-none focus-visible:border-transparent focus-visible:ring-ring/0 focus-visible:ring-0 z-0",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-        "border-none outline-none box-shadow-none scrollbar-hide",
+        "border-none outline-none box-shadow-none",
         props.className
       )}
       style={{

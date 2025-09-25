@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import {
     Breadcrumb,
     BreadcrumbEllipsis,
@@ -9,12 +9,14 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import useUserDataStateSynced from "./yjs/useUserStateSynced";
+import { DEFAULT_PATH_ID, DEFAULT_PATH_LABEL } from "./yjs/constants";
 import { useReactFlow } from "@xyflow/react";
 
 export function SegmentBreadCrumb() {
     const { fitView } = useReactFlow();
     const { currentUserData, onDiagramDrillToIndex } = useUserDataStateSynced(fitView);
     const path = currentUserData?.currentDiagramPath || [];
+    console.log("path", path);
 
     type Item = {
         key: string;
@@ -22,16 +24,17 @@ export function SegmentBreadCrumb() {
         onClick?: () => void;
     };
 
-    const segmentItems: Item[] = React.useMemo(() => {
-        return path.map((seg, idx) => ({
+    const segmentItems: Item[] = useMemo(() => {
+        const normalized = Array.isArray(path) ? path : [];
+        return normalized.map((seg, idx) => ({
             key: seg.id,
-            label: seg.label ?? "Unknown",
+            label: seg.id === DEFAULT_PATH_ID ? DEFAULT_PATH_LABEL : (seg.label ?? "Unknown"),
             onClick: () => onDiagramDrillToIndex?.(idx),
         }));
-    }, [currentUserData, onDiagramDrillToIndex]);
+    }, [path, onDiagramDrillToIndex]);
 
     // With new currentUserData path, drill items are already represented in segmentItems
-    const drillItems: Item[] = React.useMemo(() => [], []);
+    const drillItems: Item[] = useMemo(() => [], []);
 
     const combined: Item[] = [...segmentItems, ...drillItems];
     const total = combined.length;

@@ -5,34 +5,54 @@ import { FillStyle } from "./types";
 import { Color } from "../colors/types";
 import { useElementSize } from "./hooks/useElementSize";
 import { SketchyBorderOverlay } from "./SketchyBorderOverlay";
+import { SketchyShapeKind } from "./SketchyShape";
 
-export type SketchyPanelProps = React.PropsWithChildren<{
-  className?: string;
-  strokeWidth?: number;
-  roughness?: number;
-  strokeColor?: Color;
-  hoverEffect?: boolean;
-  fillColor?: Color;
-  strokeLineDash?: number[];
-  strokeLineDashOffset?: number;
-  fillWeight?: number;
-  fillStyle?: FillStyle;
-  seed?: number;
-}>;
+export type SketchyPanelProps = React.PropsWithChildren<
+   {
+    className?: string;
+    strokeWidth?: number;
+    roughness?: number;
+    strokeColor?: Color;
+    hoverEffect?: boolean;
+    fillColor?: Color;
+    strokeLineDash?: number[];
+    strokeLineDashOffset?: number;
+    fillWeight?: number;
+    fillStyle?: FillStyle;
+    seed?: number;
+    kind?: SketchyShapeKind;
+  }
+>;
 
-export function SketchyPanel({ className, strokeWidth = 2, roughness = 1.5, strokeColor, hoverEffect = false, children, strokeLineDash, strokeLineDashOffset, fillColor, fillWeight, fillStyle, seed }: SketchyPanelProps): React.JSX.Element {
+export const SketchyPanel = React.forwardRef<HTMLDivElement, SketchyPanelProps>(function SketchyPanel(
+  { className, strokeWidth = 2, roughness = 1.5, strokeColor, hoverEffect = false, children, strokeLineDash, strokeLineDashOffset, fillColor, fillWeight, fillStyle, seed, kind, ...rest },
+  forwardedRef
+): React.JSX.Element {
   const { ref, size } = useElementSize<HTMLDivElement>();
   const [hovered, setHovered] = React.useState(false);
   // No explicit theme dependency here because nested Sketchy components listen to theme changes
 
+  const setRefs = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      if (typeof forwardedRef === "function") {
+        forwardedRef(node);
+      } else if (forwardedRef) {
+        (forwardedRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    },
+    [forwardedRef, ref]
+  );
+
   return (
     <div
-      ref={ref}
+      ref={setRefs}
       className={`relative overflow-hidden ${className || ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      {...rest}
     >
-      <div className="pointer-events-none absolute inset-0 scrollbar-hide">
+      <div className="pointer-events-none absolute inset-0">
         <SketchyBorderOverlay
           seed={hovered && hoverEffect ? 20 : seed ?? 1}
           width={size.width}
@@ -46,6 +66,7 @@ export function SketchyPanel({ className, strokeWidth = 2, roughness = 1.5, stro
           fillColor={fillColor}
           fillWeight={fillWeight}
           fillStyle={fillStyle}
+          kind={kind}
         />
       </div>
       <div className="relative overflow-auto p-1">
@@ -53,6 +74,6 @@ export function SketchyPanel({ className, strokeWidth = 2, roughness = 1.5, stro
       </div>
     </div>
   );
-}
+});
 
 

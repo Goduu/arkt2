@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { type XYPosition } from '@xyflow/react';
 import { ArktNode } from '@/components/nodes/arkt/types';
 import { ArktTextNode } from '@/components/nodes/text/types';
+import { Integration } from '@/components/controls/IntegrationSelector';
 
 // Define specific data types for each command
 type OpenCreateTemplateData = {
@@ -17,13 +18,19 @@ type AddNodeData = {
   nodes: (ArktNode | ArktTextNode)[];
 };
 
+type IntegrationDialogData = {
+  type: Integration;
+  url: string;
+};
+
 export type CommandTypes = 
 "open-templates-manager" |
  "open-create-template" |
  "freehand-mode" |
  "add-node" |
  "dragging-node" |
- "open-add-virtual-dialog";
+ "open-add-virtual-dialog" |
+ "open-integration-dialog";
 
 // Create a mapped type for better type safety
 type CommandMap = {
@@ -33,6 +40,7 @@ type CommandMap = {
   "add-node": Command<AddNodeData>;
   "dragging-node": Command;
   "open-add-virtual-dialog": Command;
+  "open-integration-dialog": Command<IntegrationDialogData>;
 };
 
 interface AppState {
@@ -54,7 +62,8 @@ export const useCommandStore = create<AppState>((set) => ({
     "freehand-mode": { status: "inactive" },
     "add-node": { status: "inactive" },
     "dragging-node": { status: "inactive" },
-    "open-add-virtual-dialog": { status: "inactive" }
+    "open-add-virtual-dialog": { status: "inactive" },
+    "open-integration-dialog": { status: "inactive" },
   },
 
   activateCommand: (command, data) =>

@@ -119,7 +119,8 @@ function detectLanguageFromFilename(fileName?: string): string | undefined {
 
 export function CodeHighlighter({ code, className, language, fileName }: CodeHighlighterProps) {
     const lang = useMemo(() => language || detectLanguageFromFilename(fileName), [language, fileName]);
-    const [html, setHtml] = useState<string | null>(null);
+    const [htmlLight, setHtmlLight] = useState<string | null>(null);
+    const [htmlDark, setHtmlDark] = useState<string | null>(null);
     const [failed, setFailed] = useState<boolean>(false);
 
     const isTooLarge = useMemo(() => {
@@ -132,38 +133,52 @@ export function CodeHighlighter({ code, className, language, fileName }: CodeHig
         let cancelled = false;
         setFailed(false);
         if (!code || isTooLarge) {
-            setHtml(null);
+            setHtmlLight(null);
+            setHtmlDark(null);
             return;
         }
 
-        const key = buildCacheKey(code, lang);
-        const cached = getCache(key);
-        if (cached) {
-            setHtml(cached);
+        const baseKey = buildCacheKey(code, lang);
+        const keyLight = `${baseKey}::light`;
+        const keyDark = `${baseKey}::dark`;
+
+        const cachedLight = getCache(keyLight);
+        const cachedDark = getCache(keyDark);
+
+        if (cachedLight && cachedDark) {
+            setHtmlLight(cachedLight);
+            setHtmlDark(cachedDark);
             return;
         }
 
         (async () => {
             try {
                 const shiki = await import("shiki");
-                const generated = await shiki.codeToHtml(code, {
-                    lang: lang || "plaintext",
-                    // Dual themes for instant theme switching without recomputation
-                    themes: { light: "github-light", dark: "github-dark" },
-                });
-                // Inject utility classes into the rendered <pre>
-                const enhanced = generated.replace(
-                    '<pre class="shiki',
-                    '<pre class="shiki text-sm leading-6 p-4 m-0 whitespace-pre min-w-full overflow-x-auto'
-                );
+                const [generatedLight, generatedDark] = await Promise.all([
+                    shiki.codeToHtml(code, { lang: lang || "plaintext", theme: "github-light" }),
+                    shiki.codeToHtml(code, { lang: lang || "plaintext", theme: "github-dark" }),
+                ]);
+
+                const enhance = (html: string) =>
+                    html.replace(
+                        '<pre class="shiki',
+                        '<pre class="shiki text-sm leading-6 p-4 m-0 whitespace-pre min-w-full overflow-x-auto'
+                    );
+
+                const enhancedLight = enhance(generatedLight);
+                const enhancedDark = enhance(generatedDark);
+
                 if (!cancelled) {
-                    setCache(key, enhanced);
-                    setHtml(enhanced);
+                    setCache(keyLight, enhancedLight);
+                    setCache(keyDark, enhancedDark);
+                    setHtmlLight(enhancedLight);
+                    setHtmlDark(enhancedDark);
                 }
             } catch {
                 if (!cancelled) {
                     setFailed(true);
-                    setHtml(null);
+                    setHtmlLight(null);
+                    setHtmlDark(null);
                 }
             }
         })();
@@ -181,7 +196,7 @@ export function CodeHighlighter({ code, className, language, fileName }: CodeHig
         );
     }
 
-    if (html == null) {
+    if (htmlLight == null || htmlDark == null) {
         return (
             <div className={cn("p-4 text-sm text-muted-foreground", className)}>
                 Rendering syntax highlight…
@@ -190,11 +205,10 @@ export function CodeHighlighter({ code, className, language, fileName }: CodeHig
     }
 
     return (
-        <div
-            className={cn("[&_.shiki]:bg-transparent", className)}
-             
-            dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <div className={cn("[&_.shiki]:bg-transparent", className)}>
+            <div className="hidden dark:block" dangerouslySetInnerHTML={{ __html: htmlDark }} />
+            <div className="block dark:hidden" dangerouslySetInnerHTML={{ __html: htmlLight }} />
+        </div>
     );
 }
 

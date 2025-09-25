@@ -8,6 +8,8 @@ import { TextNodeControls } from "./TextNodeControls";
 import { ArktTextNode } from "@/components/nodes/text/types";
 import { FreehandNodeControls } from "./FreehandNodeControls";
 import { FreehandNodeType } from "@/components/nodes/freehand/types";
+import { IntegrationsControl } from "./IntegrationsControl";
+import { IntegrationNode } from "@/components/nodes/arkt/integrations/type";
 
 export function NodeControls() {
   const [nodes, setNodes] = useNodesStateSynced();
@@ -16,7 +18,7 @@ export function NodeControls() {
   const isArktNode = selectedNode?.type === "arktNode"
   const isArchTextNode = selectedNode?.type === "text"
   const isFreehandNode = selectedNode?.type === "freehand"
-
+  const isIntegrationNode = selectedNode?.type === "integration"
   const handleNodeChange = (next: Partial<ArktNodeData> | undefined) => {
     if (!next) return;
 
@@ -46,6 +48,9 @@ export function NodeControls() {
       )}
       {isFreehandNode && (
         <FreehandNodeControls node={selectedNode as FreehandNodeType} />
+      )}
+      {isIntegrationNode && (
+        <IntegrationsControl node={selectedNode as IntegrationNode} />
       )}
     </ControlWrapper>
 

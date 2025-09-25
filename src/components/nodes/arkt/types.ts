@@ -9,7 +9,6 @@ export type ArktNodeData = {
     fillColor: Color;
     textColor: Color;
     iconKey?: IconKey;
-    githubLink: string;
     rotation: number;
     fontSize: number;
     isDraft: boolean;

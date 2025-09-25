@@ -33,24 +33,25 @@ import useCopyPaste from '../hooks/useCopyPast';
 import { useHelperLines } from '../../components/helper-lines/useHelperLines';
 import { FreehandNode } from '../../components/nodes/freehand/FreehandNode';
 import { Freehand } from '../../components/nodes/freehand/Freehand';
-import { ModeToggle } from '../../components/ModeToggle';
 import { Button } from '@/components/ui/button';
 import { NodeUnion } from '../../components/nodes/types';
 import useUserDataStateSynced from '../../components/yjs/useUserStateSynced';
-import { SegmentBreadCrumb } from '../../components/SegmentBreadCrumb';
 import { EditableEdgeComponent } from '../../components/edges/ArktEdge';
 import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
 import { EdgeControls } from '@/components/controls/EdgeControls';
 import { NodeControls } from '@/components/controls/node-controls/NodeControls';
 import { DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
 import { useDraggableNode } from '@/components/nodes/useDraggableNode';
-import { StatusIcon } from './StatusIcon';
+import { StatusIcon } from './status-icon/StatusIcon';
 import { ArchTextNodeComponent } from '@/components/nodes/text/ArchTextNode';
+import { ChatBubble } from '@/components/chat/ChatBubble';
+import { IntegrationNodeComponent } from '@/components/nodes/arkt/integrations/IntegrationNode';
 
 const nodeTypes = {
   arktNode: ArktNodeComponent,
   freehand: FreehandNode,
   text: ArchTextNodeComponent,
+  integration: IntegrationNodeComponent,
 };
 
 export const edgeTypes = {
@@ -76,9 +77,9 @@ export default function FlowEditor() {
   const [, setSelectedNodes] = useState<NodeUnion[]>([]);
   const freehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
   const { draggingNodesRef, mouseMoveHandler, dropHandler } = useDraggableNode();
-  
+
   useCopyPaste();
-  
+
   useEffect(() => {
     if (freehandModeCommand.status === "pending") {
       setIsDrawing(true);
@@ -103,6 +104,7 @@ export default function FlowEditor() {
   const onConnect: OnConnect = useCallback(
     (connection) => {
       const { connectionLinePath } = useCommandStore.getState();
+      console.log('connection', connection);
       // We add a new edge based on the selected DEFAULT_ALGORITHM
       // and transfer all the control points from the connectionLinePath
       // in case the user has added any while creating the connection
@@ -171,64 +173,73 @@ export default function FlowEditor() {
     takeSnapshot();
   }, [takeSnapshot]);
 
+  const proOptions = { hideAttribution: true };
+
+
   return (
-    <div className="w-screen h-screen">
-      <SegmentBreadCrumb />
+    <div className="flex flex-col h-full">
+      <div className="flex-1 min-h-0 relative">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onPointerMove={handleMouseMove}
+          onNodeDragStart={onNodeDragStart}
+          onNodeDragStop={onNodeDragStop}
+          onSelectionDragStart={onSelectionDragStart}
+          onSelectionChange={handleSelectionChange}
+          onNodesDelete={onNodesDelete}
+          onEdgesDelete={onEdgesDelete}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          elevateNodesOnSelect
+          proOptions={proOptions}
+          elevateEdgesOnSelect
+          connectionMode={ConnectionMode.Loose}
+          connectionLineComponent={ConnectionLine}
+          panOnDrag={!isDrawing}
+          zoomOnScroll={!isDrawing}
+          panOnScroll={!isDrawing}
+          selectNodesOnDrag={!isDrawing}
+          fitView
+          fitViewOptions={fitViewOptions}
+          onClick={draggingNodesRef.current.length > 0 ? dropHandler : undefined}
+        >
 
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onPointerMove={handleMouseMove}
-        onNodeDragStart={onNodeDragStart}
-        onNodeDragStop={onNodeDragStop}
-        onSelectionDragStart={onSelectionDragStart}
-        onSelectionChange={handleSelectionChange}
-        onNodesDelete={onNodesDelete}
-        onEdgesDelete={onEdgesDelete}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        elevateNodesOnSelect
-        elevateEdgesOnSelect
-        connectionMode={ConnectionMode.Loose}
-        connectionLineComponent={ConnectionLine}
-        panOnDrag={!isDrawing}
-        zoomOnScroll={!isDrawing}
-        panOnScroll={!isDrawing}
-        selectNodesOnDrag={!isDrawing}
-        fitView
-        fitViewOptions={fitViewOptions}
-        onClick={draggingNodesRef.current.length > 0 ? dropHandler : undefined}
-      >
-
-        {isDrawing && <Freehand setNodes={setNodes} setIsDrawing={setIsDrawing} />}
-        <Background />
-        <Panel position="top-left">
-          <Button onClick={() => {
-            setNodes([]);
-            setEdges([]);
-          }}>
-            Reset
-          </Button>
-          <Button
-            className={`xy-theme__button ${isDrawing ? 'active' : ''}`}
-            onClick={() => setIsDrawing(isDrawing => !isDrawing)}
-          >
-            {isDrawing ? 'Drawing Mode' : 'Freehand Mode'}
-          </Button>
-          <ModeToggle />
-        </Panel>
-        <HelperLines />
-        <MiniMap />
-        <Cursors cursors={cursors} />
-        <div className='absolute bottom-2 left-2'>
-          <StatusIcon />
-        </div>
-      </ReactFlow>
-      <EdgeControls />
-      <NodeControls />
+          {isDrawing && <Freehand setNodes={setNodes} setIsDrawing={setIsDrawing} />}
+          <Background />
+          <Panel position="top-left">
+            <Button onClick={() => {
+              setNodes(nodes => [...nodes,
+              {
+                id: '1',
+                type: 'integration',
+                data: { type: 'github', pathId: currentPath || DEFAULT_PATH_ID },
+                position: { x: 0, y: 0 },
+              }]);
+            }}>
+              Add Integration
+            </Button>
+            <Button onClick={() => {
+              setNodes([]);
+              setEdges([]);
+            }}>
+              Reset
+            </Button>
+          </Panel>
+          <HelperLines />
+          <MiniMap bgColor='transparent' maskColor='transparent' maskStrokeColor='#888' />
+          <ChatBubble />
+          <Cursors cursors={cursors} />
+          <div className='absolute bottom-2 left-2'>
+            <StatusIcon />
+          </div>
+        </ReactFlow>
+        <EdgeControls />
+        <NodeControls />
+      </div>
     </div>
 
   );

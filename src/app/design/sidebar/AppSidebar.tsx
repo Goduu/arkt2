@@ -29,6 +29,7 @@ import { useCommandStore } from "../commandStore"
 import SidenavTemplatesList from "./SidenavTemplatesList"
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced"
 import { useNewDraftNode } from "@/components/nodes/arkt/utils"
+import { ModeToggle } from "@/components/ModeToggle"
 
 export function AppSidebar() {
     // const { nodeTemplates, setPendingSpawn, setPendingCommand } = useAppStore()
@@ -84,6 +85,7 @@ export function AppSidebar() {
                 </SidebarContent>
 
                 <SidebarFooter>
+                    <ModeToggle />
                     <SidebarTrigger className="opacity-50 hover:opacity-100" />
                 </SidebarFooter>
 
@@ -96,7 +98,7 @@ export function AppSidebar() {
         <Sidebar collapsible="icon" side="left" className="overflow-hidden" variant="sidebar">
             <SidebarHeader>
                 <Link href="/" className="flex gap-4 px-2 items-center w-full justify-start group-data-[collapsible=icon]:justify-center">
-                    {mounted && <Image src={`/arkt-logo-${resolvedTheme}.svg`} alt="ArkT" width={32} height={32} />}
+                    {mounted ? <Image src={`/arkt-logo-${resolvedTheme}.svg`} alt="ArkT" width={32} height={32} /> : <div className="size-8" />}
                     <span className="text-sm font-semibold group-data-[collapsible=icon]:hidden">ArkT</span>
                 </Link>
             </SidebarHeader>
@@ -156,7 +158,7 @@ export function AppSidebar() {
                                     <span>Add text</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                            </SidebarMenu>
+                        </SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton tooltip="Add Line" onClick={() => activateCommand("freehand-mode")}>
                                 <LineSquiggle />
@@ -202,6 +204,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
+                <ModeToggle className="-ml-1"/>
                 <SidebarTrigger className="opacity-50 hover:opacity-100" />
             </SidebarFooter>
 

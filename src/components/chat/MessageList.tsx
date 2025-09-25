@@ -1,8 +1,8 @@
 "use client";
 
 import { memo } from "react";
-import { SketchyPanel } from "../ui/sketchy/SketchyPanel";
 import { cn } from "@/lib/utils";
+import { SketchyPanel } from "../sketchy/SketchyPanel";
 
 export interface ChatMessageItem {
     id: string;

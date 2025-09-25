@@ -45,7 +45,7 @@ export interface ButtonProps
   fillWeight?: number;
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size, fillWeight, fillColor, fillStyle = "dots", strokeColor, ...props }, ref) => {
     const { ref: sizeRef, size: elementSize } = useElementSize<HTMLButtonElement>();
     const [hovered, setHovered] = React.useState(false);
@@ -145,6 +145,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
-Button.displayName = "Button";
+ButtonComponent.displayName = "Button";
+
+export const Button = React.memo(ButtonComponent);
 
 

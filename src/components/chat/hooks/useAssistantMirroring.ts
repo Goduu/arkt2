@@ -1,15 +1,15 @@
 "use client";
 
+import { useChatStore } from "@/app/design/chatStore";
+import { UIMessage } from "ai";
 import { useEffect, useRef } from "react";
-import type { MyUIMessage } from "@/lib/aiTypes";
-import { useAppStore } from "@/lib/store";
 
 export function useAssistantMirroring(
-  messages: Array<MyUIMessage> | undefined,
+  messages: Array<UIMessage> | undefined,
   assistantChatId: string | null,
   assistantMsgId: string | null
 ) {
-  const updateChatMessage = useAppStore((s) => s.updateChatMessage);
+  const updateChatMessage = useChatStore((s) => s.updateChatMessage);
   const lastAssistantTextRef = useRef<string>("");
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function useAssistantMirroring(
     if (!chatId || !msgId) return;
 
     // Gate mirroring based on the persisted tag of the assistant message
-    const state = useAppStore.getState();
+    const state = useChatStore.getState();
     const chat = state.aiChats[chatId];
     const persistedTag = chat?.messages.find(m => m.id === msgId)?.tag;
     if (persistedTag === 'Create') return;
