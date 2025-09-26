@@ -3,6 +3,7 @@ import { type XYPosition } from '@xyflow/react';
 import { ArktNode } from '@/components/nodes/arkt/types';
 import { ArktTextNode } from '@/components/nodes/text/types';
 import { Integration } from '@/components/controls/IntegrationSelector';
+import { IntegrationNode } from '@/components/nodes/arkt/integrations/type';
 
 // Define specific data types for each command
 type OpenCreateTemplateData = {
@@ -15,7 +16,7 @@ type Command<T = unknown> = {
 };
 
 type AddNodeData = {
-  nodes: (ArktNode | ArktTextNode)[];
+  nodes: (ArktNode | ArktTextNode | IntegrationNode)[];
 };
 
 type IntegrationDialogData = {
@@ -30,7 +31,10 @@ export type CommandTypes =
  "add-node" |
  "dragging-node" |
  "open-add-virtual-dialog" |
- "open-integration-dialog";
+ "open-integration-dialog" |
+ "open-add-integration-dialog" |
+ "open-export-dialog" |
+ "open-import-dialog";
 
 // Create a mapped type for better type safety
 type CommandMap = {
@@ -41,6 +45,9 @@ type CommandMap = {
   "dragging-node": Command;
   "open-add-virtual-dialog": Command;
   "open-integration-dialog": Command<IntegrationDialogData>;
+  "open-add-integration-dialog": Command;
+  "open-export-dialog": Command;
+  "open-import-dialog": Command;
 };
 
 interface AppState {
@@ -64,6 +71,9 @@ export const useCommandStore = create<AppState>((set) => ({
     "dragging-node": { status: "inactive" },
     "open-add-virtual-dialog": { status: "inactive" },
     "open-integration-dialog": { status: "inactive" },
+    "open-export-dialog": { status: "inactive" },
+    "open-import-dialog": { status: "inactive" },
+    "open-add-integration-dialog": { status: "inactive" },
   },
 
   activateCommand: (command, data) =>

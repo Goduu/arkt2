@@ -17,7 +17,8 @@ import {
     LineSquiggle,
     Layers,
     LinkIcon,
-    Type
+    Type,
+    Blocks
 } from "lucide-react"
 import Link from "next/link"
 import { Collapsible } from "@/components/ui/collapsible"
@@ -179,6 +180,16 @@ export function AppSidebar() {
                             >
                                 <LinkIcon />
                                 <span>Add virtual node</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                data-testid="sidebar-add-virtual-node-button"
+                                tooltip="Add Virtual Node"
+                                onClick={() => activateCommand("open-add-integration-dialog")}
+                            >
+                                <Blocks />
+                                <span>Add Integration</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
 

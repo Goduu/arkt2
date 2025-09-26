@@ -5,11 +5,14 @@ import { DEFAULT_PATH_ID } from "@/components/yjs/constants";
 import useUserDataStateSynced from "@/components/yjs/useUserStateSynced";
 import { nanoid } from "nanoid";
 import { ArktTextNode } from "../text/types";
+import { Integration } from "@/components/controls/IntegrationSelector";
+import { IntegrationNode } from "./integrations/type";
 
 export const useNewDraftNode = (): {
     getNewDraftNode: (templateData?: TemplateData) => ArktNode,
     getNewDraftVirtualNode: (node: ArktNode) => ArktNode,
-    getNewDraftTextNode: () => ArktTextNode
+    getNewDraftTextNode: () => ArktTextNode,
+    getNewDraftIntegrationNode: (integration: Integration) => IntegrationNode
 } => {
     const { currentUserData } = useUserDataStateSynced()
 
@@ -75,7 +78,21 @@ export const useNewDraftNode = (): {
         } satisfies ArktTextNode;
     }
 
-    return { getNewDraftNode, getNewDraftVirtualNode, getNewDraftTextNode }
+    const getNewDraftIntegrationNode = (integration: Integration) => {
+        return {
+            id: nanoid(),
+            type: "integration",
+            position: { x: -1000, y: -1000 },
+            data: {
+                pathId: currentUserData?.currentDiagramId || DEFAULT_PATH_ID,
+                type: integration,
+                url: "",
+                description: "",
+            }
+        } satisfies IntegrationNode;
+    }
+
+    return { getNewDraftNode, getNewDraftVirtualNode, getNewDraftTextNode, getNewDraftIntegrationNode }
 }
 
 export const DEFAULT_NODE_WIDTH = 90;

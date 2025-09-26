@@ -1,7 +1,7 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import FlowEditor from "./FlowEditor";
 import { Dialogs } from "@/components/Dialogs";
-import { TopBar } from "./TopBar";
+import { TopBar } from "./topbar/TopBar";
 
 export default function EditableEdgeFlow() {
     return (
