@@ -19,18 +19,26 @@ import { MentionOption } from "./chatHistory/types";
 import { useMentionOptions } from "./hooks/useMentionOptions";
 import { ChatTag } from "./types";
 import { prepareRequestData } from "./prepareRequestData";
-import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
-import useNodesStateSynced from "../yjs/useNodesStateSynced";
 import { saveInteractionMetrics } from "@/lib/ai/usageHistory";
 import { useUserDataStateSynced } from "../yjs/useUserStateSynced";
 import { DEFAULT_PATH_ID } from "../yjs/constants";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
 import { useTheme } from "next-themes";
 import { useMounted } from "@/app/useMounted";
+import { useAiCreateStreaming } from "./useAiCreateStreaming";
+import { ArktNode } from "../nodes/arkt/types";
+import ydoc from "../yjs/ydoc";
+import { NodeUnion } from "../nodes/types";
+import { ArktEdge } from "../edges/ArktEdge/type";
 
 type Message = ChatMessageItem
 
+export const nodesMap = ydoc.getMap<NodeUnion>('nodes');
+export const edgesMap = ydoc.getMap<ArktEdge>('edges');
+
 export function ChatBubble() {
+    const nodes = Array.from(nodesMap.values());
+    const edges = Array.from(edgesMap.values());
     const [isOpen, setIsOpen] = useState(false);
     const [showMessages, setShowMessages] = useState(false);
     const [showActionBar, setShowActionBar] = useState(false);
@@ -41,8 +49,6 @@ export function ChatBubble() {
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [mentions, setMentions] = useState<MentionOption[]>([]);
     const inputRef = useRef<HTMLDivElement | null>(null);
-    const [, setNodes] = useNodesStateSynced()
-    const [, setEdges] = useEdgesStateSynced()
 
     // App state and chat actions
     const aiChats = useChatStore((s) => s.aiChats);
@@ -87,7 +93,7 @@ export function ChatBubble() {
         resetMetadata(Date.now());
         try {
             const store = useChatStore.getState();
-            const chatId = store.currentChatId || store.createChat('New chat');
+            const chatId = store.currentChatId || store.createChat('Current chat');
             store.addChatMessage(chatId, { role: 'user', content: inputValue, tag: selectedTag });
 
             // Auto-name chat if this is the first message
@@ -101,7 +107,8 @@ export function ChatBubble() {
 
             const activeId = currentDiagramId
             const payloadRootId = activeId || rootId;
-            const requestData = prepareRequestData(payloadRootId, mentions, selectedTag, templates);
+            const arktNodes = nodes.filter((node) => node.type === "arktNode") as ArktNode[];
+            const requestData = prepareRequestData(payloadRootId, mentions, selectedTag, arktNodes, edges, templates);
 
             const finalChatId = useChatStore.getState().currentChatId || chatId;
             const assistantInitialContent = ((selectedTag || '').toLowerCase() === 'create') ? 'processing your request' : '';
@@ -238,7 +245,7 @@ export function ChatBubble() {
     }, [usage, modelUsed, toolEvents, setChatMessageMeta]);
 
     // Handle streaming and application effects via extracted hook
-    // useAiCreateStreaming({ sdkMessages, toolEvents, endedAt, setNodes, setEdges, assistantChatIdRef, assistantMsgIdRef });
+    useAiCreateStreaming({ sdkMessages, toolEvents, endedAt, assistantChatIdRef, assistantMsgIdRef });
 
     const messageListProps = useMemo(() => ({
         messages: derivedMessages.slice(-4),
@@ -250,7 +257,7 @@ export function ChatBubble() {
     const handleSelectTag = (tag: ChatTag) => {
         // create a new chat if the tag is changed
         if (tag !== selectedTag && sdkMessages.length > 0) {
-            const newChatId = useChatStore.getState().createChat('New chat');
+            const newChatId = useChatStore.getState().createChat('Current chat');
             useChatStore.getState().setCurrentChat(newChatId);
         }
         setSelectedTag(tag);
@@ -258,7 +265,7 @@ export function ChatBubble() {
 
     return (
         <div className={cn(
-            "absolute bottom-2 right-0 transition-all duration-300 ease-in-out",
+            "absolute bottom-2 right-0 transition-all duration-300 ease-in-out z-20",
             isOpen ? 'w-96' : 'w-15'
         )} data-testid="chat-bubble">
             {/* Messages Display */}
@@ -272,7 +279,7 @@ export function ChatBubble() {
             )}
 
             {/* Input Container */}
-            <div className={cn("flex items-center justify-center gap-0 rounded-xs shadow-xs border-gray-200 overflow-hidden transition-all duration-300 ease-in-out", !isOpen && "w-15")}>
+            <div className={cn("flex items-center bg-background justify-center gap-0 rounded-xs shadow-xs border-gray-200 overflow-hidden transition-all duration-300 ease-in-out", !isOpen && "w-15")}>
                 <Button
                     variant="ghost"
                     size="icon"

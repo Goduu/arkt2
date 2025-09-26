@@ -23,4 +23,20 @@ export function useMetaKeyLabel(): "cmd" | "ctr" {
   return label;
 }
 
+export function useAltKeyLabel(): "alt" | "opt" {
+  const [label, setLabel] = useState<"alt" | "opt">("opt");
+
+  useEffect(() => {
+    try {
+      const platform = (navigator.platform || navigator.userAgent || "").toLowerCase();
+      const isMac = platform.includes("mac");
+      setLabel(isMac ? "opt" : "alt");
+    } catch {
+      setLabel("alt");
+    }
+  }, []);
+
+  return label;
+}
+
 

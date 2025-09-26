@@ -32,7 +32,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
 
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
     // if cmd/ctr is pressed, drilldown to the node
-    if (event.ctrlKey || event.metaKey) {
+    if (event.altKey) {
       if (data.virtualOf) {
         onDiagramDrillToNode(data.virtualOf);
       }

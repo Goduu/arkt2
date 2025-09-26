@@ -3,9 +3,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArktNode, ArktNodeData } from "@/components/nodes/arkt/types";
 import { TAILWIND_FILL_COLORS } from "@/components/colors/utils";
 import { ColorSelector } from "../ColorSelector";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { FontSizeSelector } from "../FontSizeSelector";
-import { useMetaKeyLabel } from "@/hooks/use-meta-key";
+import { useAltKeyLabel } from "@/hooks/use-meta-key";
 import { TemplateCombobox } from "@/components/templates/TemplateCombobox";
 
 type BasicNodeControlProps = {
@@ -18,8 +17,8 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
     onChange,
 }) => {
     const { description, fillColor, strokeColor, fontSize, templateId } = node.data ?? {};
-    const metaKey = useMetaKeyLabel();
-    
+    const altKey = useAltKeyLabel();
+
     return (
         <>
             <div data-testid="basic-controls-description">
@@ -64,7 +63,7 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
                 />
             </div>
             <div className="text-[10px] whitespace-nowrap text-muted-foreground opacity-70 select-none">
-                {`${metaKey}+click to navigate`}
+                {`${altKey}+click to navigate`}
             </div>
         </>
     );

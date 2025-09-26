@@ -31,7 +31,7 @@ export const useChatStore = create<AppStoreState>()(
         set((state) => ({
           aiChats: {
             ...state.aiChats,
-            [id]: { id, title: title || 'New chat', createdAt: nowTs, updatedAt: nowTs, messages: [] },
+            [id]: { id, title: title || 'current chat', createdAt: nowTs, updatedAt: nowTs, messages: [] },
           },
           currentChatId: id,
         }));

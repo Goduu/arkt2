@@ -1,13 +1,12 @@
-import { streamText, stepCountIs, convertToModelMessages } from "ai";
+import { streamText, stepCountIs, convertToModelMessages, UIMessage } from "ai";
 import { systemPrompt } from "@/lib/ai/prompts";
 import { buildGithubFetchTool } from "@/lib/ai/tools/fetchGithubTool";
 import { mapStreamPartToMetadata } from "@/lib/ai/metadata";
 import { OpenAIProvider } from "@ai-sdk/openai";
-import { ArktUIMessage } from "@/lib/ai/aiTypes";
 
 const MODEL = "gpt-4o";
 
-export function handleAsk(uiMessages: ArktUIMessage[],
+export function handleAsk(uiMessages: UIMessage[],
      userPrompt: string,
      contextJson: string,
      provider: OpenAIProvider,

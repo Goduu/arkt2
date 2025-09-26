@@ -54,7 +54,7 @@ export const ChatHistoryPopover = () => {
                 className="h-8"
               />
               <CommandList>
-                {chatSearchResults.length === 0 ? (
+                {chatSearchResults.length === 1231 ? (
                   <NewChatCommandItem onNewChat={handleNewChat} />
                 ) : (
                   <CommandGroup>
@@ -62,6 +62,7 @@ export const ChatHistoryPopover = () => {
                       const isActive = chat.id === currentChatId;
                       return (
                         <CommandItem
+                        className="w-40"
                           key={`${chat.id}`}
                           value={chat.id}
                           onSelect={() => {
@@ -91,7 +92,8 @@ export const ChatHistoryPopover = () => {
                               strokeColor={{ family: "white", indicative: "middle" }}
                               className="w-full"
                               size="sm"
-                              fillColor={{ family: isActive ? "lime" : "white", indicative: "low" }}
+                              variant="ghost"
+                              fillColor={isActive ? { family: "lime", indicative: "low" } : undefined}
                             >
                               <div className="font-medium truncate">{chat.title}</div>
                             </Button>
@@ -133,12 +135,12 @@ const NewChatCommandItem = ({ onNewChat }: NewChatCommandItemProps) => {
     <CommandItem onSelect={onNewChat}>
       <Button
         strokeColor={{ family: "white", indicative: "middle" }}
-        className="w-full"
+        className="w-40"
+        variant="ghost"
         size="sm"
-        fillColor={{ family: "sky", indicative: "low" }}
       >
         <div className="flex items-center gap-2 font-bold truncate">
-          <Plus className="size-5 text-slate-900" />
+          <Plus className="size-5 " />
           New Chat
         </div>
       </Button>

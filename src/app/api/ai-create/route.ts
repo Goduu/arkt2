@@ -1,11 +1,11 @@
 import { openai, createOpenAI } from "@ai-sdk/openai";
-import type { MyUIMessage } from "@/lib/aiTypes";
 import { decryptOpenAIKey, type EncryptedKeyBlob } from "@/lib/server/crypto";
 import type { DiagramLite } from "@/lib/ai/context";
 import { handleCreate } from "./handleCreate";
 import { handleAsk } from "./handleAsk";
 import { extractGithubToken } from "@/lib/http/cookies";
 import { MinimalTemplate } from "@/components/chat/prepareRequestData";
+import { UIMessage } from "ai";
 
 export async function POST(req: Request): Promise<Response> {
     try {
@@ -13,8 +13,8 @@ export async function POST(req: Request): Promise<Response> {
         const body = await req.json();
         const userPrompt = typeof body?.prompt === 'string' ? String(body?.prompt ?? "").trim() : "";
 
-        const diagrams: Record<string, DiagramLite> | undefined = body?.diagrams ?? body?.data?.diagrams;
-        const rootId: string | undefined = body?.rootId ?? body?.data?.rootId;
+        const diagram: Record<string, DiagramLite> | undefined = body?.data?.diagram;
+        const rootId: string | undefined = body?.data?.rootId;
         const mentions: Array<{ id: string; label: string }> | undefined = body?.mentions ?? body?.data?.mentions;
         const encKey: EncryptedKeyBlob | undefined = body?.encryptedKey ?? body?.data?.encryptedKey;
         const tag: string | undefined = body?.tag ?? body?.data?.tag;
@@ -23,11 +23,12 @@ export async function POST(req: Request): Promise<Response> {
 
         // Prepare context
         const contextJson = JSON.stringify({
-            diagrams: diagrams ?? {},
+            diagram: diagram ?? {},
             currentDiagramId: rootId ?? null,
             mentionsInUserPrompt: mentions ?? [],
             availableTemplates: templates ?? [],
         });
+        console.log('contextJson', contextJson);
 
         // Build provider: use decrypted key if provided, else fallback to env
         let provider = openai;
@@ -40,7 +41,7 @@ export async function POST(req: Request): Promise<Response> {
         }
 
         // Decide input mode: AI SDK UI messages or custom single prompt with context
-        const uiMessages: MyUIMessage[] = Array.isArray(body?.messages) ? body.messages : [];
+        const uiMessages: UIMessage[] = Array.isArray(body?.messages) ? body.messages : [];
         // Build messages for the model
         if (tag === "Create") {
             return handleCreate(uiMessages, userPrompt, contextJson, provider);

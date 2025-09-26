@@ -78,6 +78,8 @@ export default function FlowEditor() {
   const freehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
   const { draggingNodesRef, mouseMoveHandler, dropHandler } = useDraggableNode();
 
+  console.log('edges', edges);
+
   useCopyPaste();
 
   useEffect(() => {

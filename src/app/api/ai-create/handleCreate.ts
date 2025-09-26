@@ -1,13 +1,12 @@
 import { mapStreamPartToMetadata } from "@/lib/ai/metadata";
 import { createDiagramSystemPrompt } from "@/lib/ai/prompts";
 import { CreateDiagramOutputSchema } from "@/lib/ai/tools/createDiagramTool";
-import { MyUIMessage } from "@/lib/aiTypes";
 import { OpenAIProvider } from "@ai-sdk/openai";
-import { convertToModelMessages, Output, streamText } from "ai";
+import { convertToModelMessages, Output, streamText, UIMessage } from "ai";
 
 const MODEL = "gpt-4o";
 export function handleCreate(
-    uiMessages: MyUIMessage[],
+    uiMessages: UIMessage[],
     userPrompt: string,
     contextJson: string,
     provider: OpenAIProvider

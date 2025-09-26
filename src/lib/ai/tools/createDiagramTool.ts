@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ArktBasicNodeTypesSchema } from "@/components/diagram/flow-editor/node-controls/types";
 
 export function buildCreateDiagramTool() {
     return {
@@ -22,16 +21,17 @@ export function buildCreateDiagramTool() {
 
 const NodeSchema: z.ZodType = z.lazy(() =>
     z.object({
-        type: ArktBasicNodeTypesSchema,
+        id: z.string().describe("Temporary id for reference in the edges and pathId"),
+        type: z.string().describe("The type of the node. always 'arktNode'"),
         data: z.object({
             label: z.string().describe("The label of the node."),
             description: z.string().describe("Small description of the node."),
-            diagram: DiagramDataSchema,
-            templateId: z
-                .string()
+            pathId: z.string().describe("An id of a node. If this is filled, it means that this node is nested inside another node."),
+            templateId: z.string()
                 .describe(
                     `The ID of the template used by the node. It represents an entity in the diagram.
-                    It MUST be an existing template ID from the given availableTemplates.`
+                    Just fill up this field if the template label/description makes sense for the node.
+                    If present, it MUST be an existing template ID from the given availableTemplates.`
                 ).optional(),
             virtualOf: z
                 .string()
@@ -50,21 +50,14 @@ const NodeSchema: z.ZodType = z.lazy(() =>
 
 const EdgeSchema = z.lazy(() =>
     z.object({
-        source: z.string().describe("The label of the source node. It MUST be a valid node label"),
-        target: z.string().describe("The label of the target node. It MUST be a valid node label"),
+        source: z.string().describe("The label of the source node. It MUST be a valid node label which has the same pathId as the source node."),
+        target: z.string().describe("The label of the target node. It MUST be a valid node label which has the same pathId as the target node."),
         data: z.object({
             label: z.string().describe("Short label that describes what the edge is connecting."),
         }),
     })
 );
 
-
-const DiagramDataSchema = z.lazy(() =>
-    z.object({
-        nodes: z.array(NodeSchema).describe("The nodes of the diagram."),
-        edges: z.array(EdgeSchema),
-    })
-);
 
 export const CreateDiagramOutputSchema = z.object({
     initialDiagramId: z.string().describe("It MUST be an existing diagram ID from the context where the nodes should be created."),

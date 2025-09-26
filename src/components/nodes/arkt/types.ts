@@ -19,7 +19,6 @@ export type ArktNodeData = {
     virtualOf?: string;
     expandGroupId?: string;
     isEphemeralExpansion: boolean;
-    originalId: string;
 };
 
 export type ArktNode = Node<ArktNodeData, 'arktNode'>;
