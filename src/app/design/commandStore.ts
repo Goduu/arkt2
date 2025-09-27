@@ -19,22 +19,28 @@ type AddNodeData = {
   nodes: (ArktNode | ArktTextNode | IntegrationNode)[];
 };
 
+type DraggingNodeData = {
+  type: "arktNode" | "text" | "integration" | "virtual"
+};
+
 type IntegrationDialogData = {
   type: Integration;
   url: string;
 };
 
-export type CommandTypes = 
-"open-templates-manager" |
- "open-create-template" |
- "freehand-mode" |
- "add-node" |
- "dragging-node" |
- "open-add-virtual-dialog" |
- "open-integration-dialog" |
- "open-add-integration-dialog" |
- "open-export-dialog" |
- "open-import-dialog";
+export type CommandTypes =
+  "open-templates-manager" |
+  "open-create-template" |
+  "freehand-mode" |
+  "add-node" |
+  "dragging-node" |
+  "open-add-virtual-dialog" |
+  "open-integration-dialog" |
+  "open-add-integration-dialog" |
+  "open-export-dialog" |
+  "open-import-dialog" |
+  "open-command-palette" |
+  "open-collab-dialog";
 
 // Create a mapped type for better type safety
 type CommandMap = {
@@ -42,12 +48,14 @@ type CommandMap = {
   "open-create-template": Command<OpenCreateTemplateData>;
   "freehand-mode": Command;
   "add-node": Command<AddNodeData>;
-  "dragging-node": Command;
+  "dragging-node": Command<DraggingNodeData>;
   "open-add-virtual-dialog": Command;
   "open-integration-dialog": Command<IntegrationDialogData>;
   "open-add-integration-dialog": Command;
   "open-export-dialog": Command;
   "open-import-dialog": Command;
+  "open-command-palette": Command;
+  "open-collab-dialog": Command;
 };
 
 interface AppState {
@@ -74,6 +82,8 @@ export const useCommandStore = create<AppState>((set) => ({
     "open-export-dialog": { status: "inactive" },
     "open-import-dialog": { status: "inactive" },
     "open-add-integration-dialog": { status: "inactive" },
+    "open-command-palette": { status: "inactive" },
+    "open-collab-dialog": { status: "inactive" }
   },
 
   activateCommand: (command, data) =>

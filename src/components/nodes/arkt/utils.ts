@@ -52,6 +52,7 @@ export const useNewDraftNode = (): {
             position: { x: -1000, y: -1000 },
             data: {
                 ...node.data,
+                isDraft: true,
                 pathId: currentUserData?.currentDiagramId || DEFAULT_PATH_ID,
                 virtualOf: node.id
             },

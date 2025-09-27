@@ -10,27 +10,27 @@ import { useCommandStore } from "@/app/design/commandStore";
 import { DEFAULT_STROKE_COLOR, getTailwindTextClass } from "@/components/colors/utils";
 import { useTheme } from "next-themes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useMetaKeyLabel } from "@/hooks/use-meta-key";
 
 export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): React.JSX.Element {
   const { description } = props.data;
   const { resolvedTheme } = useTheme();
-  const metaKey = useMetaKeyLabel();
 
   const activateCommand = useCommandStore((state) => state.activateCommand);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!props.data.url) return;
-    if (event.ctrlKey || event.metaKey) {
+    if (event.altKey) {
       activateCommand("open-integration-dialog", { type: props.data.type, url: props.data.url });
     }
-
   }
 
   const textClass = getTailwindTextClass(DEFAULT_STROKE_COLOR, resolvedTheme);
 
   return (
-    <div className="group">
+    <div
+      className="group"
+      onClick={handleClick}
+    >
       <NodeResizer
         isVisible={props.selected}
         minWidth={30}
@@ -45,7 +45,6 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
             kind={"ellipse"}
             strokeWidth={2}
             className="cursor-pointer relative overflow-visible"
-            onClick={handleClick}
           >
             {props.data.type === "github" && (
               <Github className={`p-1 size-6 ${textClass}`} />

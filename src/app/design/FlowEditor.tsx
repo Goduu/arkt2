@@ -72,7 +72,7 @@ export default function FlowEditor() {
   const { currentUserData } = useUserDataStateSynced();
   const currentPath = currentUserData?.currentDiagramId || DEFAULT_PATH_ID;
   const [isDrawing, setIsDrawing] = useState(false);
-  const [cursors, onMouseMove] = useCursorStateSynced();
+  const [, cursors, onMouseMove] = useCursorStateSynced();
   const [, setSelectedEdges] = useState<ArktEdge[]>([]);
   const [, setSelectedNodes] = useState<NodeUnion[]>([]);
   const freehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
@@ -213,17 +213,6 @@ export default function FlowEditor() {
           {isDrawing && <Freehand setNodes={setNodes} setIsDrawing={setIsDrawing} />}
           <Background />
           <Panel position="top-left">
-            <Button onClick={() => {
-              setNodes(nodes => [...nodes,
-              {
-                id: '1',
-                type: 'integration',
-                data: { type: 'github', pathId: currentPath || DEFAULT_PATH_ID },
-                position: { x: 0, y: 0 },
-              }]);
-            }}>
-              Add Integration
-            </Button>
             <Button onClick={() => {
               setNodes([]);
               setEdges([]);

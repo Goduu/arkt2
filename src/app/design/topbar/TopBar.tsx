@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import SketchySideBorder from "@/components/sketchy/SketchySideBorder";
 import { useCommandStore } from "../commandStore";
+import { CollabPopover } from "@/components/yjs/CollabPopover";
 // import { importFromEnvelopeText } from "./exportImport";
 
 export function TopBar() {
@@ -32,6 +33,7 @@ export function TopBar() {
         <Button fillColor={{ family: "slate", indicative: "low" }} size="sm" variant="ghost" onClick={onExportClick}>
           <Download className="mr-2 h-4 w-4" /> Export
         </Button>
+        <CollabPopover />
       </div>
       <SketchySideBorder seed={1} side="bottom" strokeColor={{ family: "slate", indicative: "low" }} strokeWidth={1} />
     </div>

@@ -22,9 +22,12 @@ export const useDraggableNode = () => {
     useEffect(() => {
         if (addNodeCommand.status === "pending") {
             setNodes(nodes => [...nodes, ...(addNodeCommand.data?.nodes || [])]);
-            draggingNodesRef.current = addNodeCommand.data?.nodes.map(node => node.id) || [];
+            const nodes = addNodeCommand.data?.nodes;
+            draggingNodesRef.current = nodes?.map(node => node.id) || [];
             removeCommand("add-node");
-            activateCommand("dragging-node")
+            const firstNode = nodes?.[0];
+            const nodeType = firstNode && "virtualOf" in firstNode.data && firstNode?.data.virtualOf ? "virtual" : firstNode?.type || "arktNode";
+            activateCommand("dragging-node", { type: nodeType })
             // Reset baseline so the first mouse move after adding nodes sets it
             lastMousePositionRef.current = null;
         }

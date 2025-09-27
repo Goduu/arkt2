@@ -13,17 +13,23 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { Type, LineSquiggle, Layers, Link as LinkIcon, Settings, Bot, Download, Upload, Plus, FileText } from "lucide-react";
+import { Type, LineSquiggle, Layers, Link as LinkIcon, Settings, Bot, Download, Upload, Plus, FileText, Blocks } from "lucide-react";
 import { TemplateIcon } from "@/components/templates/TemplateIcon";
 import { useCommandStore } from "../commandStore";
 import { useNewDraftNode } from "@/components/nodes/arkt/utils";
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced";
+import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
 
 export function CommandPalette(): JSX.Element {
   const router = useRouter();
   const [nodeTemplates,] = useTemplatesStateSynced()
   const activateCommand = useCommandStore((s) => s.activateCommand);
-  const { getNewDraftNode } = useNewDraftNode();
+  const { getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
+  const openCommandPaletteCommand = useCommandStore((s) => s.commandMap["open-command-palette"]);
+  const isDraggingNodeCommand = useCommandStore((s) => s.commandMap["dragging-node"]);
+  const isFreehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
+  const removeCommand = useCommandStore((s) => s.removeCommand);
+  const [, setNodes] = useNodesStateSynced()
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -36,17 +42,96 @@ export function CommandPalette(): JSX.Element {
   };
 
   useEffect(() => {
+    if (openCommandPaletteCommand.status === "pending") {
+      setOpen(true);
+    }
+  }, [openCommandPaletteCommand]);
+
+  useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (isTypingTarget(e.target)) return;
+
       const mod = e.metaKey || e.ctrlKey;
-      if (mod && (e.key === "k" || e.key === "K")) {
+      const alt = e.altKey;
+      const shift = e.shiftKey;
+      const key = (e.key || "").toLowerCase();
+
+      // Toggle command palette
+      if (mod && key === "k") {
         e.preventDefault();
         setOpen((prev) => !prev);
+        return;
+      }
+
+      // Do not trigger shortcuts while the palette is open
+      if (open) return;
+
+      // Only handle plain-key shortcuts (no mod/alt)
+      if (mod || alt) return;
+
+      if (key === "escape") {
+        if (isDraggingNodeCommand.status === "pending") {
+          removeCommand("dragging-node");
+          setNodes(nodes => nodes.filter(node => "isDraft" in node.data && !node.data.isDraft));
+          return;
+        }
+        if (isFreehandModeCommand.status === "pending") {
+          removeCommand("freehand-mode");
+          return;
+        }
+      }
+
+      // Shift-combo shortcuts
+      if (shift) {
+        if (key === "c") {
+          e.preventDefault();
+          activateCommand("open-create-template");
+          return;
+        }
+        if (key === "t") {
+          e.preventDefault();
+          activateCommand("open-templates-manager");
+          return;
+        }
+        if (key === "s") {
+          e.preventDefault();
+          try { router.push("/design/settings"); } catch { /* noop */ }
+          return;
+        }
+      }
+
+      // Non-shift single-key shortcuts
+      if (!shift) {
+        if (key === "t") {
+          e.preventDefault();
+          activateCommand("add-node", { nodes: [getNewDraftTextNode()] });
+          return;
+        }
+        if (key === "l") {
+          e.preventDefault();
+          activateCommand("freehand-mode");
+          return;
+        }
+        if (key === "n") {
+          e.preventDefault();
+          activateCommand("add-node", { nodes: [getNewDraftNode()] });
+          return;
+        }
+        if (key === "v") {
+          e.preventDefault();
+          activateCommand("open-add-virtual-dialog");
+          return;
+        }
+        if (key === "i") {
+          e.preventDefault();
+          activateCommand("open-add-integration-dialog");
+          return;
+        }
       }
     };
     window.addEventListener("keydown", down);
     return () => window.removeEventListener("keydown", down);
-  }, []);
+  }, [activateCommand, getNewDraftNode, getNewDraftTextNode, open, router]);
 
   const templates = useMemo(() => {
     return Object.values(nodeTemplates).sort((a, b) => (b.lastUsedAt ?? b.updatedAt) - (a.lastUsedAt ?? a.updatedAt));
@@ -61,7 +146,7 @@ export function CommandPalette(): JSX.Element {
           <CommandItem
             value="add text"
             onSelect={() => {
-              // setPendingCommand({ type: "addText" });
+              activateCommand("add-node", { nodes: [getNewDraftTextNode()] });
               setOpen(false);
             }}
           >
@@ -78,7 +163,7 @@ export function CommandPalette(): JSX.Element {
           >
             <LineSquiggle className="mr-2 h-4 w-4" />
             <span className="flex-1">Add line</span>
-            <CommandShortcut>l</CommandShortcut>
+            <CommandShortcut>L</CommandShortcut>
           </CommandItem>
           <CommandItem
             value="add node"
@@ -101,6 +186,17 @@ export function CommandPalette(): JSX.Element {
             <LinkIcon className="mr-2 h-4 w-4" />
             <span className="flex-1">Add virtual node</span>
             <CommandShortcut>v</CommandShortcut>
+          </CommandItem>
+          <CommandItem
+            value="add integration"
+            onSelect={() => {
+              activateCommand("open-add-integration-dialog");
+              setOpen(false);
+            }}
+          >
+            <Blocks className="mr-2 h-4 w-4" />
+            <span className="flex-1">Add integration</span>
+            <CommandShortcut>i</CommandShortcut>
           </CommandItem>
           <CommandItem
             value="create template"
@@ -195,13 +291,13 @@ export function CommandPalette(): JSX.Element {
               }}
               className="[&_svg]:!size-4"
             >
-                <TemplateIcon
-                  className="size-4 relative flex items-center justify-center shrink-0 p-0"
-                  iconKey={t.iconKey}
-                  fillColor={t.fillColor}
-                  strokeColor={t.strokeColor}
-                />
-                {t.name}
+              <TemplateIcon
+                className="size-4 relative flex items-center justify-center shrink-0 p-0"
+                iconKey={t.iconKey}
+                fillColor={t.fillColor}
+                strokeColor={t.strokeColor}
+              />
+              {t.name}
             </CommandItem>
           ))}
         </CommandGroup>

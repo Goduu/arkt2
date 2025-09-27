@@ -7,6 +7,7 @@ import FigmaLinkDialog from "./controls/node-controls/FigmaLinkDialog";
 import ExportDialog from "@/app/design/topbar/ExportDialog";
 import ImportDialog from "@/app/design/topbar/ImportDialog";
 import { AddIntegrationDialog } from "./nodes/arkt/integrations/AddIntegrationDialog";
+import CollabDialog from "./yjs/CollabDialog";
 
 export const Dialogs = () => {
 
@@ -20,6 +21,7 @@ export const Dialogs = () => {
             <ExportDialog />
             <ImportDialog />
             <AddIntegrationDialog />
+            <CollabDialog />
         </>
     );
 };

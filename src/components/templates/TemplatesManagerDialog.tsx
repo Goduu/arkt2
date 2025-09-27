@@ -40,7 +40,7 @@ export function TemplatesManagerDialog(): JSX.Element | null {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[880px] max-w-[95vw] p-0" showCloseButton>
+      <DialogContent className="max-w-[90vw] p-0" showCloseButton>
         <DialogHeader className="px-3 py-2 pr-10 border-b">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-sm font-medium">Templates</DialogTitle>
@@ -56,7 +56,7 @@ export function TemplatesManagerDialog(): JSX.Element | null {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto pr-1">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto pr-1 max-h-[60vh] overflow-y-auto">
             {list.map((tpl) => (
               <SketchyPanel key={tpl.id} className="w-full h-full" hoverEffect>
                 <button

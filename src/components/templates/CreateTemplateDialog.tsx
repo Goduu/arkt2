@@ -99,7 +99,7 @@ export function CreateTemplateDialog(): React.JSX.Element | null {
       <DialogContent className="w-auto max-w-[90vw] p-0" showCloseButton={false}>
         <DialogHeader className="px-3 py-2 border-b">
           <DialogTitle className="text-sm font-medium">
-            {mode === "edit" ? "Edit template" : "Create node"}
+            {mode === "edit" ? "Edit template" : "Create template"}
             {mode === "edit" && (
               <div className="text-xs text-muted-foreground font-normal">
                 Editing the template will automatically update all nodes using this template.
