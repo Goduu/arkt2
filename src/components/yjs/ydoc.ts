@@ -1,7 +1,7 @@
 "use client";
 import { IndexeddbPersistence } from 'y-indexeddb';
 import type { WebrtcProvider } from 'y-webrtc';
-import { Doc } from 'yjs';
+import { Doc, encodeStateAsUpdate, applyUpdate } from 'yjs';
 // For this example we use the WebrtcProvider to synchronize the document
 // between multiple clients. Other providers are available.
 // You can find a list here: https://docs.yjs.dev/ecosystem/connection-provider
@@ -27,16 +27,30 @@ function getRoomName(): string {
 
 // Lazily create provider on the client to avoid SSR importing WebRTC
 let provider: WebrtcProvider | null = null;
+let currentRoomName: string | null = null;
 
 export async function getProvider() {
     if (typeof window === 'undefined') return null;
-    if (provider) return provider;
     const roomName = getRoomName();
+
+    // Reinitialize provider if the room changed
+    if (provider && currentRoomName === roomName) {
+        return provider;
+    }
+
+    if (provider && currentRoomName !== roomName) {
+        try {
+            disconnectProvider();
+        } catch {
+            // ignore
+        }
+    }
 
     const { WebrtcProvider } = await import('y-webrtc');
     new IndexeddbPersistence(roomName, ydoc);
 
     if(roomName === 'local') {
+        currentRoomName = roomName;
         return null;
     }
 
@@ -75,12 +89,140 @@ export async function getProvider() {
         console.error('Error initializing WebRTC provider');
     }
 
+    currentRoomName = roomName;
     return provider;
+}
+
+export function disconnectProvider() {
+    try {
+        // Remove this client's presence from shared maps immediately
+        const selfId = ydoc.clientID.toString();
+        const cursorsMap = ydoc.getMap('cursors');
+        const usersDataMap = ydoc.getMap('usersData');
+        try {
+            ydoc.transact(() => {
+                if (cursorsMap.has(selfId)) cursorsMap.delete(selfId);
+                if (usersDataMap.has(selfId)) usersDataMap.delete(selfId);
+            });
+        } catch {
+            // ignore
+        }
+
+        if (provider) {
+            provider.disconnect();
+            provider.destroy();
+            provider = null;
+        }
+    } catch {
+        console.error('Error disconnecting provider')
+    }
+}
+
+// Copy the current document content into the "local" room's IndexedDB store
+export async function copyCurrentDocToLocalRoom() {
+    if (typeof window === 'undefined') return;
+    try {
+        const localDoc = new Doc();
+        const update = encodeStateAsUpdate(ydoc);
+        const { IndexeddbPersistence } = await import('y-indexeddb');
+        const persistence = new IndexeddbPersistence('local', localDoc);
+
+        // Wait for initial load before applying our update
+        try {
+            await persistence.whenSynced;
+        } catch {
+            // ignore
+        }
+
+        applyUpdate(localDoc, update);
+
+        // Strip transient presence from the local room copy
+        const localCursors = localDoc.getMap('cursors');
+        const localUsersData = localDoc.getMap('usersData');
+        localDoc.transact(() => {
+            localCursors.clear();
+            localUsersData.clear();
+        });
+
+        // Give IndexedDB a tick to persist writes
+        await new Promise((resolve) => setTimeout(resolve, 10));
+    } catch (err) {
+        console.error('Failed to copy current Yjs doc to local room', err);
+    }
+}
+
+// Load data from the "local" room into the current ydoc (one-way)
+export async function copyLocalRoomToCurrentDoc() {
+    if (typeof window === 'undefined') return;
+    try {
+        const localDoc = new Doc();
+        const { IndexeddbPersistence } = await import('y-indexeddb');
+        const persistence = new IndexeddbPersistence('local', localDoc);
+        try {
+            await persistence.whenSynced;
+        } catch {
+            // ignore
+        }
+
+        const update = encodeStateAsUpdate(localDoc);
+        applyUpdate(ydoc, update);
+
+        // ensure presence maps are empty at start
+        const cursors = ydoc.getMap('cursors');
+        const usersData = ydoc.getMap('usersData');
+        ydoc.transact(() => {
+            cursors.clear();
+            usersData.clear();
+        });
+    } catch (err) {
+        console.error('Failed to copy local room Yjs doc into current doc', err);
+    }
+}
+
+// Prepare a new collaboration room by seeding it with the current local data
+export async function prepareCollabShare(roomName: string) {
+    if (typeof window === 'undefined') return;
+    if (!roomName || roomName === 'local') return;
+    try {
+        // Start from local IndexedDB state
+        await copyLocalRoomToCurrentDoc();
+
+        // Persist the seeded current ydoc state into the target room's IndexedDB
+        const seededUpdate = encodeStateAsUpdate(ydoc);
+        const { IndexeddbPersistence } = await import('y-indexeddb');
+        const targetDoc = new Doc();
+        const targetPersistence = new IndexeddbPersistence(roomName, targetDoc);
+        try {
+            await targetPersistence.whenSynced;
+        } catch {
+            // ignore
+        }
+        applyUpdate(targetDoc, seededUpdate);
+
+        // Clear presence in target
+        const targetCursors = targetDoc.getMap('cursors');
+        const targetUsersData = targetDoc.getMap('usersData');
+        targetDoc.transact(() => {
+            targetCursors.clear();
+            targetUsersData.clear();
+        });
+        await new Promise((resolve) => setTimeout(resolve, 10));
+    } catch (err) {
+        console.error('Failed to prepare collab share for room', roomName, err);
+    }
 }
 
 // Auto-init on the client
 if (typeof window !== 'undefined') {
     void getProvider();
+
+    // Ensure we disconnect from signaling and peers when leaving the page
+    const cleanup = () => {
+        disconnectProvider();
+    };
+
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
 }
 
 export default ydoc;

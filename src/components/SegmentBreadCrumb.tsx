@@ -16,7 +16,6 @@ export function SegmentBreadCrumb() {
     const { fitView } = useReactFlow();
     const { currentUserData, onDiagramDrillToIndex } = useUserDataStateSynced(fitView);
     const path = currentUserData?.currentDiagramPath || [];
-    console.log("path", path);
 
     type Item = {
         key: string;

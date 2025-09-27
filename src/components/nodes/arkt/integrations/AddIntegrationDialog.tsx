@@ -18,7 +18,6 @@ export const AddIntegrationDialog = () => {
     const { getNewDraftIntegrationNode } = useNewDraftNode();
 
     useEffect(() => {
-        console.log("openAddIntegrationDialogCommand", openAddIntegrationDialogCommand);
         if (openAddIntegrationDialogCommand.status === "pending") {
             setIsOpen(true);
             removeCommand("open-add-integration-dialog");

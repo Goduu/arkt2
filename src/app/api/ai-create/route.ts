@@ -28,7 +28,6 @@ export async function POST(req: Request): Promise<Response> {
             mentionsInUserPrompt: mentions ?? [],
             availableTemplates: templates ?? [],
         });
-        console.log('contextJson', contextJson);
 
         // Build provider: use decrypted key if provided, else fallback to env
         let provider = openai;

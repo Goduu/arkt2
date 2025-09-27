@@ -13,6 +13,7 @@ import { useEffect, useState } from "react"
 import { Check, Copy, Download, OctagonAlert } from "lucide-react"
 import { nanoid } from "nanoid"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { prepareCollabShare } from "./ydoc"
 import { toast } from "sonner"
 import { useCommandStore } from "@/app/design/commandStore"
 import { Badge } from "../ui/badge"
@@ -48,6 +49,14 @@ export function CollabDialog() {
         e.preventDefault()
         const hash = nanoid(36)
         setSharingKey(hash)
+
+        // Seed the new room with local data before navigating
+        try {
+            await prepareCollabShare(hash)
+        } catch {
+           console.error('Failed to prepare collab share')
+        }
+
         const params = new URLSearchParams(searchParams);
         params.set("collab", hash)
         router.push(`${pathname}?${params.toString()}`);
@@ -58,8 +67,13 @@ export function CollabDialog() {
         toast("Copied to clipboard", { position: "bottom-right", icon: <Check /> })
     }
 
+    const onClose = () => {
+        setSharingKey("")
+        setIsOpen(false)
+    }
+
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => { if (!open) setIsOpen(false) }}>
+        <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
             <form onSubmit={onShare}>
                 <DialogContent>
                     <DialogHeader>
@@ -98,7 +112,7 @@ export function CollabDialog() {
                                 </Button>
                             </div>
                         }
-                        <DialogClose asChild>
+                        <DialogClose asChild onClick={onClose}>
                             <Button variant="outline" type="button">
                                 {sharingKey ? "Close" : "Cancel"}
                             </Button>

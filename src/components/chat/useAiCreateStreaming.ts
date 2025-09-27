@@ -191,7 +191,6 @@ export function useAiCreateStreaming(params: {
                 setEdges((prev) => [...prev, ...createdEdges]);
             }
             if (createdNodes.length > 0) {
-                console.log("createdNodes", createdNodes);
                 activateCommand("add-node", { nodes: createdNodes });
             }
 

@@ -10,10 +10,14 @@ import { Input } from "../ui/input";
 import useCursorStateSynced from "./useCursorStateSynced";
 import { stringToColor } from "./utils";
 import ydoc from "./ydoc";
+import { copyCurrentDocToLocalRoom, disconnectProvider } from "./ydoc";
+import { usePathname, useRouter } from "next/navigation";
 
 export function CollabPopover() {
     const searchParams = useSearchParams();
     const collab = searchParams.get("collab")
+    const router = useRouter();
+    const pathname = usePathname();
     const activateCommand = useCommandStore((s) => s.activateCommand);
     const { usersData } = useUserDataStateSynced()
     const [cursors, , , localName, updateLocalUserName] = useCursorStateSynced()
@@ -55,6 +59,14 @@ export function CollabPopover() {
             .sort((a, b) => Number(b.isSelf) - Number(a.isSelf));
     }, [usersData, cursors, selfId, localName]);
 
+    const onDisconnect = useCallback(async () => {
+        await copyCurrentDocToLocalRoom().catch(() => undefined);
+        disconnectProvider();
+        const params = new URLSearchParams(searchParams);
+        params.delete('collab');
+        router.push(`${pathname}${params.size ? `?${params.toString()}` : ''}`);
+    }, [searchParams, router, pathname]);
+
     if (!collab) {
         return (
             <Button fillColor={{ family: "slate", indicative: "low" }} size="sm" variant="ghost" onClick={() => activateCommand("open-collab-dialog")}>
@@ -77,17 +89,18 @@ export function CollabPopover() {
                             <div className="text-sm font-semibold">Live collaboration</div>
                             <div className="text-xs text-slate-500">{cursors.length} online</div>
                         </div>
+                        <Button size="sm" variant="outline" onClick={onDisconnect}>Disconnect</Button>
                     </div>
 
                     <div className="mt-4">
                         <ul className="space-y-2">
                             {participants.map((p) => (
-                                <li key={p.id} className="flex items-center gap-3 rounded-lg p-2 hover:bg-slate-50 transition-colors">
-                                    <div className="h-7 w-7 rounded-full shadow-sm ring-2 ring-white flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: p.color }}>
+                                <li key={p.id} className="flex items-center gap-3 rounded-lg p-2 hover:bg-slate-500/10 transition-colors cursor-pointer" onClick={() => onStartEdit()}>
+                                    <div className="h-7 w-7 rounded-full shadow-sm ring-2 ring-white flex items-center justify-center text-xs font-bold" style={{ backgroundColor: p.color }}>
                                         {p.name.slice(0, 1).toUpperCase()}
                                     </div>
                                     <div className="flex-1">
-                                        <div className="text-sm font-medium text-slate-800 flex items-center gap-2">
+                                        <div className="text-sm font-medium flex justify-between items-center gap-2">
                                             {p.id === selfId ? (
                                                 isEditing ? (
                                                     <div className="flex items-center gap-2 w-full">
@@ -97,6 +110,7 @@ export function CollabPopover() {
                                                             onKeyDown={onKeyDown}
                                                             onBlur={onCommitName}
                                                             className="h-7 px-2 py-1 text-xs"
+                                                            hideStroke
                                                             autoFocus
                                                         />
                                                         <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onCommitName}>
@@ -106,13 +120,13 @@ export function CollabPopover() {
                                                 ) : (
                                                     <button className="inline-flex items-center gap-1 hover:underline" onClick={onStartEdit}>
                                                         <span>{localName}</span>
-                                                        <Pencil className="h-3 w-3 text-slate-400" />
+                                                        <Pencil className="h-3 w-3" />
                                                     </button>
                                                 )
                                             ) : (
                                                 <span>{p.name}</span>
                                             )}
-                                            {p.id === selfId ? <span className="text-[10px] font-semibold text-slate-500">(you)</span> : null}
+                                            {p.id === selfId ? <span className="text-[10px] font-semibold">(you)</span> : null}
                                         </div>
                                     </div>
                                 </li>

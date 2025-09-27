@@ -122,7 +122,6 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                             rf.setNodes((prev) => prev.map((n) => (n.id === id ? { ...n, data: { ...n.data, label: next } } : n)));
                         }}
                         onBlur={() => {
-                            console.log("onBlur");
                             if (isEditing) {
                                 setIsEditing(false);
                             }

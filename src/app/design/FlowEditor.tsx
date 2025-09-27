@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -46,6 +46,8 @@ import { StatusIcon } from './status-icon/StatusIcon';
 import { ArchTextNodeComponent } from '@/components/nodes/text/ArchTextNode';
 import { ChatBubble } from '@/components/chat/ChatBubble';
 import { IntegrationNodeComponent } from '@/components/nodes/arkt/integrations/IntegrationNode';
+import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
+import { useSearchParams } from 'next/navigation';
 
 const nodeTypes = {
   arktNode: ArktNodeComponent,
@@ -77,8 +79,8 @@ export default function FlowEditor() {
   const [, setSelectedNodes] = useState<NodeUnion[]>([]);
   const freehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
   const { draggingNodesRef, mouseMoveHandler, dropHandler } = useDraggableNode();
-
-  console.log('edges', edges);
+  const searchParams = useSearchParams();
+  const prevCollabRef = useRef<string | null>(null);
 
   useCopyPaste();
 
@@ -87,6 +89,22 @@ export default function FlowEditor() {
       setIsDrawing(true);
     }
   }, [freehandModeCommand]);
+
+  // Ensure Yjs provider is initialized when the collab room changes via client-side navigation
+  useEffect(() => {
+    const collab = searchParams.get('collab');
+    const prev = prevCollabRef.current;
+
+    if (prev && prev !== collab) {
+      // Leaving previous room: disconnect to remove presence immediately
+      disconnectProvider();
+    }
+
+    // Entering a room (or staying in the same one): ensure provider is connected
+    void getProvider();
+
+    prevCollabRef.current = collab;
+  }, [searchParams]);
 
   const handleSelectionChange: OnSelectionChangeFunc<NodeUnion, ArktEdge> = (selection) => {
     const edges = selection.edges
@@ -106,7 +124,6 @@ export default function FlowEditor() {
   const onConnect: OnConnect = useCallback(
     (connection) => {
       const { connectionLinePath } = useCommandStore.getState();
-      console.log('connection', connection);
       // We add a new edge based on the selected DEFAULT_ALGORITHM
       // and transfer all the control points from the connectionLinePath
       // in case the user has added any while creating the connection

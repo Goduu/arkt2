@@ -118,12 +118,6 @@ export function AppSidebar() {
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                                {/* <SidebarMenuItem>
-                                    <SidebarMenuButton data-testid="sidebar-diagrams-button" tooltip="Diagrams" onClick={() => setPendingCommand({ type: "openDiagrams" })}>
-                                        <Layers />
-                                        <span>Diagrams</span>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem> */}
                                 <SidebarMenuItem>
                                     <SidebarMenuButton tooltip="Templates" onClick={() => activateCommand("open-templates-manager")}>
                                         <FileText />
@@ -192,15 +186,16 @@ export function AppSidebar() {
                                 <span>Add Integration</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
+                    </SidebarGroupContent>
+                </SidebarGroup>
 
-                        <SidebarSeparator />
-
-                        <SidebarGroup className="flex-1">
-                            <SidebarGroupLabel className="-ml-2">Templates</SidebarGroupLabel>
-                            <SidebarGroupAction title="Create Template" onClick={() => activateCommand("open-create-template")}>
+                <SidebarSeparator />
+                <SidebarGroup>
+                    <SidebarGroupLabel>Templates</SidebarGroupLabel>
+                    <SidebarGroupAction title="Create Template" onClick={() => activateCommand("open-create-template")}>
                                 <Plus /> <span className="sr-only">Create Template</span>
                             </SidebarGroupAction>
-                        </SidebarGroup>
+                    <SidebarGroupContent>
                         <SidebarMenuItem className="group-data-[collapsible=icon]:block hidden">
                             <SidebarMenuButton tooltip="Create Template" onClick={() => activateCommand("open-create-template")}>
                                 <Plus /> <span>Create Template</span>
@@ -215,7 +210,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <ModeToggle className="-ml-1"/>
+                <ModeToggle className="-ml-1" />
                 <SidebarTrigger className="opacity-50 hover:opacity-100" />
             </SidebarFooter>
 
