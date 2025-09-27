@@ -2,8 +2,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MoveHorizontal, MoveLeft, MoveRight } from "lucide-react";
 
 type EdgeMarkerProps = {
-    value: "start" | "end" | "both" | "";
-    onChange: (direction: "start" | "end" | "both" | "") => void
+    value: "start" | "end" | "both" | "none";
+    onChange: (direction: "start" | "end" | "both" | "none") => void
 }
 
 export const EdgeMarker = ({ value, onChange }: EdgeMarkerProps) => {
@@ -24,6 +24,9 @@ export const EdgeMarker = ({ value, onChange }: EdgeMarkerProps) => {
                 </ToggleGroupItem>
                 <ToggleGroupItem value="both" aria-label="both">
                     <MoveHorizontal className="size-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="none" aria-label="none">
+                    <div className="w-3 h-0.5 bg-current rounded-xl"/>
                 </ToggleGroupItem>
             </ToggleGroup>
         </div>

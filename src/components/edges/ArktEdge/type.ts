@@ -27,6 +27,7 @@ export type ArktEdgeData = {
     strokeWidth?: number
     algorithm: Algorithm
     points: ControlPointData[]
+    direction: "end" | "start" | "both" | "none"
     label?: string
     fontSize: number
     labelFill: Color

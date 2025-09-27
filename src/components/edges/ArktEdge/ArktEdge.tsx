@@ -11,6 +11,8 @@ import { getEdgeParams, getEdgePath } from './path/utils';
 import { EdgeLabel } from './EdgeLabel';
 import { useEdgeControls } from './useEdgeControls';
 import { colorToHex, DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
+import { getDefaultMarker } from '@/components/controls/EdgeControls';
+import { useTheme } from 'next-themes';
 
 const useIdsForInactiveControlPoints = (points: ControlPointData[]) => {
   const ids = useRef<string[]>([]);
@@ -42,13 +44,14 @@ export function EditableEdgeComponent({
   sourceX,
   sourceY,
   target,
-  markerEnd,
-  markerStart,
   style,
+  markerStart,
+  markerEnd,
   data,
 }: EdgeProps<ArktEdge>) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { onControlPointsChange } = useEdgeControls(id);
+  const { resolvedTheme: theme } = useTheme();
 
   const sourceNode = useInternalNode(source);
   const targetNode = useInternalNode(target);
