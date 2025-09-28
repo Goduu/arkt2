@@ -21,6 +21,7 @@ export type SketchyPanelProps = React.PropsWithChildren<
     fillStyle?: FillStyle;
     seed?: number;
     kind?: SketchyShapeKind;
+    onClick?: () => void;
   }
 >;
 

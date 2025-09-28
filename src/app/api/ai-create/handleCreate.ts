@@ -1,12 +1,13 @@
+import { ArktUIMessage } from "@/lib/ai/aiTypes";
 import { mapStreamPartToMetadata } from "@/lib/ai/metadata";
 import { createDiagramSystemPrompt } from "@/lib/ai/prompts";
 import { CreateDiagramOutputSchema } from "@/lib/ai/tools/createDiagramTool";
 import { OpenAIProvider } from "@ai-sdk/openai";
-import { convertToModelMessages, Output, streamText, UIMessage } from "ai";
+import { convertToModelMessages, Output, streamText } from "ai";
 
 const MODEL = "gpt-4o";
 export function handleCreate(
-    uiMessages: UIMessage[],
+    uiMessages: ArktUIMessage[],
     userPrompt: string,
     contextJson: string,
     provider: OpenAIProvider

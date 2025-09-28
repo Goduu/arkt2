@@ -35,8 +35,8 @@ export const MessageList = memo(({ messages, isStreaming }: MessageListProps) =>
                         seed={2}
                         fillWeight={3.05}
                         fillStyle="dots"
-                        fillColor={message.type === "user" ? { family: "lime", shade: "300" } : { family: "gray", shade: "300" }}
-                        strokeColor={message.type === "user" ? { family: "lime", shade: "300" } : { family: "gray", shade: "300" }}
+                        fillColor={message.type === "user" ? { family: "lime", indicative: "low" } : { family: "gray", indicative: "low" }}
+                        strokeColor={message.type === "user" ? { family: "lime", indicative: "low" } : { family: "gray", indicative: "low" }}
                     >
                         <div className="break-words text-white font-bold">
                             {message.content || (message.isStreaming ? "..." : "")}

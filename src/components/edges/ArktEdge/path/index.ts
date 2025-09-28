@@ -4,7 +4,6 @@ import { getLinearPath, getLinearControlPoints } from './linear';
 import { getCatmullRomPath, getCatmullRomControlPoints } from './catmull-rom';
 import { Algorithm } from '../constants';
 import { ControlPointData } from '../type';
-import { getStepPath } from './step';
 
 export function getControlPoints(
   points: (ControlPointData | XYPosition)[],

@@ -13,7 +13,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { Type, LineSquiggle, Layers, Link as LinkIcon, Settings, Bot, Download, Upload, Plus, FileText, Blocks } from "lucide-react";
+import { Type, LineSquiggle, Layers, Link as LinkIcon, Settings, Bot, Download, Upload, Plus, FileText, Blocks, Share } from "lucide-react";
 import { TemplateIcon } from "@/components/templates/TemplateIcon";
 import { useCommandStore } from "../commandStore";
 import { useNewDraftNode } from "@/components/nodes/arkt/utils";
@@ -98,6 +98,27 @@ export function CommandPalette(): JSX.Element {
           try { router.push("/design/settings"); } catch { /* noop */ }
           return;
         }
+        if (key === "q") {
+          e.preventDefault();
+          activateCommand("open-collab-dialog")
+          return
+        }
+        if (key === "e") {
+          e.preventDefault();
+          activateCommand("open-export-dialog")
+          return
+        }
+        if (key === "a") {
+          e.preventDefault();
+          activateCommand("open-ask-ai")
+          return
+        }
+        if (key === "i") {
+          e.preventDefault();
+          activateCommand("open-import-dialog")
+          return
+        }
+
       }
 
       // Non-shift single-key shortcuts
@@ -198,17 +219,6 @@ export function CommandPalette(): JSX.Element {
             <span className="flex-1">Add integration</span>
             <CommandShortcut>i</CommandShortcut>
           </CommandItem>
-          <CommandItem
-            value="create template"
-            onSelect={() => {
-              activateCommand("open-create-template");
-              setOpen(false);
-            }}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            <span className="flex-1">Create template</span>
-            <CommandShortcut>⇧C</CommandShortcut>
-          </CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Navigation">
@@ -249,14 +259,26 @@ export function CommandPalette(): JSX.Element {
         <CommandSeparator />
         <CommandGroup heading="Utilities">
           <CommandItem
+            value="collab"
+            onSelect={() => {
+              activateCommand("open-collab-dialog");
+              setOpen(false);
+            }}
+          >
+            <Share className="mr-2 h-4 w-4" />
+            <span>Collab</span>
+            <CommandShortcut>⇧Q</CommandShortcut>
+          </CommandItem>
+          <CommandItem
             value="ask ai"
             onSelect={() => {
-              try { window.dispatchEvent(new Event("arkt:open-ask-ai")); } catch { console.warn("Error dispatching event"); }
+              activateCommand("open-ask-ai");
               setOpen(false);
             }}
           >
             <Bot className="mr-2 h-4 w-4" />
             <span>Ask AI</span>
+            <CommandShortcut>⇧A</CommandShortcut>
           </CommandItem>
           <CommandItem
             value="export"
@@ -267,6 +289,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Download className="mr-2 h-4 w-4" />
             <span>Export</span>
+            <CommandShortcut>⇧E</CommandShortcut>
           </CommandItem>
           <CommandItem
             value="import"
@@ -277,10 +300,22 @@ export function CommandPalette(): JSX.Element {
           >
             <Upload className="mr-2 h-4 w-4" />
             <span>Import</span>
+            <CommandShortcut>⇧I</CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Templates">
+          <CommandItem
+            value="create template"
+            onSelect={() => {
+              activateCommand("open-create-template");
+              setOpen(false);
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            <span className="flex-1">Create template</span>
+            <CommandShortcut>⇧C</CommandShortcut>
+          </CommandItem>
           {templates.map((t) => (
             <CommandItem
               key={t.id}

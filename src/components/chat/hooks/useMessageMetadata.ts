@@ -1,10 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { MessageMetadata, MyUIMessage, ToolEvent } from "@/lib/aiTypes";
+import type { ArktUIMessage, MessageMetadata, ToolEvent } from "@/lib/ai/aiTypes";
 
-
-export function useMessageMetadata(messages: Array<MyUIMessage> | undefined) {
+export function useMessageMetadata(messages?: Array<ArktUIMessage>) {
   const [usage, setUsage] = useState<MessageMetadata["usage"] | null>(null);
   const [modelUsed, setModelUsed] = useState<string | null>(null);
   const [toolEvents, setToolEvents] = useState<ToolEvent[]>([]);
@@ -13,32 +12,32 @@ export function useMessageMetadata(messages: Array<MyUIMessage> | undefined) {
 
   useEffect(() => {
     if (!messages || messages.length === 0) return;
-    const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant') as MyUIMessage | undefined;
+    const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant')
     if (!lastAssistant) return;
-    const md = lastAssistant.metadata;
-    if (!md) return;
+    const metadata = lastAssistant.metadata;
+    if (!metadata) return;
 
-    if (md.model && md.model !== modelUsed) {
-      setModelUsed(md.model);
+    if (metadata.model && metadata.model !== modelUsed) {
+      setModelUsed(metadata.model);
     }
 
-    const hasAnyToken = typeof md.usage?.totalTokens === 'number';
+    const hasAnyToken = typeof metadata.usage?.totalTokens === 'number';
     if (hasAnyToken) {
-      setUsage(md.usage);
+      setUsage(metadata.usage);
     }
 
-    if (typeof md.createdAt === 'number' && (!startedAt || startedAt !== md.createdAt)) {
-      setStartedAt(md.createdAt);
+    if (typeof metadata.createdAt === 'number' && (!startedAt || startedAt !== metadata.createdAt)) {
+      setStartedAt(metadata.createdAt);
     }
 
-    if (typeof md.usage?.totalTokens === 'number' && !endedAt) {
+    if (typeof metadata.usage?.totalTokens === 'number' && !endedAt) {
       setEndedAt(Date.now());
     }
 
-    if (Array.isArray(md.tools) && md.tools.length > 0) {
+    if (Array.isArray(metadata.tools) && metadata.tools.length > 0) {
       setToolEvents((prev) => {
         const next = [...prev];
-        for (const t of md.tools!) {
+        for (const t of metadata.tools!) {
           next.push({
             name: t.name,
             args: t.input,

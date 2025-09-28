@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { SketchyBorderOverlay } from "@/components/ui/sketchy/SketchyBorderOverlay";
-import { useElementSize } from "@/components/ui/useElementSize";
-import { Color } from "../../diagram/flow-editor/node-controls/types";
 import { FillStyle } from "./types";
+import { Color } from "../colors/types";
+import { useElementSize } from "./hooks/useElementSize";
+import { SketchyBorderOverlay } from "./SketchyBorderOverlay";
 
 type SketchyBackgroundProps = React.PropsWithChildren<{
     className?: string;

@@ -1,11 +1,11 @@
 "use client";
 
 import { useChatStore } from "@/app/design/chatStore";
-import { UIMessage } from "ai";
+import { ArktUIMessage } from "@/lib/ai/aiTypes";
 import { useEffect, useRef } from "react";
 
 export function useAssistantMirroring(
-  messages: Array<UIMessage> | undefined,
+  messages: Array<ArktUIMessage> | undefined,
   assistantChatId: string | null,
   assistantMsgId: string | null
 ) {

@@ -2,15 +2,17 @@ import { ArktEdge } from "../edges/ArktEdge/type";
 import { ArktNode } from "../nodes/arkt/types";
 import { TemplateData } from "../templates/types";
 import { loadEncryptedAIKey } from "@/lib/ai/aiKey";
+import { DEFAULT_PATH_ID } from "../yjs/constants";
 
-export function prepareRequestData(
-    rootId: string,
+type PrepareRequestDataParams = {
+    rootId?: string,
     mentions: Array<{ id: string; label: string }>,
     tag: string,
     nodes: ArktNode[],
     edges: ArktEdge[],
     nodeTemplates: TemplateData[]
-) {
+}
+export function prepareRequestData({ rootId = DEFAULT_PATH_ID, mentions, tag, nodes, edges, nodeTemplates }: PrepareRequestDataParams) {
     const encryptedKey = loadEncryptedAIKey();
 
     const templates = nodeTemplates.map<MinimalTemplate>(template => {

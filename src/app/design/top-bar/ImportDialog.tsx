@@ -105,7 +105,12 @@ export function ImportDialog() {
         <div className="grid gap-4">
           <input ref={fileInputRef} type="file" accept="application/json" onChange={onFileChange} className="hidden" />
           {!encryptDetected && (
-            <Button type="button" onClick={() => fileInputRef.current?.click()}>Select file…</Button>
+            <Button
+              strokeColor={{ family: "base", indicative: "high" }}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Select file…
+            </Button>
           )}
           {encryptDetected && (
             <form onSubmit={onSubmitDecrypt} className="grid gap-3">
@@ -125,7 +130,7 @@ export function ImportDialog() {
         {!encryptDetected && (
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" type="button" onClick={() => { setIsOpen(false); reset(); }}>Close</Button>
+              <Button variant="ghost" type="button" onClick={() => { setIsOpen(false); reset(); }}>Close</Button>
             </DialogClose>
           </DialogFooter>
         )}

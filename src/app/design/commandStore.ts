@@ -11,7 +11,7 @@ type OpenCreateTemplateData = {
 };
 
 type Command<T = unknown> = {
-  status: "pending" | "inactive";
+  status: "pending" | "inactive" | "active";
   data?: T;
 };
 
@@ -40,7 +40,9 @@ export type CommandTypes =
   "open-export-dialog" |
   "open-import-dialog" |
   "open-command-palette" |
-  "open-collab-dialog";
+  "open-collab-dialog" |
+  "open-ask-ai" |
+  "help-lines-toggle";
 
 // Create a mapped type for better type safety
 type CommandMap = {
@@ -56,6 +58,8 @@ type CommandMap = {
   "open-import-dialog": Command;
   "open-command-palette": Command;
   "open-collab-dialog": Command;
+  "open-ask-ai": Command;
+  "help-lines-toggle": Command;
 };
 
 interface AppState {
@@ -63,6 +67,7 @@ interface AppState {
   setConnectionLinePath: (connectionLinePath: XYPosition[]) => void;
   latestCommand: CommandTypes | null;
   commandMap: CommandMap;
+  toggleCommand: (command: CommandTypes) => void;
   activateCommand: <K extends CommandTypes>(command: K, data?: CommandMap[K]['data']) => void;
   removeCommand: (command: CommandTypes) => void;
 }
@@ -83,7 +88,10 @@ export const useCommandStore = create<AppState>((set) => ({
     "open-import-dialog": { status: "inactive" },
     "open-add-integration-dialog": { status: "inactive" },
     "open-command-palette": { status: "inactive" },
-    "open-collab-dialog": { status: "inactive" }
+    "open-collab-dialog": { status: "inactive" },
+    "reset-diagram": { status: "inactive" },
+    "open-ask-ai": { status: "inactive" },
+    "help-lines-toggle": { status: "inactive" }
   },
 
   activateCommand: (command, data) =>
@@ -93,6 +101,14 @@ export const useCommandStore = create<AppState>((set) => ({
       commandMap: {
         ...state.commandMap,
         [command]: { status: "pending", data },
+      },
+    })),
+
+  toggleCommand: (command) =>
+    set((state) => ({
+      commandMap: {
+        ...state.commandMap,
+        [command]: { status: state.commandMap[command].status === "active" ? "inactive" : "active", data: undefined },
       },
     })),
 

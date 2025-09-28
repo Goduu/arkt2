@@ -105,7 +105,6 @@ export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.El
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           spellCheck={false}
-          onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
           onKeyDown={(e) => {

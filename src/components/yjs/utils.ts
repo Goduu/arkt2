@@ -19,10 +19,6 @@ export function stringToColor(str: string) {
     return colour.substring(0, 7);
   }
 
-  export const areChangesFromSameDiagram = (changes: NodeChange<ArktNode>[], diagramId: string) => {
-    return changes.every((change) => change.item.data.diagramId === diagramId);
-  }
-  
   export const transactWithUserId = (fn: () => void, userId: string) => {
     ydoc.transact(() => {
       fn();

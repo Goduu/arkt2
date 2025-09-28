@@ -379,7 +379,7 @@ const getStepPoints = ({
     points,
     initialStepPoints,
 }: {
-    points: (ControlPointData | XYPosition)[];
+    points: ControlPointData[];
     initialStepPoints: ControlPointData[];
 }) => {
     return points.length === 2 ? initialStepPoints : points;
@@ -390,7 +390,7 @@ export function getStepPath({
     points,
     initialStepPoints,
 }: {
-    points: (ControlPointData | XYPosition)[];
+    points: ControlPointData[];
     initialStepPoints: ControlPointData[];
 }) {
     const finalPoints = getStepPoints({ points, initialStepPoints });
@@ -429,14 +429,14 @@ export function getStepControlPoints({
     points,
     initialStepPoints,
 }: {
-    points: (ControlPointData | XYPosition)[];
+    points: ControlPointData[];
     initialStepPoints: ControlPointData[];
 }) {
-    const controlPoints = [] as ControlPointData[];
+    const controlPoints: ControlPointData[] = [];
     const finalPoints = getStepPoints({
         points,
         initialStepPoints,
-    }) as ControlPointData[];
+    });
 
     /**
      * We map through the points to create control points for step edge. Based off of the x,y coordinates of these

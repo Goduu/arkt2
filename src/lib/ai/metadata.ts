@@ -1,4 +1,4 @@
-import type { MessageMetadata } from "@/lib/aiTypes";
+import type { MessageMetadata } from "@/lib/ai/aiTypes";
 import { TextStreamPart, ToolSet } from "ai";
 
 export function mapStreamPartToMetadata(part: TextStreamPart<ToolSet>, model: string): MessageMetadata | undefined {

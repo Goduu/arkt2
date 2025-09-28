@@ -6,6 +6,7 @@ import { Trash2, Pencil } from "lucide-react";
 import { Input } from "../../ui/input";
 import { DetailsBar } from "./DetailsBar";
 import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
+import { useChatStore } from "@/app/design/chatStore";
 
 function TypingDots(): React.JSX.Element {
   return (
@@ -18,11 +19,11 @@ function TypingDots(): React.JSX.Element {
 }
 
 export function ChatHistoryUI() {
-  const chats = useAppStore((s) => s.aiChats);
-  const currentChatId = useAppStore((s) => s.currentChatId);
-  const setCurrentChat = useAppStore((s) => s.setCurrentChat);
-  const deleteChat = useAppStore((s) => s.deleteChat);
-  const renameChat = useAppStore((s) => s.renameChat);
+  const chats = useChatStore((s) => s.aiChats);
+  const currentChatId = useChatStore((s) => s.currentChatId);
+  const setCurrentChat = useChatStore((s) => s.setCurrentChat);
+  const deleteChat = useChatStore((s) => s.deleteChat);
+  const renameChat = useChatStore((s) => s.renameChat);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState<string>("");
 
@@ -50,36 +51,36 @@ export function ChatHistoryUI() {
           <div className="text-sm font-medium">Chats</div>
         </div>
         <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-          {chatList.map((c) => (
+          {chatList.map((chat) => (
             <SketchyPanel
-              key={c.id}
-              strokeWidth={active?.id === c.id ? 3 : 2}
-              strokeColor={active?.id === c.id ? { family: "slate", shade: "500" } : undefined}
+              key={chat.id}
+              strokeWidth={active?.id === chat.id ? 3 : 2}
+              strokeColor={active?.id === chat.id ? { family: "slate", indicative: "middle" } : undefined}
               hoverEffect
             >
-              <div data-testid="chat-item" className={`group rounded-md text-sm cursor-pointer`} onClick={() => setCurrentChat(c.id)}>
-                {renamingId === c.id ? (
+              <div data-testid="chat-item" className={`group rounded-md text-sm cursor-pointer`} onClick={() => setCurrentChat(chat.id)}>
+                {renamingId === chat.id ? (
                   <Input
                     className="w-full px-1 py-px bg-transparent"
                     value={renameValue}
                     onChange={(e) => setRenameValue(e.target.value)}
-                    onBlur={() => { renameChat(c.id, renameValue.trim() || c.title); setRenamingId(null); }}
+                    onBlur={() => { renameChat(chat.id, renameValue.trim() || chat.title); setRenamingId(null); }}
                     onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setRenamingId(null); }}
                   />
                 ) : (
                   <div className="flex items-center justify-between">
-                    <div className="truncate" title={c.title}>{c.title}</div>
+                    <div className="truncate" title={chat.title}>{chat.title}</div>
                     <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
-                      <Button data-testid="chat-rename" size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); setRenamingId(c.id); setRenameValue(c.title); }}>
+                      <Button data-testid="chat-rename" size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); setRenamingId(chat.id); setRenameValue(chat.title); }}>
                         <Pencil className="h-3 w-3" />
                       </Button>
-                      <Button data-testid="chat-delete" size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); deleteChat(c.id); }}>
+                      <Button data-testid="chat-delete" size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}>
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>
                 )}
-                <div className="text-[10px] text-muted-foreground">{new Date(c.updatedAt).toLocaleString()}</div>
+                <div className="text-[10px] text-muted-foreground">{new Date(chat.updatedAt).toLocaleString()}</div>
               </div>
             </SketchyPanel>
           ))}

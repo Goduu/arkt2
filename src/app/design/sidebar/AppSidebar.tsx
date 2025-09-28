@@ -31,6 +31,7 @@ import SidenavTemplatesList from "./SidenavTemplatesList"
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced"
 import { useNewDraftNode } from "@/components/nodes/arkt/utils"
 import { ModeToggle } from "@/components/ModeToggle"
+import { ResetDialog } from "./ResetDialog"
 
 export function AppSidebar() {
     // const { nodeTemplates, setPendingSpawn, setPendingCommand } = useAppStore()
@@ -193,8 +194,8 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupLabel>Templates</SidebarGroupLabel>
                     <SidebarGroupAction title="Create Template" onClick={() => activateCommand("open-create-template")}>
-                                <Plus /> <span className="sr-only">Create Template</span>
-                            </SidebarGroupAction>
+                        <Plus /> <span className="sr-only">Create Template</span>
+                    </SidebarGroupAction>
                     <SidebarGroupContent>
                         <SidebarMenuItem className="group-data-[collapsible=icon]:block hidden">
                             <SidebarMenuButton tooltip="Create Template" onClick={() => activateCommand("open-create-template")}>
@@ -210,6 +211,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
+                <ResetDialog />
                 <ModeToggle className="-ml-1" />
                 <SidebarTrigger className="opacity-50 hover:opacity-100" />
             </SidebarFooter>

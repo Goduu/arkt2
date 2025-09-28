@@ -6,7 +6,7 @@ import { cn } from "../../lib/utils";
 import { PanelTopClose, PanelTopOpen } from "lucide-react";
 import { useChatStore as useChatStore } from "@/app/design/chatStore";
 import { hasStoredAIKey } from "@/lib/ai/aiKey";
-import { DefaultChatTransport, UIMessage } from "ai";
+import { DefaultChatTransport } from "ai";
 import { useChat } from "@ai-sdk/react";
 import { useAssistantMirroring } from "./hooks/useAssistantMirroring";
 import { useMessageMetadata } from "./hooks/useMessageMetadata";
@@ -20,8 +20,6 @@ import { useMentionOptions } from "./hooks/useMentionOptions";
 import { ChatTag } from "./types";
 import { prepareRequestData } from "./prepareRequestData";
 import { saveInteractionMetrics } from "@/lib/ai/usageHistory";
-import { useUserDataStateSynced } from "../yjs/useUserStateSynced";
-import { DEFAULT_PATH_ID } from "../yjs/constants";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
 import { useTheme } from "next-themes";
 import { useMounted } from "@/app/useMounted";
@@ -30,6 +28,9 @@ import { ArktNode } from "../nodes/arkt/types";
 import ydoc from "../yjs/ydoc";
 import { NodeUnion } from "../nodes/types";
 import { ArktEdge } from "../edges/ArktEdge/type";
+import useUserDataStateSynced from "../yjs/useUserStateSynced";
+import { ArktUIMessage } from "@/lib/ai/aiTypes";
+import { useCommandStore } from "@/app/design/commandStore";
 
 type Message = ChatMessageItem
 
@@ -49,11 +50,13 @@ export function ChatBubble() {
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [mentions, setMentions] = useState<MentionOption[]>([]);
     const inputRef = useRef<HTMLDivElement | null>(null);
-
+    const { currentUserData } = useUserDataStateSynced();
+    const openAskAiCommand = useCommandStore((s) => s.commandMap["open-ask-ai"]);
+    const removeCommand = useCommandStore((s) => s.removeCommand);
+    
     // App state and chat actions
     const aiChats = useChatStore((s) => s.aiChats);
     const currentChatId = useChatStore((s) => s.currentChatId);
-    const rootId = DEFAULT_PATH_ID
     const [templates] = useTemplatesStateSynced();
     const addChatMessage = useChatStore((s) => s.addChatMessage);
     const setChatMessageMeta = useChatStore((s) => s.setChatMessageMeta);
@@ -63,12 +66,19 @@ export function ChatBubble() {
 
     // AI transport and streaming
     const transport = useMemo(() => new DefaultChatTransport({ api: "/api/ai-create" }), []);
-    const { messages: sdkMessages, sendMessage } = useChat<UIMessage>({ transport });
+    const { messages: sdkMessages, sendMessage } = useChat<ArktUIMessage>({ transport });
     const assistantMsgIdRef = useRef<string | null>(null);
     const assistantChatIdRef = useRef<string | null>(null);
     const { usage, modelUsed, toolEvents, startedAt, endedAt, setEndedAt, resetMetadata } = useMessageMetadata(sdkMessages);
     // Streaming state handled by useAiCreateStreaming
     const lastAppendedForMsgIdRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        if (openAskAiCommand.status === "pending") {
+            setIsOpen(true);
+            removeCommand("open-ask-ai");
+        }
+    }, [openAskAiCommand]);
 
     // Derived messages for UI from store
     const derivedMessages: Message[] = useMemo(() => {
@@ -103,10 +113,16 @@ export function ChatBubble() {
                 }
             }
 
-            const activeId = currentDiagramId
-            const payloadRootId = activeId || rootId;
             const arktNodes = nodes.filter((node) => node.type === "arktNode") as ArktNode[];
-            const requestData = prepareRequestData(payloadRootId, mentions, selectedTag, arktNodes, edges, templates);
+            const rootId = currentUserData?.currentDiagramId;
+            const requestData = prepareRequestData({
+                rootId,
+                mentions,
+                tag: selectedTag,
+                nodes: arktNodes,
+                edges,
+                nodeTemplates: templates
+            });
 
             const finalChatId = useChatStore.getState().currentChatId || chatId;
             const assistantInitialContent = ((selectedTag || '').toLowerCase() === 'create') ? 'processing your request' : '';

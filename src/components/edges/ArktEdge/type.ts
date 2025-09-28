@@ -18,7 +18,8 @@ export type ControlPointProps = {
 export type ControlPointData = XYPosition & {
     id: string;
     active?: boolean;
-    prev?: XYPosition;
+    prev?: XYPosition | string;
+    direction?: "horizontal" | "vertical";
 };
 
 export type ArktEdgeData = {

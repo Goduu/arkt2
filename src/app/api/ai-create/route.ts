@@ -5,7 +5,7 @@ import { handleCreate } from "./handleCreate";
 import { handleAsk } from "./handleAsk";
 import { extractGithubToken } from "@/lib/http/cookies";
 import { MinimalTemplate } from "@/components/chat/prepareRequestData";
-import { UIMessage } from "ai";
+import { ArktUIMessage } from "@/lib/ai/aiTypes";
 
 export async function POST(req: Request): Promise<Response> {
     try {
@@ -40,7 +40,7 @@ export async function POST(req: Request): Promise<Response> {
         }
 
         // Decide input mode: AI SDK UI messages or custom single prompt with context
-        const uiMessages: UIMessage[] = Array.isArray(body?.messages) ? body.messages : [];
+        const uiMessages: ArktUIMessage[] = Array.isArray(body?.messages) ? body.messages : [];
         // Build messages for the model
         if (tag === "Create") {
             return handleCreate(uiMessages, userPrompt, contextJson, provider);

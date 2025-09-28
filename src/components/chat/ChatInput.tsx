@@ -47,7 +47,7 @@ export const ChatInput = (
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                fillColor={{ family: "gray", shade: "300" }}
+                                fillColor={{ family: "gray", indicative: "low" }}
                                 className="group pr-0 flex items-center justify-between gap-1 text-xs font-medium text-gray-700 capitalize">
                                 {selectedTag}
                                 <RefreshCcwDot
@@ -59,7 +59,7 @@ export const ChatInput = (
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    fillColor={{ family: "lime", shade: "300" }}
+                                    fillColor={{ family: "lime", indicative: "low" }}
                                     onClick={() => handleClick("Ask")}
                                     className="h-full w-full text-xs font-medium text-gray-700 hover:text-gray-900"
                                 >
@@ -69,7 +69,7 @@ export const ChatInput = (
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    fillColor={{ family: "purple", shade: "300" }}
+                                    fillColor={{ family: "purple", indicative: "low" }}
                                     onClick={() => handleClick("Create")}
                                     className="h-full w-full text-xs font-medium text-gray-700 hover:text-gray-900"
                                 >

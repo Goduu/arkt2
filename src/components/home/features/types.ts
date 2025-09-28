@@ -1,4 +1,4 @@
-import { TailwindFamily } from "@/lib/utils";
+import { TailwindFamily } from "@/components/colors/types";
 
 export type Feature = {
     id: string;

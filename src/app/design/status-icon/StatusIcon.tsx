@@ -1,5 +1,5 @@
 import { useCommandStore } from "../commandStore";
-import { Blocks, Layers, LineSquiggle, Link, Text, Type } from "lucide-react";
+import { Blocks, Layers, LineSquiggle, Link, Type } from "lucide-react";
 import { StatusTooltip } from "./StatusTooltip";
 import { Gamepad } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ export const StatusIcon = () => {
                 <StatusTooltip title={`Open command palette (${metaKey}+k)`} className="z-50 cursor-pointer opacity-50 hover:opacity-100 transition-opacity" >
                     <Button
                         size="icon"
+                        variant="ghost"
                         aria-label="Open command palette"
                         className="inline-flex items-center"
                         onClick={() => activateCommand("open-command-palette")}>

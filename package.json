@@ -5,7 +5,17 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "type-check": "tsc --noEmit",
+    "check": "pnpm run type-check && pnpm run lint",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:install": "playwright install --with-deps",
+    "test:e2e:slowmo": "SLOWMO=1000 pnpm test:e2e"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.32",

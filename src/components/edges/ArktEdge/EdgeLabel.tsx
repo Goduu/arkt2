@@ -86,10 +86,6 @@ export const EdgeLabel = (
                             placeholder="+label"
                             fillColor={fillColor}
                             strokeColor={strokeColor}
-                            style={{ fontSize: fontSize }}
-                            onClick={(e) => e.stopPropagation()}
-                            onMouseDown={(e) => { if (isEditing) e.stopPropagation(); }}
-                            onPointerDown={(e) => { if (isEditing) e.stopPropagation(); }}
                             value={draft}
                             fontSize={fontSize}
                             onChange={(value) => {
@@ -102,7 +98,6 @@ export const EdgeLabel = (
                                     onBlur()
                                 }
                             }}
-                            spellCheck={false}
                             data-testid="text-inline-input"
                         />
                     )}

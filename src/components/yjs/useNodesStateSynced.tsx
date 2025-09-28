@@ -48,6 +48,34 @@ function useNodesStateSynced(): [
     []
   );
 
+  const getChildrenNodes = (nodeId: string, visited?: Set<string>, allNodesParam?: NodeUnion[]): NodeUnion[] => {
+    const allNodes = allNodesParam ?? Array.from(nodesMap.values());
+    const seen = visited ?? new Set<string>();
+
+    if (seen.has(nodeId)) {
+      return [];
+    }
+    seen.add(nodeId);
+
+    const directChildren = allNodes.filter(
+      (node) => node.id !== nodeId && node.data.pathId.includes(nodeId)
+    );
+
+    const descendants: NodeUnion[] = [];
+
+    for (const child of directChildren) {
+      if (!seen.has(child.id)) {
+        descendants.push(child);
+        const childDescendants = getChildrenNodes(child.id, seen, allNodes);
+        if (childDescendants.length > 0) {
+          descendants.push(...childDescendants);
+        }
+      }
+    }
+
+    return descendants;
+  }
+
   // The onNodesChange callback updates nodesMap.
   // When the changes are applied to the map, the observer will be triggered and updates the nodes state.
   const onNodesChanges: OnNodesChange<NodeUnion> = useCallback((changes) => {
@@ -59,7 +87,7 @@ function useNodesStateSynced(): [
         nodesMap.set(change.item.id, change.item);
       } else if (change.type === 'remove' && nodesMap.has(change.id)) {
         const deletedNode = nodesMap.get(change.id)!;
-        const deletedChildrenNodes = Array.from(nodesMap.values()).filter(node => node.data.pathId.includes(change.id));
+        const deletedChildrenNodes = getChildrenNodes(change.id);
         const allDeletedNodes = [...deletedChildrenNodes, deletedNode];
         const connectedEdges = getConnectedEdges(
           allDeletedNodes,

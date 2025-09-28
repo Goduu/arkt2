@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, type MutableRefObject } from "react";
-import { UIMessage } from "ai";
 import useNodesStateSynced from "../yjs/useNodesStateSynced";
 import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
@@ -15,6 +14,7 @@ import { useNewDraftNode } from "../nodes/arkt/utils";
 import type { TemplateData } from "../templates/types";
 import type { CreateDiagramOutput } from "@/lib/ai/tools/createDiagramTool";
 import { useCommandStore } from "@/app/design/commandStore";
+import { ArktUIMessage } from "@/lib/ai/aiTypes";
 
 type ToolEvent = { name?: string; atMs?: number; result?: unknown };
 
@@ -45,7 +45,7 @@ function isCreateDiagramOutput(value: unknown): value is CreateDiagramOutput {
 }
 
 export function useAiCreateStreaming(params: {
-    sdkMessages: Array<UIMessage> | undefined;
+    sdkMessages: Array<ArktUIMessage> | undefined;
     toolEvents: ToolEvent[] | undefined;
     endedAt: number | null | undefined;
     assistantChatIdRef: MutableRefObject<string | null>;

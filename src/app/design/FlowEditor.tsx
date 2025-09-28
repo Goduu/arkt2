@@ -13,9 +13,8 @@ import {
   OnNodesDelete,
   OnEdgesDelete,
   useReactFlow,
-  OnNodesChange,
-  applyNodeChanges,
-  OnSelectionChangeFunc,
+  OnNodesChange, OnSelectionChangeFunc,
+  applyNodeChanges
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -33,7 +32,6 @@ import useCopyPaste from '../hooks/useCopyPast';
 import { useHelperLines } from '../../components/helper-lines/useHelperLines';
 import { FreehandNodeComponent } from '../../components/nodes/freehand/FreehandNode';
 import { Freehand } from '../../components/nodes/freehand/Freehand';
-import { Button } from '@/components/ui/button';
 import { NodeUnion } from '../../components/nodes/types';
 import useUserDataStateSynced from '../../components/yjs/useUserStateSynced';
 import { EditableEdgeComponent } from '../../components/edges/ArktEdge';
@@ -48,6 +46,8 @@ import { ChatBubble } from '@/components/chat/ChatBubble';
 import { IntegrationNodeComponent } from '@/components/nodes/arkt/integrations/IntegrationNode';
 import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
+import { Grid2X2Check } from 'lucide-react';
+import { HelpLinesToggle } from './status-icon/HelpLinesToggle';
 
 export const nodeTypes = {
   arktNode: ArktNodeComponent,
@@ -63,9 +63,6 @@ export const edgeTypes = {
 const fitViewOptions = { padding: 0.4 };
 
 export default function FlowEditor() {
-  // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  // const [edges, setEdges, onEdgesChange] =
-  //   useEdgesState<ArktEdge>(initialEdges);
   const { getNodes } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
   const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
@@ -81,6 +78,8 @@ export default function FlowEditor() {
   const { draggingNodesRef, mouseMoveHandler, dropHandler } = useDraggableNode();
   const searchParams = useSearchParams();
   const prevCollabRef = useRef<string | null>(null);
+  const helpLinesStatus = useCommandStore((s) => s.commandMap["help-lines-toggle"].status);
+  const showHelpLines = helpLinesStatus === "active"
 
   useCopyPaste();
 
@@ -165,18 +164,23 @@ export default function FlowEditor() {
 
   const handleNodesChange: OnNodesChange<NodeUnion> = useCallback(
     (changes) => {
-      setNodes((nodes) => {
-        const updatedChanges = updateHelperLines(changes, nodes);
-        onNodesChange(updatedChanges);
-        return applyNodeChanges(updatedChanges, nodes);
-      });
+      const prev = getNodes();
+      if (!showHelpLines) {
+        onNodesChange(changes);
+        return
+      }
+      const updatedChanges = updateHelperLines(changes, prev);
+      applyNodeChanges(updatedChanges, nodes);
+      onNodesChange(updatedChanges);
     },
-    [setNodes, updateHelperLines],
+    [updateHelperLines],
   );
 
   const onNodeDragStop = useCallback(() => {
+    if (!showHelpLines) return
+
     rebuildIndex(getNodes());
-  }, [getNodes, rebuildIndex]);
+  }, [getNodes, rebuildIndex, showHelpLines]);
 
   const onSelectionDragStart: SelectionDragHandler = useCallback(() => {
     // 👇 make dragging a selection undoable
@@ -225,26 +229,22 @@ export default function FlowEditor() {
           selectNodesOnDrag={!isDrawing}
           fitView
           fitViewOptions={fitViewOptions}
+          snapToGrid={showHelpLines}
           onClick={draggingNodesRef.current.length > 0 ? dropHandler : undefined}
         >
 
           {isDrawing && <Freehand setNodes={setNodes} setIsDrawing={setIsDrawing} />}
           <Background />
-          <Panel position="top-left">
-            <Button onClick={() => {
-              setNodes([]);
-              setEdges([]);
-            }}>
-              Reset
-            </Button>
+          <Panel position="bottom-left" className='flex flex-col gap-2 justify-start'>
+            <HelpLinesToggle />
+            <StatusIcon />
           </Panel>
-          <HelperLines />
+          {showHelpLines &&
+            <HelperLines />
+          }
           <MiniMap bgColor='transparent' maskColor='transparent' maskStrokeColor='#888' />
           <ChatBubble />
           <Cursors cursors={cursors} />
-          <div className='absolute bottom-2 left-2'>
-            <StatusIcon />
-          </div>
         </ReactFlow>
         <EdgeControls />
         <NodeControls />

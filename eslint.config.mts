@@ -20,8 +20,10 @@ export default defineConfig([
     "**/playwright-report/**",
     "**/test-results/**",
   ]),
-  { rules: { 
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-uses-react": "off",
-   } },
+  {
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off",
+    }
+  },
 ]);

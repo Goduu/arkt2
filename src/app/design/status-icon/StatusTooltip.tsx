@@ -1,4 +1,5 @@
 import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReactNode } from "react";
 
@@ -14,12 +15,12 @@ export const StatusTooltip = ({ title, className, shortcut, onClick, children }:
     return (
         <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-                <SketchyPanel className={className} onClick={onClick}>
+                <Button onClick={onClick} size="icon">
                     {children}
                     <div className="absolute bottom-0 right-0 text-[5px]">
                         {shortcut}
                     </div>
-                </SketchyPanel>
+                </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
                 {title}
