@@ -46,7 +46,6 @@ import { ChatBubble } from '@/components/chat/ChatBubble';
 import { IntegrationNodeComponent } from '@/components/nodes/arkt/integrations/IntegrationNode';
 import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
-import { Grid2X2Check } from 'lucide-react';
 import { HelpLinesToggle } from './status-icon/HelpLinesToggle';
 
 export const nodeTypes = {
