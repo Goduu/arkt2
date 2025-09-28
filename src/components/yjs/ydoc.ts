@@ -13,7 +13,7 @@ const ydoc = new Doc();
 // Head over to https://github.com/yjs/y-websocket-server for more information
 // on how to set up your own signaling server.
 
-const signalingServerUrl = (process.env.NEXT_PUBLIC_YJS_SIGNALING as string | undefined) || 'ws://localhost:4444'
+const signalingServerUrl = process.env.NEXT_PUBLIC_YJS_SIGNALING ?? 'ws://localhost:4444'
 
 // Function to get room name from URL or use default
 function getRoomName(): string {
@@ -28,6 +28,20 @@ function getRoomName(): string {
 // Lazily create provider on the client to avoid SSR importing WebRTC
 let provider: WebrtcProvider | null = null;
 let currentRoomName: string | null = null;
+let idbPersistence: IndexeddbPersistence | null = null;
+
+function setupPersistence(roomName: string) {
+    if (idbPersistence) {
+        try {
+            idbPersistence.destroy();
+        } catch {
+            // ignore
+        }
+        idbPersistence = null;
+    }
+
+    idbPersistence = new IndexeddbPersistence(roomName, ydoc);
+}
 
 export async function getProvider() {
     if (typeof window === 'undefined') return null;
@@ -47,7 +61,7 @@ export async function getProvider() {
     }
 
     const { WebrtcProvider } = await import('y-webrtc');
-    new IndexeddbPersistence(roomName, ydoc);
+    setupPersistence(roomName);
 
     if(roomName === 'local') {
         currentRoomName = roomName;
@@ -60,7 +74,7 @@ export async function getProvider() {
         {
             signaling: [signalingServerUrl],
             maxConns: 5,
-            // filterBcConns: true,
+            filterBcConns: true,
             peerOpts: {
                 config: {
                     iceServers: [
@@ -84,6 +98,9 @@ export async function getProvider() {
         });
         provider.on('peers', (event: unknown) => {
             console.info('WebRTC peers:', event);
+        });
+        provider.on('synced', (event: unknown) => {
+            console.info('WebRTC sync:', event);
         });
     } catch {
         console.error('Error initializing WebRTC provider');
@@ -112,6 +129,14 @@ export function disconnectProvider() {
             provider.disconnect();
             provider.destroy();
             provider = null;
+        }
+        if (idbPersistence) {
+            try {
+                idbPersistence.destroy();
+            } catch {
+                // ignore
+            }
+            idbPersistence = null;
         }
     } catch {
         console.error('Error disconnecting provider')

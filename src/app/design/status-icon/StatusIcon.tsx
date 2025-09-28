@@ -48,15 +48,13 @@ export const StatusIcon = () => {
             )
         default:
             return (
-                <StatusTooltip title={`Open command palette (${metaKey}+k)`} className="z-50 cursor-pointer opacity-50 hover:opacity-100 transition-opacity" >
-                    <Button
-                        size="icon"
-                        variant="ghost"
-                        aria-label="Open command palette"
-                        className="inline-flex items-center"
-                        onClick={() => activateCommand("open-command-palette")}>
-                        <Gamepad />
-                    </Button>
+                <StatusTooltip
+                    title={`Open command palette (${metaKey}+k)`}
+                    aria-label="Open command palette"
+                    className="z-50 cursor-pointer opacity-50 hover:opacity-100 transition-opacity"
+                    onClick={() => activateCommand("open-command-palette")}
+                >
+                    <Gamepad />
                 </StatusTooltip>
             )
     }
