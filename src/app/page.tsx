@@ -13,6 +13,9 @@ import { useTheme } from "next-themes";
 import { ModeToggle } from "@/components/ModeToggle";
 import { useMounted } from "./useMounted";
 import Dot from "@/components/ui/dot";
+import { HomeExample } from "@/components/home/HomeExample";
+import { ReactFlowProvider } from "@xyflow/react";
+import GithubFileDialog from "@/components/controls/node-controls/GithubFileDialog";
 
 export default function HomeLanding(): JSX.Element {
     const { resolvedTheme, theme } = useTheme();
@@ -54,9 +57,11 @@ export default function HomeLanding(): JSX.Element {
                             </SketchyPanel>
                         </div>
                         <div className="relative">
-                            <SketchyPanel className="aspect-[16/10] w-full">
-                                <div className="flex h-full items-center justify-center px-6 py-7">
-                                    <Image src="/screen.png" alt="ArkT" width={1000} height={1000} className=" w-full" />
+                            <SketchyPanel className="w-full">
+                                <div className="flex h-full items-center justify-center p-2">
+                                    <ReactFlowProvider>
+                                        <HomeExample />
+                                    </ReactFlowProvider>
                                 </div>
                             </SketchyPanel>
                         </div>
@@ -99,6 +104,7 @@ export default function HomeLanding(): JSX.Element {
                 </section>
                 <Footer />
             </div >
+            <GithubFileDialog />
         </Dot>
 
     );

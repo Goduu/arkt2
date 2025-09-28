@@ -169,9 +169,10 @@ export function useAiCreateStreaming(params: {
                     id: `${Date.now()}-${sourceId}-${targetId}`,
                     source: sourceId,
                     target: targetId,
-                    type: "editable-edge",
+                    type: "arktEdge",
                     data: {
                         algorithm: DEFAULT_ALGORITHM,
+                        direction: "none",
                         pathId: pathId,
                         strokeColor: DEFAULT_STROKE_COLOR,
                         strokeWidth: 2,

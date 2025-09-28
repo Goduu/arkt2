@@ -24,12 +24,18 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
     }
   }
 
+  const handleDoubleClick = () => {
+    if (!props.data.url) return;
+    activateCommand("open-integration-dialog", { type: props.data.type, url: props.data.url });
+  }
+
   const textClass = getTailwindTextClass(DEFAULT_STROKE_COLOR, resolvedTheme);
 
   return (
     <div
       className="group"
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
     >
       <NodeResizer
         isVisible={props.selected}

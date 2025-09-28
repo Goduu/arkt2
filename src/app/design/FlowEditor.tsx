@@ -31,7 +31,7 @@ import useEdgesStateSynced from '../../components/yjs/useEdgesStateSynced';
 import useUndoRedo from '../hooks/useUndoRedo';
 import useCopyPaste from '../hooks/useCopyPast';
 import { useHelperLines } from '../../components/helper-lines/useHelperLines';
-import { FreehandNode } from '../../components/nodes/freehand/FreehandNode';
+import { FreehandNodeComponent } from '../../components/nodes/freehand/FreehandNode';
 import { Freehand } from '../../components/nodes/freehand/Freehand';
 import { Button } from '@/components/ui/button';
 import { NodeUnion } from '../../components/nodes/types';
@@ -49,15 +49,15 @@ import { IntegrationNodeComponent } from '@/components/nodes/arkt/integrations/I
 import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
 
-const nodeTypes = {
+export const nodeTypes = {
   arktNode: ArktNodeComponent,
-  freehand: FreehandNode,
+  freehand: FreehandNodeComponent,
   text: ArchTextNodeComponent,
   integration: IntegrationNodeComponent,
 };
 
 export const edgeTypes = {
-  'editable-edge': EditableEdgeComponent,
+  'arktEdge': EditableEdgeComponent,
 };
 
 const fitViewOptions = { padding: 0.4 };
@@ -130,7 +130,7 @@ export default function FlowEditor() {
       const edge: ArktEdge = {
         ...connection,
         id: `${Date.now()}-${connection.source}-${connection.target}`,
-        type: 'editable-edge',
+        type: 'arktEdge',
         selected: true,
         data: {
           algorithm: DEFAULT_ALGORITHM,
@@ -139,6 +139,7 @@ export default function FlowEditor() {
           strokeWidth: 2,
           fontSize: 12,
           labelFill: { family: "base", indicative: "low" },
+          direction: "none",
           points: connectionLinePath.map(
             (point, i) =>
             ({

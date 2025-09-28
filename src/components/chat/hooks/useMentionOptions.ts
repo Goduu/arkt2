@@ -1,15 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
 import { MentionOption } from "../chatHistory/types";
-import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
+import { NodeUnion } from "@/components/nodes/types";
+import ydoc from "@/components/yjs/ydoc";
 
-export function useMentionOptions(currentDiagramId: string | undefined): MentionOption[] {
-  const [nodes] = useNodesStateSynced();
-  return useMemo<MentionOption[]>(() => {
-   
-    return nodes.filter((node) => node.type === "arktNode" && !node.data.virtualOf).map((node) => ({ id: node.id, label: "label" in node.data ? node.data.label : "" }));
-  }, [currentDiagramId]);
+const nodesMap = ydoc.getMap<NodeUnion>("nodes");
+export function useMentionOptions(): MentionOption[] {
+  const nodes = Array.from(nodesMap.values()).filter((node) => node.type === "arktNode" && !node.data?.virtualOf)
+  const nodeOptions = nodes.map((node) => ({ id: node.id, label: "label" in node.data ? node.data.label : "" }));
+  return nodeOptions;
 }
 
 

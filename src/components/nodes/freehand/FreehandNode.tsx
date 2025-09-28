@@ -6,7 +6,7 @@ import type { FreehandNodeType, Points } from './types';
 import { colorToHex } from '@/components/colors/utils';
 import { useRotationHandler } from '../useRotationHandler';
 
-export function FreehandNode({
+export function FreehandNodeComponent({
     id,
     width,
     height,

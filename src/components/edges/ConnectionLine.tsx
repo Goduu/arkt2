@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { MarkerType, type ConnectionLineComponentProps } from '@xyflow/react';
 
 import { getPath } from './ArktEdge';
-import { Algorithm, COLORS, DEFAULT_ALGORITHM } from './ArktEdge/constants';
+import { Algorithm, DEFAULT_ALGORITHM } from './ArktEdge/constants';
 import { useCommandStore } from '@/app/design/commandStore';
 import { colorToHex, DEFAULT_STROKE_COLOR } from '../colors/utils';
 

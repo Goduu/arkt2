@@ -7,7 +7,6 @@ import { useReactFlow } from "@xyflow/react";
 import { NodeProps } from "@xyflow/system";
 import { ArktTextNode } from "./types";
 import { DEFAULT_FILL_COLOR, getTailwindTextClass } from "@/components/colors/utils";
-import SketchyShape from "@/components/sketchy/SketchyShape";
 import { AutoGrowInput } from "@/components/ui/AutoGrowInput";
 
 export type ArchTextNodeData = {
@@ -36,8 +35,6 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
     const textColor = props.data.strokeColor;
     const rotation = props.data.rotation ?? 0;
     const textClass = getTailwindTextClass(textColor)
-    const fontSize = Number(props.data.fontSize ?? 15);
-    const width = label.length * fontSize / 2;
 
 	// Toggle node draggability based on editing state
 	React.useEffect(() => {
@@ -65,21 +62,6 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                 });
             }}
         >
-            {/* Sketchy background behind content, sized to measured node bounds */}
-            {/* <div className="pointer-events-none absolute inset-0 -z-10">
-                <SketchyShape
-                    kind="rectangle"
-                    fillColor={fillColor}
-                    width={width}
-                    height={20}
-                    roughness={1.6}
-                    strokeWidth={0}
-                    fillStyle="zigzag"
-                    fillWeight={1}
-                    className="w-full h-full"
-                    seed={fillColor?.family.length ?? 0}
-                />
-            </div> */}
 
             {/* Rotated content only, keep handles unrotated for correct edge geometry */}
             <div
@@ -95,27 +77,13 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                         roughness={1.6}
                         fillColor={fillColor ?? DEFAULT_FILL_COLOR}
                         ref={inputRef}
+                        fontSize={props.data.fontSize}
                         className={cn(
                             "outline-none font-medium",
                             isEditing ? "w-auto nodrag nowheel pointer-events-auto" : "w-auto pointer-events-none",
                             textClass,
                         )}
                         hideStroke
-                        style={{ fontSize }}
-                        onClick={(e) => e.stopPropagation()}
-                        onMouseDown={(e) => { if (isEditing) e.stopPropagation(); }}
-                        onPointerDown={(e) => { if (isEditing) e.stopPropagation(); }}
-                        onDoubleClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                            e.stopPropagation();
-                            if (isEditing) {
-                                if (e.key === "Escape") {
-                                    e.preventDefault();
-                                    // setValue(beforeEditValueRef.current);
-                                    (e.target as HTMLInputElement).blur();
-                                }
-                            }
-                        }}
                         value={label}
                         onChange={(next) => {
                             if (typeof next !== "string") return
@@ -127,7 +95,6 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                             }
                         }}
                         readOnly={!isEditing}
-                        spellCheck={false}
                         data-testid="text-inline-input"
                     />
                 </div>

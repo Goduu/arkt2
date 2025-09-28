@@ -7,7 +7,7 @@ export type TemplateData = {
     description?: string;
     iconKey?: IconKey;
     strokeColor: Color;
-    fillColor: Color;
+    fillColor?: Color;
     updatedAt: number;
     lastUsedAt?: number;
 }

@@ -19,7 +19,6 @@ export function EdgeControls() {
   const selectedEdge = selectedEdges[0];
   const { strokeColor, algorithm, strokeWidth, fontSize, labelFill, direction } = selectedEdge?.data || {};
   const { onEdgeUpdate,onEdgeMarkerChange } = useEdgeControls(selectedEdge?.id ?? "");
-  console.log("direction", direction);
 
   if (!selectedEdges.length) return null;
 

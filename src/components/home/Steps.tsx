@@ -1,6 +1,9 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { SketchyPanel } from "../sketchy/SketchyPanel";
+import { HomeSketch } from "./HomeSketch";
+import { ReactFlowProvider } from "@xyflow/react";
+import { HomeGithub } from "./HomeGithub";
+import { HomeAskAi } from "./HomeAskAi";
 
 export function Steps() {
     return (
@@ -16,7 +19,13 @@ export function Steps() {
                                     <p className="text-xl opacity-80">{s.copy}</p>
                                 </div>
                                 <div className={cn("md:w-1/2 mt-2 w-full md:h-32", index % 2 === 0 ? "md:order-2" : "md:order-1")}>
-                                    <Image src={s.image} alt={s.title} width={500} height={100} />
+                                    {s.Component &&
+                                        <SketchyPanel className="w-full">
+                                            <ReactFlowProvider>
+                                                {s.Component}
+                                            </ReactFlowProvider>
+                                        </SketchyPanel>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -31,15 +40,15 @@ const steps = [{
     step: 1,
     title: "Sketch your system",
     copy: "Create nodes and edges. Organize by domains and go multi‑level.",
-    image: "/step1.png",
+    Component: <HomeSketch />,
 }, {
     step: 2,
     title: "Link your code",
     copy: "Connect GitHub to browse files alongside your diagrams.",
-    image: "/step2.png",
+    Component: <HomeGithub />,
 }, {
     step: 3,
     title: "Ask about impact",
     copy: "Use ASK AI to explore change effects across your system and get suggestions.",
-    image: "/step3.png",
+    Component: <HomeAskAi />
 }]

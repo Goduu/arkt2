@@ -66,8 +66,8 @@ export const useEdgeControls = (id: string) => {
     };
 
 
-    const isEditableEdge = (edge: Edge): edge is ArktEdge =>
-        edge.type === 'editable-edge';
+    const isArktEdge = (edge: Edge): edge is ArktEdge =>
+        edge.type === 'arktEdge';
 
 
     const onControlPointsChange = useCallback(
@@ -75,7 +75,7 @@ export const useEdgeControls = (id: string) => {
             setEdges((edges: ArktEdge[]) =>
                 edges.map((e) => {
                     if (e.id !== id) return e;
-                    if (!isEditableEdge(e)) return e;
+                    if (!isArktEdge(e)) return e;
 
                     if (!e.data) return e;
 

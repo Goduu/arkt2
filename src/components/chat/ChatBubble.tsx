@@ -53,8 +53,6 @@ export function ChatBubble() {
     // App state and chat actions
     const aiChats = useChatStore((s) => s.aiChats);
     const currentChatId = useChatStore((s) => s.currentChatId);
-    const { currentUserData } = useUserDataStateSynced();
-    const currentDiagramId = currentUserData?.currentDiagramId;
     const rootId = DEFAULT_PATH_ID
     const [templates] = useTemplatesStateSynced();
     const addChatMessage = useChatStore((s) => s.addChatMessage);
@@ -252,7 +250,7 @@ export function ChatBubble() {
         isStreaming
     }), [derivedMessages, isStreaming]);
 
-    const mentionOptions = useMentionOptions(currentDiagramId);
+    const mentionOptions = useMentionOptions();
 
     const handleSelectTag = (tag: ChatTag) => {
         // create a new chat if the tag is changed

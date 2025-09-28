@@ -51,7 +51,7 @@ export const AutoGrowInput: FC<AutoGrowInputProps> = ({
             const newWidth = Math.max(minWidth, Math.min(maxWidth, textWidth + 10)); // Add padding
             setInputWidth(newWidth);
         }
-    }, [value, minWidth, maxWidth]);
+    }, [value, minWidth, maxWidth, fontSize]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const newValue = event.target.value;

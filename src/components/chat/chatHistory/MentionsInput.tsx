@@ -113,14 +113,76 @@ export function MentionsInput({ mentions = [], placeholder = "Type @ to mention"
     function selectMention(mention: MentionOption): void {
         const editor = ref?.current;
         if (!editor) return;
-        const selection = window.getSelection();
-        const range = document.createRange();
-        const textContent = editor.innerText;
-        const beforeMention = textContent.slice(0, mentionStart);
-        const afterMention = textContent.slice(mentionStart + commandQuery.length + 1);
+        // Replace only the "@query" sequence with a mention token using DOM ranges
+        const atStartIndex = mentionStart;
+        const atEndIndex = mentionStart + commandQuery.length + 1; // include '@' + query
 
-        editor.innerHTML = "";
-        if (beforeMention) editor.appendChild(document.createTextNode(beforeMention));
+        // Helper: build linear segments across text nodes and existing mention tokens
+        type TextSegment = { type: "text"; node: Text; length: number } | { type: "mention"; el: HTMLElement; length: number };
+        const buildSegments = (root: HTMLElement): TextSegment[] => {
+            const segments: TextSegment[] = [];
+            const walk = (node: Node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const textNode = node as Text;
+                    const len = textNode.data.length;
+                    if (len > 0) segments.push({ type: "text", node: textNode, length: len });
+                    return;
+                }
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    const el = node as HTMLElement;
+                    if (el.classList.contains("mention")) {
+                        // Treat mention as a single segment; use its rendered text length for indexing
+                        const len = el.innerText.length;
+                        segments.push({ type: "mention", el, length: len });
+                        return;
+                    }
+                    for (let i = 0; i < el.childNodes.length; i++) {
+                        walk(el.childNodes[i]);
+                    }
+                }
+            };
+            walk(root);
+            return segments;
+        };
+
+        // Helper: create a collapsed Range at a given global text index, avoiding being inside mention elements
+        const rangeFromGlobalIndex = (root: HTMLElement, index: number): Range => {
+            const r = document.createRange();
+            const segments = buildSegments(root);
+            let acc = 0;
+            for (const seg of segments) {
+                const nextAcc = acc + seg.length;
+                if (index <= nextAcc) {
+                    if (seg.type === "text") {
+                        const offsetInNode = Math.max(0, index - acc);
+                        r.setStart(seg.node, offsetInNode);
+                        r.collapse(true);
+                        return r;
+                    }
+                    // seg is a mention; clamp to its boundary (before if index within or at start, else after)
+                    if (index <= acc) {
+                        r.setStartBefore(seg.el);
+                    } else {
+                        r.setStartAfter(seg.el);
+                    }
+                    r.collapse(true);
+                    return r;
+                }
+                acc = nextAcc;
+            }
+            // Fallback to end of editor
+            r.selectNodeContents(root);
+            r.collapse(false);
+            return r;
+        };
+
+        const startRange = rangeFromGlobalIndex(editor, atStartIndex);
+        const endRange = rangeFromGlobalIndex(editor, atEndIndex);
+
+        const replaceRange = document.createRange();
+        replaceRange.setStart(startRange.startContainer, startRange.startOffset);
+        replaceRange.setEnd(endRange.startContainer, endRange.startOffset);
+        replaceRange.deleteContents();
 
         const mentionSpan = document.createElement("span");
         mentionSpan.className = "mention";
@@ -133,15 +195,23 @@ export function MentionsInput({ mentions = [], placeholder = "Type @ to mention"
         mentionSpan.style.marginRight = "2px";
         mentionSpan.contentEditable = "false";
         mentionSpan.textContent = `@${mention.label}`;
-        editor.appendChild(mentionSpan);
-        editor.appendChild(document.createTextNode(" "));
 
-        if (afterMention) editor.appendChild(document.createTextNode(afterMention));
+        const trailingSpace = document.createTextNode(" ");
 
-        range.setStartAfter(mentionSpan.nextSibling || mentionSpan);
-        range.setEndAfter(mentionSpan.nextSibling || mentionSpan);
+        // Insert the mention token and a trailing space at the collapsed start position
+        const insertAt = rangeFromGlobalIndex(editor, atStartIndex);
+        const frag = document.createDocumentFragment();
+        frag.appendChild(mentionSpan);
+        frag.appendChild(trailingSpace);
+        insertAt.insertNode(frag);
+
+        // Place caret after the space we just inserted
+        const selection = window.getSelection();
+        const afterRange = document.createRange();
+        afterRange.setStart(trailingSpace, 1);
+        afterRange.collapse(true);
         selection?.removeAllRanges();
-        selection?.addRange(range);
+        selection?.addRange(afterRange);
 
         setIsOpen(false);
         setCommandQuery("");
@@ -176,8 +246,8 @@ export function MentionsInput({ mentions = [], placeholder = "Type @ to mention"
                     contentEditable
                     className={cn(
                         "w-full py-1.5 rounded-md bg-background text-foreground",
-                        className,
                         "focus:outline-none focus:ring-0 focus:ring-ring text-sm",
+                        className,
                         isOpen && "max-h-48"
                     )}
                     onInput={handleInput}
