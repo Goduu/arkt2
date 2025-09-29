@@ -13,8 +13,9 @@ import {
   OnNodesDelete,
   OnEdgesDelete,
   useReactFlow,
-  OnNodesChange, OnSelectionChangeFunc,
-  applyNodeChanges
+  OnNodesChange,
+  applyNodeChanges,
+  OnSelectionChangeFunc
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -43,7 +44,7 @@ import { useDraggableNode } from '@/components/nodes/useDraggableNode';
 import { StatusIcon } from './status-icon/StatusIcon';
 import { ArchTextNodeComponent } from '@/components/nodes/text/ArchTextNode';
 import { ChatBubble } from '@/components/chat/ChatBubble';
-import { IntegrationNodeComponent } from '@/components/nodes/arkt/integrations/IntegrationNode';
+import { IntegrationNodeComponent } from '@/components/nodes/integrations/IntegrationNode';
 import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
 import { HelpLinesToggle } from './status-icon/HelpLinesToggle';
@@ -71,8 +72,6 @@ export default function FlowEditor() {
   const currentPath = currentUserData?.currentDiagramId || DEFAULT_PATH_ID;
   const [isDrawing, setIsDrawing] = useState(false);
   const [, cursors, onMouseMove] = useCursorStateSynced();
-  const [, setSelectedEdges] = useState<ArktEdge[]>([]);
-  const [, setSelectedNodes] = useState<NodeUnion[]>([]);
   const freehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
   const { draggingNodesRef, mouseMoveHandler, dropHandler } = useDraggableNode();
   const searchParams = useSearchParams();
@@ -103,13 +102,6 @@ export default function FlowEditor() {
 
     prevCollabRef.current = collab;
   }, [searchParams]);
-
-  const handleSelectionChange: OnSelectionChangeFunc<NodeUnion, ArktEdge> = (selection) => {
-    const edges = selection.edges
-    setSelectedEdges(edges);
-    const nodes = selection.nodes
-    setSelectedNodes(nodes);
-  }
 
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     onMouseMove(event);
@@ -163,6 +155,7 @@ export default function FlowEditor() {
 
   const handleNodesChange: OnNodesChange<NodeUnion> = useCallback(
     (changes) => {
+      console.log("changes", changes);
       const prev = getNodes();
       if (!showHelpLines) {
         onNodesChange(changes);
@@ -172,7 +165,7 @@ export default function FlowEditor() {
       applyNodeChanges(updatedChanges, nodes);
       onNodesChange(updatedChanges);
     },
-    [updateHelperLines],
+    [getNodes, showHelpLines, updateHelperLines, onNodesChange]
   );
 
   const onNodeDragStop = useCallback(() => {
@@ -212,7 +205,6 @@ export default function FlowEditor() {
           onNodeDragStart={onNodeDragStart}
           onNodeDragStop={onNodeDragStop}
           onSelectionDragStart={onSelectionDragStart}
-          onSelectionChange={handleSelectionChange}
           onNodesDelete={onNodesDelete}
           onEdgesDelete={onEdgesDelete}
           nodeTypes={nodeTypes}
@@ -226,6 +218,7 @@ export default function FlowEditor() {
           zoomOnScroll={!isDrawing}
           panOnScroll={!isDrawing}
           selectNodesOnDrag={!isDrawing}
+          // onSelect={handleSelectionChange}
           fitView
           fitViewOptions={fitViewOptions}
           snapToGrid={showHelpLines}

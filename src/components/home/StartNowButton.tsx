@@ -14,7 +14,7 @@ export function StartNowButton({ className, "aria-label": ariaLabel, href = "/de
             <Button
                 aria-label={`Start now ${ariaLabel}`}
                 fillColor={{ family: "lime", indicative: "low" }}
-                className={cn("z-10", className, size === "xs" ? "text-xs" : size === "sm" ? "text-sm" : size === "md" ? "text-base" : "text-lg")}
+                className={cn("z-10 font-black", className, size === "xs" ? "text-xs" : size === "sm" ? "text-sm" : size === "md" ? "text-base" : "text-lg")}
             >
                 Start now
             </Button>

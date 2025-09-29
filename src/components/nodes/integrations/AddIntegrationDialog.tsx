@@ -3,10 +3,10 @@ import { Figma, Github } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCommandStore } from "@/app/design/commandStore";
-import { NodeUnion } from "../../types";
+import { NodeUnion } from "../types";
 import ydoc from "@/components/yjs/ydoc";
 import { Integration } from "@/components/controls/IntegrationSelector";
-import { useNewDraftNode } from "../utils";
+import { useNewDraftNode } from "../arkt/utils";
 
 export const nodesMap = ydoc.getMap<NodeUnion>('nodes');
 

@@ -8,7 +8,7 @@ import { Algorithm, DEFAULT_ALGORITHM } from "../edges/ArktEdge/constants"
 import { Color } from "../colors/types"
 import { getDefaultMarker } from "../controls/EdgeControls"
 import { NodeUnion } from "../nodes/types"
-import { IntegrationNode } from "../nodes/arkt/integrations/type"
+import { IntegrationNode } from "../nodes/integrations/type"
 import { ArktNode } from "../nodes/arkt/types"
 import { FreehandNodeType } from "../nodes/freehand/types"
 
@@ -74,7 +74,6 @@ export const getExampleNode = ({ templateData, position, id, type, label, width,
             fontSize: 12,
             isDraft: true,
             strokeColor: templateData?.strokeColor || DEFAULT_STROKE_COLOR,
-            isEphemeralExpansion: false,
         },
     } satisfies ArktNode;
 }

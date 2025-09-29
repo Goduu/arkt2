@@ -6,7 +6,7 @@ import GithubFileDialog from "./controls/node-controls/GithubFileDialog";
 import FigmaLinkDialog from "./controls/node-controls/FigmaLinkDialog";
 import ExportDialog from "@/app/design/top-bar/ExportDialog";
 import ImportDialog from "@/app/design/top-bar/ImportDialog";
-import { AddIntegrationDialog } from "./nodes/arkt/integrations/AddIntegrationDialog";
+import { AddIntegrationDialog } from "./nodes/integrations/AddIntegrationDialog";
 import CollabDialog from "./yjs/CollabDialog";
 
 export const Dialogs = () => {

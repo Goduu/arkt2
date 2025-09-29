@@ -16,15 +16,20 @@ import { useNodeData } from './useNodeData';
 import { VirtualLinkIndicator } from './virtual/VirtualLinkIndicator';
 
 export const ArktNodeComponent = ({ id, selected, width, height, data }: NodeProps<ArktNode>) => {
+  if(selected) {
+    console.log("selected", data);
+  }
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<{ width: number; height: number }>({ width: width ?? 180, height: height ?? 80 });
   const { rotateControlRef } = useRotationHandler(id, "arktNode", selected);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { fitView } = useReactFlow();
-  const { onDiagramDrillDown, onDiagramDrillToNode } = useUserDataStateSynced(fitView);
+  const { onDiagramDrillDown, onDiagramDrillToNode, currentUserData } = useUserDataStateSynced(fitView);
   const { fillColor, strokeColor, rotation, iconKey, strokeLineDash, label } = useNodeData(data);
   const { theme } = useTheme();
   const textColorClass = getTailwindTextClass(strokeColor, theme)
+
+  const isSelectedByCurrentUser = selected && data.selectedBy === currentUserData?.id;
 
   const { onNodeUpdate: onLabelChange } = useArktNodeControls(id);
 
@@ -52,12 +57,12 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       }}
       onClick={handleClick}
       data-testid={`arkt-node`}
-      data-selected={selected ? "true" : "false"}
+      data-selected={isSelectedByCurrentUser ? "true" : "false"}
       onDoubleClick={() => setIsEditing(true)}
     >
       <NodeResizer
         color="#ff0071"
-        isVisible={selected}
+        isVisible={isSelectedByCurrentUser}
         minWidth={30}
         minHeight={30}
       />
@@ -77,7 +82,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
         fillStyle={"hachure"}
         seed={1}
       />
-      {isEditing && selected ? (
+      {isEditing && isSelectedByCurrentUser ? (
         <AutoResizeTextarea
           nodeId={id}
           value={label}

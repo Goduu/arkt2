@@ -3,7 +3,7 @@ import { type XYPosition } from '@xyflow/react';
 import { ArktNode } from '@/components/nodes/arkt/types';
 import { ArktTextNode } from '@/components/nodes/text/types';
 import { Integration } from '@/components/controls/IntegrationSelector';
-import { IntegrationNode } from '@/components/nodes/arkt/integrations/type';
+import { IntegrationNode } from '@/components/nodes/integrations/type';
 
 // Define specific data types for each command
 type OpenCreateTemplateData = {

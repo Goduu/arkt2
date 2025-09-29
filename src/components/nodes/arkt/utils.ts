@@ -6,7 +6,7 @@ import useUserDataStateSynced from "@/components/yjs/useUserStateSynced";
 import { nanoid } from "nanoid";
 import { ArktTextNode } from "../text/types";
 import { Integration } from "@/components/controls/IntegrationSelector";
-import { IntegrationNode } from "./integrations/type";
+import { IntegrationNode } from "../integrations/type";
 
 export const useNewDraftNode = (): {
     getNewDraftNode: (templateData?: TemplateData) => ArktNode,

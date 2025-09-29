@@ -1,8 +1,8 @@
 import { Color } from "@/components/colors/types";
 import { Node } from "@xyflow/react";
+import { CommonNodeData } from "../arkt/types";
 
-export type ArktTextNodeData = {
-    pathId: string;
+export type ArktTextNodeData = CommonNodeData & {
     label: string;
     fillColor?: Color;
     strokeColor?: Color;

@@ -100,6 +100,37 @@ function useNodesStateSynced(): [
         for (const edge of connectedEdges) {
           edgesMap.delete(edge.id);
         }
+      } else if (change.type === "select") {
+        const updatedNode = nextNodes.find((n) => n.id === change.id);
+        if (!updatedNode) return;
+        const selectedBy = change.selected ? currentUserData?.id : undefined;
+        // Update discriminated union safely without type assertions
+        switch (updatedNode.type) {
+          case 'arktNode':
+            nodesMap.set(change.id, {
+              ...updatedNode,
+              data: { ...updatedNode.data, selectedBy }
+            });
+            break;
+          case 'freehand':
+            nodesMap.set(change.id, {
+              ...updatedNode,
+              data: { ...updatedNode.data, selectedBy }
+            });
+            break;
+          case 'text':
+            nodesMap.set(change.id, {
+              ...updatedNode,
+              data: { ...updatedNode.data, selectedBy }
+            });
+            break;
+          case 'integration':
+            nodesMap.set(change.id, {
+              ...updatedNode,
+              data: { ...updatedNode.data, selectedBy }
+            });
+            break;
+        }
       } else {
         const updatedNode = nextNodes.find((n) => n.id === change.id);
         if (updatedNode) {
@@ -107,7 +138,7 @@ function useNodesStateSynced(): [
         }
       }
     }
-  }, []);
+  }, [nodesMap, currentUserData?.id]);
 
   // here we are observing the nodesMap and updating the nodes state whenever the map changes.
   useEffect(() => {

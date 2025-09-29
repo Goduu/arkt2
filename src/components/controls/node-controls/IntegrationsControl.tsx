@@ -1,8 +1,8 @@
 import { ChangeEvent, FC } from "react";
 import { Input } from "@/components/ui/input";
-import { IntegrationNode } from "@/components/nodes/arkt/integrations/type";
+import { IntegrationNode } from "@/components/nodes/integrations/type";
 import { IntegrationSelector } from "../IntegrationSelector";
-import { useIntegrationNodeControls } from "@/components/nodes/arkt/integrations/useTextNodeControls";
+import { useIntegrationNodeControls } from "@/components/nodes/integrations/useTextNodeControls";
 import { useMetaKeyLabel } from "@/hooks/use-meta-key";
 
 type IntegrationsControlProps = {

@@ -1,4 +1,4 @@
-import { IntegrationNode } from "./arkt/integrations/type";
+import { IntegrationNode } from "./integrations/type";
 import { ArktNode } from "./arkt/types";
 import { FreehandNodeType } from "./freehand/types";
 import { ArktTextNode } from "./text/types";

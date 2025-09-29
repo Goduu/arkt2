@@ -1,10 +1,10 @@
 import { Color } from "@/components/colors/types";
 import { Node } from "@xyflow/react";
+import { CommonNodeData } from "../arkt/types";
 
 export type Points = [number, number, number][];
 
-export type FreehandNodeData = {
-    pathId: string;
+export type ArktFreehandNodeData = CommonNodeData & {
     points: Points;
     fillColor: Color;
     strokeColor: Color;
@@ -13,6 +13,6 @@ export type FreehandNodeData = {
 }
 
 export type FreehandNodeType = Node<
-    FreehandNodeData,
+    ArktFreehandNodeData,
     'freehand'
 >;
