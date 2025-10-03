@@ -44,7 +44,6 @@
 }
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   --radius: 0.65rem;
@@ -81,6 +80,7 @@
    --sidebar-border: oklch(0.922 0 0);
    --sidebar-ring: oklch(0.708 0 0);
 }
+
 
 html,
 body,
@@ -267,5 +267,26 @@ body,
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.439 0 0);
+  }
+  * {
+    scrollbar-width: thin; /* values: auto | thin | none */
+  }
+
+  /* Chromium/Safari */
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px; /* for horizontal scrollbars */
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(35, 35, 35, 0.3);
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.45);
   }
 }

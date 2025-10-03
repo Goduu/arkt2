@@ -8,7 +8,7 @@ export default function EditableEdgeFlow() {
     return (
         <ReactFlowProvider>
             <Suspense fallback={<div>Loading...</div>}>
-                <div className="relative min-h-screen flex flex-col" data-testid="design-page">
+                <div className="relative h-screen flex flex-col" data-testid="design-page">
                     <TopBar />
                     <FlowEditor />
                     <Dialogs />
