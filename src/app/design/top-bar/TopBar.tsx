@@ -28,14 +28,20 @@ export function TopBar() {
       <div className="ml-auto flex items-center gap-2">
         <Input ref={fileRef} type="file" accept="application/json" className="hidden" />
         <Button size="sm" variant="ghost" onClick={onImportClick}>
-          <Upload className="mr-2 h-4 w-4" /> Import
+          <Upload className="mr-2 h-4 w-4" />
+          <span className="hidden md:block">
+            Import
+          </span>
         </Button>
         <Button size="sm" variant="ghost" onClick={onExportClick}>
-          <Download className="mr-2 h-4 w-4" /> Export
+          <Download className="mr-2 h-4 w-4" />
+          <span className="hidden md:block">
+            Export
+          </span>
         </Button>
         <CollabPopover />
       </div>
-      <SketchySideBorder seed={1} side="bottom" strokeColor={{ family: "neutral", indicative: "low" }} strokeWidth={1}roughness={1.1}/>
+      <SketchySideBorder seed={1} side="bottom" strokeColor={{ family: "neutral", indicative: "low" }} strokeWidth={1} roughness={1.1} />
     </div>
   );
 }

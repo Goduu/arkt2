@@ -19,6 +19,7 @@ import { useCommandStore } from "../commandStore";
 import { useNewDraftNode } from "@/components/nodes/arkt/utils";
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced";
 import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 
 export function CommandPalette(): JSX.Element {
   const router = useRouter();
@@ -173,7 +174,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Type className="mr-2 h-4 w-4" />
             <span className="flex-1">Add text</span>
-            <CommandShortcut>t</CommandShortcut>
+            <CommandShortcut><Kbd>t</Kbd></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="add line"
@@ -184,7 +185,7 @@ export function CommandPalette(): JSX.Element {
           >
             <LineSquiggle className="mr-2 h-4 w-4" />
             <span className="flex-1">Add line</span>
-            <CommandShortcut>L</CommandShortcut>
+            <CommandShortcut><Kbd>L</Kbd></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="add node"
@@ -195,7 +196,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Layers className="mr-2 h-4 w-4" />
             <span className="flex-1">Add node</span>
-            <CommandShortcut>n</CommandShortcut>
+            <CommandShortcut><Kbd>n</Kbd></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="add virtual node"
@@ -206,7 +207,7 @@ export function CommandPalette(): JSX.Element {
           >
             <LinkIcon className="mr-2 h-4 w-4" />
             <span className="flex-1">Add virtual node</span>
-            <CommandShortcut>v</CommandShortcut>
+            <CommandShortcut><Kbd>v</Kbd></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="add integration"
@@ -217,7 +218,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Blocks className="mr-2 h-4 w-4" />
             <span className="flex-1">Add integration</span>
-            <CommandShortcut>i</CommandShortcut>
+            <CommandShortcut><Kbd>i</Kbd></CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
@@ -242,7 +243,7 @@ export function CommandPalette(): JSX.Element {
           >
             <FileText className="mr-2 h-4 w-4" />
             <span>Open templates</span>
-            <CommandShortcut>⇧T</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>T</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="open settings"
@@ -253,7 +254,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Settings className="mr-2 h-4 w-4" />
             <span>Open settings</span>
-            <CommandShortcut>⇧S</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>S</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
@@ -267,7 +268,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Share className="mr-2 h-4 w-4" />
             <span>Collab</span>
-            <CommandShortcut>⇧Q</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>Q</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="ask ai"
@@ -278,7 +279,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Bot className="mr-2 h-4 w-4" />
             <span>Ask AI</span>
-            <CommandShortcut>⇧A</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>A</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="export"
@@ -289,7 +290,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Download className="mr-2 h-4 w-4" />
             <span>Export</span>
-            <CommandShortcut>⇧E</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>E</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
           <CommandItem
             value="import"
@@ -300,7 +301,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Upload className="mr-2 h-4 w-4" />
             <span>Import</span>
-            <CommandShortcut>⇧I</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>I</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
@@ -314,7 +315,7 @@ export function CommandPalette(): JSX.Element {
           >
             <Plus className="mr-2 h-4 w-4" />
             <span className="flex-1">Create template</span>
-            <CommandShortcut>⇧C</CommandShortcut>
+            <CommandShortcut><KbdGroup><Kbd>⇧</Kbd><Kbd>C</Kbd></KbdGroup></CommandShortcut>
           </CommandItem>
           {templates.map((t) => (
             <CommandItem

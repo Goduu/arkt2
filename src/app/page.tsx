@@ -16,6 +16,7 @@ import { HomeExample } from "@/components/home/HomeExample";
 import { ReactFlowProvider } from "@xyflow/react";
 import GithubFileDialog from "@/components/controls/node-controls/GithubFileDialog";
 import DotGrid from "@/components/ui/dot-grid";
+import Link from "next/link";
 
 export default function HomeLanding(): JSX.Element {
     const { resolvedTheme, theme } = useTheme();
@@ -53,18 +54,18 @@ export default function HomeLanding(): JSX.Element {
                                         Sketch your architecture. Think in systems.
                                     </p>
                                     <h1 className="text-3xl font-semibold leading-tight md:text-5xl">
-                                        Design multi‑level system diagrams with a sketchy feel
+                                        Your Ai-rktect for multi-level system diagrams
                                     </h1>
                                     <p className="text-sm md:text-base text-accent-foreground">
                                         Map complex architectures, explore deep links, and reason about change—fast.
                                     </p>
-                                    <div className="flex flex-col gap-3 sm:flex-row">
+                                    <div className="flex md:flex-col gap-3 sm:flex-row">
                                         <StartNowButton aria-label="(top CTA)" />
-                                        <a href="#features" className="w-full sm:w-auto">
-                                            <Button variant="outline" className="w-full sm:w-auto" aria-label="See features">
+                                        <Link href="#features" className="w-full sm:w-auto">
+                                            <Button variant="outline" className="sm:w-auto" aria-label="See features">
                                                 See features
                                             </Button>
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </SketchyPanel>

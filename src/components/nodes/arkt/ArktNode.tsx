@@ -16,7 +16,7 @@ import { useNodeData } from './useNodeData';
 import { VirtualLinkIndicator } from './virtual/VirtualLinkIndicator';
 
 export const ArktNodeComponent = ({ id, selected, width, height, data }: NodeProps<ArktNode>) => {
-  if(selected) {
+  if (selected) {
     console.log("selected", data);
   }
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -118,11 +118,11 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       <div ref={rotateControlRef} />
 
       <div className={(iconKey) && "-top-3 absolute left-1/2 -translate-x-1/2"}>
-        <Handle type="source" position={Position.Top} id="top" className="opacity-5 group-hover:opacity-100" />
+        <Handle type="source" position={Position.Top} id="top" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
       </div>
-      <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-5 group-hover:opacity-100" />
-      <Handle type="source" position={Position.Left} id="left" className="opacity-5 group-hover:opacity-100" />
-      <Handle type="source" position={Position.Right} id="right" className="opacity-5 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
+      <Handle type="source" position={Position.Left} id="left" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
+      <Handle type="source" position={Position.Right} id="right" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
     </div>
   );
 }

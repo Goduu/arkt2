@@ -6,6 +6,7 @@ import { ColorSelector } from "../ColorSelector";
 import { FontSizeSelector } from "../FontSizeSelector";
 import { useAltKeyLabel } from "@/hooks/use-meta-key";
 import { TemplateCombobox } from "@/components/templates/TemplateCombobox";
+import { Kbd } from "@/components/ui/kbd";
 
 type BasicNodeControlProps = {
     node: ArktNode;
@@ -39,7 +40,7 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
             </div>
             <TemplateCombobox
                 templateId={templateId}
-                commit={(next) => onChange({templateId: next})}
+                commit={(next) => onChange({ templateId: next })}
             />
             <div data-testid="basic-controls-fill-color">
                 <ColorSelector
@@ -63,7 +64,9 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
                 />
             </div>
             <div className="text-[10px] whitespace-nowrap text-muted-foreground opacity-70 select-none">
-                {`${altKey}+click to navigate`}
+                <Kbd>{altKey}</Kbd>+
+                <Kbd>click</Kbd>
+                {` to navigate`}
             </div>
         </>
     );

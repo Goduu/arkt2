@@ -234,7 +234,7 @@ export default function FlowEditor() {
           {showHelpLines &&
             <HelperLines />
           }
-          <MiniMap bgColor='transparent' maskColor='transparent' maskStrokeColor='#888' />
+          <MiniMap className='hidden md:block' bgColor='transparent' maskColor='transparent' maskStrokeColor='#888' />
           <ChatBubble />
           <Cursors cursors={cursors} />
         </ReactFlow>

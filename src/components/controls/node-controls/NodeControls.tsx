@@ -27,7 +27,6 @@ export const NodeControls = memo(({ selectedNodes }: NodeControlsProps) => {
     setNodes((nodes) => nodes.map((n) => {
       if (!n.id || !selectedNode.id || n.type !== "arktNode") return n;
       if (n.id !== selectedNode.id) return n;
-      console.log("next", next);
       return { ...n, data: { ...n.data, ...next } }
     }))
   }
