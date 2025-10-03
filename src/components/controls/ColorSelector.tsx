@@ -26,7 +26,7 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
     };
 
     return (
-        <div>
+        <div data-testid={`color-selector-${indicative}`}>
             <label className="block text-xs text-muted-foreground mb-1">{label ?? "Color"}</label>
 
             <div className="flex items-center">

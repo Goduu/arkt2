@@ -24,7 +24,7 @@ export function ResetDialog() {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger title="Reset">
+            <DialogTrigger title="Reset" data-testid="open-reset-dialog">
                 <RefreshCcw className="size-5 ml-1" />
             </DialogTrigger>
             <DialogContent>

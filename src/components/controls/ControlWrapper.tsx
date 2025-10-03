@@ -20,6 +20,7 @@ export function ControlWrapper({ children, title, testId }: ControlWrapperProps)
                 "shadow-lg rounded-md transition-all duration-1000",
                 "overflow-auto",
             )}
+            data-testid={testId}
         >
             <SketchyPanel>
                 <Accordion

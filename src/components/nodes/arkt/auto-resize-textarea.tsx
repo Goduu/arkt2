@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
 import { NODE_MIN_HEIGHT, NODE_MIN_WIDTH } from "./utils";
+import { JSX, useLayoutEffect, useRef } from "react";
 
 type AutoResizeTextareaProps = {
   nodeId: string;
@@ -24,6 +24,8 @@ type AutoResizeTextareaProps = {
   minHeight?: number;
   /** Inline style applied to the inner textarea (e.g., to control font size). */
   style?: React.CSSProperties;
+  /** Optional test id applied to the wrapper for e2e hooks */
+  'data-testid'?: string;
 };
 
 /**
@@ -31,16 +33,23 @@ type AutoResizeTextareaProps = {
  * required width/height via onSizeChange. Measurement uses a mirrored element
  * with white-space: pre to respect explicit line breaks without wrapping.
  */
-export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.Element {
+export function AutoResizeTextarea(props: AutoResizeTextareaProps): JSX.Element {
   const { nodeId, className, disabled, value, onChange, onBlur, readOnly, tabIndex, paddingClassName, minWidth = 20, minHeight = 20, style } = props;
   const [nodes, setNodes,] = useNodesStateSynced();
 
-  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const wrapperRef = React.useRef<HTMLDivElement | null>(null);
-  const lastSizeRef = React.useRef<{ width: number; height: number }>({ width: 0, height: 0 });
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const lastSizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    e.stopPropagation();
+    if (e.key === 'Escape') {
+      onBlur?.();
+    }
+  };
 
   // Auto-size the textarea itself and report required size to parent
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     const ta = textareaRef.current;
     const wrap = wrapperRef.current;
     if (!ta || !wrap) return;
@@ -89,8 +98,8 @@ export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.El
       {/* Visible editor */}
       <div ref={wrapperRef} className={cn("relative", paddingClassName)}>
         <Textarea
+          data-testid={props['data-testid']}
           name="auto-resize-textarea"
-          data-testid="auto-resize-textarea"
           hideStroke
           className={cn(
             "w-full bg-transparent outline-none text-sm font-medium resize-none",
@@ -104,12 +113,10 @@ export function AutoResizeTextarea(props: AutoResizeTextareaProps): React.JSX.El
           tabIndex={tabIndex}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
+          onKeyDown={handleKeyDown}
           spellCheck={false}
           onMouseDown={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
-          onKeyDown={(e) => {
-            e.stopPropagation();
-          }}
           rows={1}
         />
       </div>

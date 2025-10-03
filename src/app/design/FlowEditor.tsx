@@ -14,8 +14,7 @@ import {
   OnEdgesDelete,
   useReactFlow,
   OnNodesChange,
-  applyNodeChanges,
-  OnSelectionChangeFunc
+  applyNodeChanges
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';

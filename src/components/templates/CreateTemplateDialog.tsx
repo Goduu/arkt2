@@ -96,7 +96,7 @@ export function CreateTemplateDialog(): React.JSX.Element | null {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-auto max-w-[90vw] p-0" showCloseButton={false}>
+      <DialogContent className="w-auto max-w-[90vw] p-0" showCloseButton={false} data-testid="create-template-dialog">
         <DialogHeader className="px-3 py-2 border-b">
           <DialogTitle className="text-sm font-medium">
             {mode === "edit" ? "Edit template" : "Create template"}
@@ -111,23 +111,47 @@ export function CreateTemplateDialog(): React.JSX.Element | null {
           <div className="space-y-3">
             <div>
               <label className="block text-xs text-muted-foreground mb-1">Name</label>
-              <Input className="w-full px-2 py-1" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input
+                id="create-template-dialog-name"
+                data-testid="create-template-dialog-name"
+                className="w-full px-2 py-1" value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
               {isDuplicateName && (
                 <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
               )}
             </div>
             <div>
               <label className="block text-xs text-muted-foreground mb-1">Description</label>
-              <Textarea rows={2} className="w-full px-2 py-1" value={description} onChange={(e) => "target" in e && setDescription(e.target.value)} />
+              <Textarea
+                id="create-template-dialog-description"
+                data-testid="create-template-dialog-description"
+                rows={2}
+                className="w-full px-2 py-1" value={description}
+                onChange={(e) => "target" in e && setDescription(e.target.value)}
+              />
               {isDuplicateName && (
                 <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
               )}
             </div>
             <div className="flex gap-2 flex-wrap">
-              <ColorSelector label="Fill color" value={fillColor} onChange={setFillColor} indicative="low" defaultOptions={TAILWIND_FILL_COLORS} />
-              <ColorSelector label="Stroke color" value={strokeColor} onChange={setStrokeColor} indicative="high" />
+              <ColorSelector
+                data-testid="create-template-dialog-fill-color"
+                label="Fill color"
+                value={fillColor}
+                onChange={setFillColor}
+                indicative="low"
+                defaultOptions={TAILWIND_FILL_COLORS}
+              />
+              <ColorSelector
+                data-testid="create-template-dialog-stroke-color"
+                label="Stroke color"
+                value={strokeColor}
+                onChange={setStrokeColor}
+                indicative="high"
+              />
             </div>
-            <IconSelector label="Icon" value={iconKey} onChange={setIconKey} />
+            <IconSelector data-testid="create-template-dialog-icon-key" label="Icon" value={iconKey} onChange={setIconKey} />
           </div>
           <div className="space-y-4">
             <div className="text-xs text-muted-foreground">Preview</div>
@@ -157,24 +181,38 @@ export function CreateTemplateDialog(): React.JSX.Element | null {
                 </Button>
               ) : <div />}
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={handleClose}>Cancel</Button>
+                <Button
+                  data-testid="template-dialog-cancel"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
                 {mode === "edit" ? (
-                  <Button size="sm" disabled={isDuplicateName || !normalizedName} onClick={() => {
-                    if (!templateId) return;
-                    if (isDuplicateName) return;
-                    handleUpdateTemplate(templateId, {
-                      id: templateId,
-                      name: normalizedName || "Node",
-                      description: description,
-                      fillColor,
-                      strokeColor,
-                      iconKey,
-                      updatedAt: Date.now(),
-                    });
-                    handleClose();
-                  }}>Save</Button>
+                  <Button
+                    data-testid="template-dialog-save"
+                    size="sm" disabled={isDuplicateName || !normalizedName}
+                    onClick={() => {
+                      if (!templateId) return;
+                      if (isDuplicateName) return;
+                      handleUpdateTemplate(templateId, {
+                        id: templateId,
+                        name: normalizedName || "Node",
+                        description: description,
+                        fillColor,
+                        strokeColor,
+                        iconKey,
+                        updatedAt: Date.now(),
+                      });
+                      handleClose();
+                    }}
+                  >
+                    Save
+                  </Button>
                 ) : (
                   <Button
+                    data-testid="template-dialog-create"
                     variant="outline"
                     size="sm"
                     disabled={isDuplicateName || !normalizedName}

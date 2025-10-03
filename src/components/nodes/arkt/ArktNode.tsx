@@ -48,6 +48,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
   return (
     <div
       ref={containerRef}
+      data-testid="arktNode"
       className={cn(
         "rounded-xs group",
         "group w-full h-full relative overflow-visible",
@@ -56,7 +57,6 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
         transform: `rotate(${rotation}deg)`,
       }}
       onClick={handleClick}
-      data-testid={`arkt-node`}
       data-selected={isSelectedByCurrentUser ? "true" : "false"}
       onDoubleClick={() => setIsEditing(true)}
     >
@@ -84,16 +84,18 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       />
       {isEditing && isSelectedByCurrentUser ? (
         <AutoResizeTextarea
+          data-testid='arkt-node-label-edit'
           nodeId={id}
           value={label}
           onChange={(next) => onLabelChange({ label: next })}
           onBlur={() => setIsEditing(false)}
-          paddingClassName={cn('py-1 z-20')}
+          paddingClassName='py-1 z-20'
           className={cn(textColorClass)}
           style={{ fontSize: Number(data?.fontSize ?? 15) }}
         />
       ) : (
         <div
+          data-testid="arkt-node-label"
           style={{ fontSize: Number(data?.fontSize ?? 15) }}
           className={cn(
             "absolute inset-0 w-full z-20 h-full text-sm px-3 py-3 font-medium whitespace-pre-wrap break-words select-none",

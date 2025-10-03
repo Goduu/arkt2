@@ -43,7 +43,7 @@ export function SegmentBreadCrumb() {
             {isLast ? (
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
             ) : (
-                <BreadcrumbLink asChild>
+                <BreadcrumbLink asChild data-testid={`breadcrumb-link-${item.label}`}>
                     <a href="#" onClick={(e) => { e.preventDefault(); item.onClick?.(); }}>{item.label}</a>
                 </BreadcrumbLink>
             )}

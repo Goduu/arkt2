@@ -35,7 +35,7 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
   }
 
   return (
-    <div>
+    <div data-testid="icon-selector">
       <label className="block text-xs text-muted-foreground mb-1">{label}</label>
       <div className="flex flex-wrap gap-2">
         <Button
@@ -54,7 +54,8 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
             <Button
               key={def.key}
               size="icon"
-              className={`z-10 text-xs inline-flex items-center gap-1 "hover:bg-muted"}`}
+              data-testid={`icon-selector-key-${def.key}`}
+              className="z-10 text-xs inline-flex items-center gap-1 hover:bg-muted"
               onClick={() => handleSelect(def.key)}
               title={def.label}
               aria-label={def.label}

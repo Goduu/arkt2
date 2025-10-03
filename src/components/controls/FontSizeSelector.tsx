@@ -7,7 +7,7 @@ type FontSizeSelectorProps = {
 
 export function FontSizeSelector({ selectedFontSize, onChange }: FontSizeSelectorProps) {
     return (
-        <div>
+        <div data-testid="font-size-selector">
             <label className="block text-xs text-muted-foreground mb-1">Font Size</label>
             {FONT_SIZES.map((fs) => (
                 <Button
@@ -28,7 +28,7 @@ export function FontSizeSelector({ selectedFontSize, onChange }: FontSizeSelecto
     );
 }
 
-const FONT_SIZES = [
+export const FONT_SIZES = [
     { size: 10, label: "S", },
     { size: 12, label: "M", },
     { size: 15, label: "L", },

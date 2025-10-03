@@ -2,7 +2,6 @@ import { useCommandStore } from "../commandStore";
 import { Blocks, Layers, LineSquiggle, Link, Type } from "lucide-react";
 import { StatusTooltip } from "./StatusTooltip";
 import { Gamepad } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useMetaKeyLabel } from "@/hooks/use-meta-key";
 
 export const StatusIcon = () => {

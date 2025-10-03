@@ -6,6 +6,7 @@ import { useElementSize } from "../sketchy/hooks/useElementSize";
 
 type InputProps = React.ComponentProps<"input"> & SketchyPanelProps & {
   hideStroke?: boolean;
+  'data-testid'?: string;
 }
 const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   hideStroke = false,
@@ -16,11 +17,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   fillWeight,
   fillStyle,
   seed,
+  'data-testid': dataTestId,
   ...props
 }: InputProps, forwardedRef) {
 
   if (hideStroke) {
-    return <InputBase {...props} ref={forwardedRef} />
+    return <InputBase {...props} ref={forwardedRef} data-testid={dataTestId} />
   }
 
   return (
@@ -39,7 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
         props.className && `${props.className}`
       )}
     >
-      <InputBase {...props} ref={forwardedRef} />
+      <InputBase {...props} ref={forwardedRef} data-testid={dataTestId} />
     </SketchyPanel>
   )
 })

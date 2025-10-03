@@ -36,7 +36,7 @@ export function NodeControls() {
   if (!selectedNode || isVirtualNode) return null;
 
   return (
-    <ControlWrapper title="Node options" testId="node-options">
+    <ControlWrapper title="Node options" testId="node-controls">
       {isArktNode && (
         <BasicNodeControl
           node={selectedNode as ArktNode}
