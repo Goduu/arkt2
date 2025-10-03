@@ -153,50 +153,50 @@ export function AppSidebar() {
                                     <span>Add text</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    data-testid="add-line"
+                                    tooltip="Add Line"
+                                    onClick={() => activateCommand("freehand-mode")}
+                                >
+                                    <LineSquiggle />
+                                    <span>Add line</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    data-testid="add-node"
+                                    tooltip="Add Node"
+                                    onClick={() => activateCommand("add-node", { nodes: [getNewDraftNode()] })}>
+                                    <Layers />
+                                    <span>Add node</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    data-testid="add-virtual-node"
+                                    tooltip="Add Virtual Node"
+                                    onClick={() => activateCommand("open-add-virtual-dialog")}
+                                >
+                                    <LinkIcon />
+                                    <span>Add virtual node</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    data-testid="add-integration-node"
+                                    tooltip="Add Integration Node"
+                                    onClick={() => activateCommand("open-add-integration-dialog")}
+                                >
+                                    <Blocks />
+                                    <span>Add Integration</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                         </SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton
-                                data-testid="add-line"
-                                tooltip="Add Line"
-                                onClick={() => activateCommand("freehand-mode")}
-                            >
-                                <LineSquiggle />
-                                <span>Add line</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton
-                                data-testid="add-node"
-                                tooltip="Add Node"
-                                onClick={() => activateCommand("add-node", { nodes: [getNewDraftNode()] })}>
-                                <Layers />
-                                <span>Add node</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton
-                                data-testid="add-virtual-node"
-                                tooltip="Add Virtual Node"
-                                onClick={() => activateCommand("open-add-virtual-dialog")}
-                            >
-                                <LinkIcon />
-                                <span>Add virtual node</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton
-                                data-testid="add-integration-node"
-                                tooltip="Add Integration Node"
-                                onClick={() => activateCommand("open-add-integration-dialog")}
-                            >
-                                <Blocks />
-                                <span>Add Integration</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarSeparator className="w-56!"/>
+                <SidebarSeparator className="w-56!" />
                 <SidebarGroup>
                     <SidebarGroupLabel>Templates</SidebarGroupLabel>
                     <SidebarGroupAction
