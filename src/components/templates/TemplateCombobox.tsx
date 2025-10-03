@@ -4,13 +4,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { TemplateIcon } from "./TemplateIcon";
-import { TemplateData } from "./types";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
-import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR } from "../colors/utils";
 
 type TemplateComboboxProps = {
     templateId?: string;
-    commit: (partial?: Partial<TemplateData>) => void;
+    commit: (templateId?: string) => void;
 };
 
 export function TemplateCombobox({
@@ -19,7 +17,7 @@ export function TemplateCombobox({
 }: TemplateComboboxProps) {
     const [tplOpen, setTplOpen] = useState<boolean>(false);
     const [tplQuery, setTplQuery] = useState<string>("");
-    const [templates, ] = useTemplatesStateSynced();
+    const [templates,] = useTemplatesStateSynced();
     const filtered = useMemo(() => {
         const q = tplQuery.trim().toLowerCase();
         if (!q) return templates;
@@ -54,7 +52,7 @@ export function TemplateCombobox({
                         <ChevronsUpDown className="opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-0">
+                <PopoverContent className="w-64 p-0">
                     <Command>
                         <CommandInput
                             placeholder="Search template..."
@@ -63,19 +61,18 @@ export function TemplateCombobox({
                             className="h-9"
                         />
                         <CommandList>
-                            <CommandItem
-                                className="h-12 px-2"
-                                value="remove-template"
-                                onSelect={() => {
-                                    commit({
-                                        id: undefined,
-                                        iconKey: undefined,
-                                    });
-                                    setTplOpen(false);
-                                }}
-                            >
-                                Remove template
-                            </CommandItem>
+                            {templateId &&
+                                <CommandItem
+                                    className="h-12 px-2"
+                                    value="remove-template"
+                                    onSelect={() => {
+                                        commit(undefined);
+                                        setTplOpen(false);
+                                    }}
+                                >
+                                    Remove template
+                                </CommandItem>
+                            }
                             {filtered.length === 0 ? (
                                 <CommandEmpty>No templates found.</CommandEmpty>
                             ) : (
@@ -86,12 +83,7 @@ export function TemplateCombobox({
                                             value={tpl.id}
                                             className="h-12"
                                             onSelect={() => {
-                                                commit({
-                                                    id: tpl.id,
-                                                    fillColor: tpl.fillColor ?? DEFAULT_FILL_COLOR,
-                                                    strokeColor: tpl.strokeColor ?? DEFAULT_STROKE_COLOR,
-                                                    iconKey: tpl.iconKey,
-                                                });
+                                                commit(tpl.id);
                                                 setTplOpen(false);
                                             }}
                                         >

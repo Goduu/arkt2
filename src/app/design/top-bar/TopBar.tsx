@@ -27,15 +27,15 @@ export function TopBar() {
       <SegmentBreadCrumb />
       <div className="ml-auto flex items-center gap-2">
         <Input ref={fileRef} type="file" accept="application/json" className="hidden" />
-        <Button fillColor={{ family: "slate", indicative: "low" }} size="sm" variant="ghost" onClick={onImportClick}>
+        <Button size="sm" variant="ghost" onClick={onImportClick}>
           <Upload className="mr-2 h-4 w-4" /> Import
         </Button>
-        <Button fillColor={{ family: "slate", indicative: "low" }} size="sm" variant="ghost" onClick={onExportClick}>
+        <Button size="sm" variant="ghost" onClick={onExportClick}>
           <Download className="mr-2 h-4 w-4" /> Export
         </Button>
         <CollabPopover />
       </div>
-      <SketchySideBorder seed={1} side="bottom" strokeColor={{ family: "slate", indicative: "low" }} strokeWidth={1} />
+      <SketchySideBorder seed={1} side="bottom" strokeColor={{ family: "neutral", indicative: "low" }} strokeWidth={1}roughness={1.1}/>
     </div>
   );
 }

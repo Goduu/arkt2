@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Color } from "../colors/types";
+import { Color, DEFAULT_BUTTON_FILL_COLOR } from "../colors/types";
 import { useElementSize } from "../sketchy/hooks/useElementSize";
 import SketchyShape from "../sketchy/SketchyShape";
 
@@ -46,7 +46,7 @@ export interface ButtonProps
 }
 
 const ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size, fillWeight, fillColor, fillStyle = "dots", strokeColor, ...props }, ref) => {
+  ({ className, variant = "default", size, fillWeight, fillColor = DEFAULT_BUTTON_FILL_COLOR, fillStyle = "dots", strokeColor, ...props }, ref) => {
     const { ref: sizeRef, size: elementSize } = useElementSize<HTMLButtonElement>();
     const [hovered, setHovered] = React.useState(false);
 

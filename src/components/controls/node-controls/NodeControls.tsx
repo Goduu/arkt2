@@ -10,24 +10,25 @@ import { FreehandNodeControls } from "./FreehandNodeControls";
 import { FreehandNodeType } from "@/components/nodes/freehand/types";
 import { IntegrationsControl } from "./IntegrationsControl";
 import { IntegrationNode } from "@/components/nodes/integrations/type";
+import { NodeUnion } from "@/components/nodes/types";
+import { memo } from "react";
 
-export function NodeControls() {
-  const [nodes, setNodes] = useNodesStateSynced();
-  const selectedNodes = nodes.filter((node) => node.selected);
+type NodeControlsProps = {
+  selectedNodes: NodeUnion[];
+}
+
+export const NodeControls = memo(({ selectedNodes }: NodeControlsProps) => {
   const selectedNode = selectedNodes[0];
-  const isArktNode = selectedNode?.type === "arktNode"
-  const isArchTextNode = selectedNode?.type === "text"
-  const isFreehandNode = selectedNode?.type === "freehand"
-  const isIntegrationNode = selectedNode?.type === "integration"
+  const [, setNodes,] = useNodesStateSynced();
+
   const handleNodeChange = (next: Partial<ArktNodeData> | undefined) => {
     if (!next) return;
 
     setNodes((nodes) => nodes.map((n) => {
       if (!n.id || !selectedNode.id || n.type !== "arktNode") return n;
-      if (n.id === selectedNode.id) {
-        return { ...n, data: { ...n.data, ...next } }
-      }
-      return n;
+      if (n.id !== selectedNode.id) return n;
+      console.log("next", next);
+      return { ...n, data: { ...n.data, ...next } }
     }))
   }
 
@@ -37,24 +38,23 @@ export function NodeControls() {
 
   return (
     <ControlWrapper title="Node options" testId="node-controls">
-      {isArktNode && (
+      {selectedNode?.type === "arktNode" && (
         <BasicNodeControl
           node={selectedNode as ArktNode}
           onChange={handleNodeChange}
         />
       )}
-      {isArchTextNode && (
+      {selectedNode?.type === "text" && (
         <TextNodeControls node={selectedNode as ArktTextNode} />
       )}
-      {isFreehandNode && (
+      {selectedNode?.type === "freehand" && (
         <FreehandNodeControls node={selectedNode as FreehandNodeType} />
       )}
-      {isIntegrationNode && (
+      {selectedNode?.type === "integration" && (
         <IntegrationsControl node={selectedNode as IntegrationNode} />
       )}
     </ControlWrapper>
+  )
+});
 
-  );
-}
-
-
+NodeControls.displayName = "NodeControls";

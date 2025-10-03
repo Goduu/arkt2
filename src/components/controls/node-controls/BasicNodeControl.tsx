@@ -39,7 +39,7 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
             </div>
             <TemplateCombobox
                 templateId={templateId}
-                commit={onChange}
+                commit={(next) => onChange({templateId: next})}
             />
             <div data-testid="basic-controls-fill-color">
                 <ColorSelector

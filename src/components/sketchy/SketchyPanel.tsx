@@ -6,9 +6,10 @@ import { Color } from "../colors/types";
 import { useElementSize } from "./hooks/useElementSize";
 import { SketchyBorderOverlay } from "./SketchyBorderOverlay";
 import { SketchyShapeKind } from "./SketchyShape";
+import { cn } from "../utils";
 
 export type SketchyPanelProps = React.PropsWithChildren<
-   {
+  {
     className?: string;
     strokeWidth?: number;
     roughness?: number;
@@ -21,12 +22,30 @@ export type SketchyPanelProps = React.PropsWithChildren<
     fillStyle?: FillStyle;
     seed?: number;
     kind?: SketchyShapeKind;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
     onClick?: () => void;
   }
 >;
 
 export const SketchyPanel = React.forwardRef<HTMLDivElement, SketchyPanelProps>(function SketchyPanel(
-  { className, strokeWidth = 2, roughness = 1.5, strokeColor, hoverEffect = false, children, strokeLineDash, strokeLineDashOffset, fillColor, fillWeight, fillStyle, seed, kind, ...rest },
+  { className,
+    strokeWidth = 2,
+    roughness = 1.5,
+    strokeColor,
+    hoverEffect = false,
+    children,
+    strokeLineDash,
+    strokeLineDashOffset,
+    fillColor,
+    fillWeight,
+    fillStyle,
+    seed,
+    kind,
+    onMouseEnter,
+    onMouseLeave,
+    ...rest
+  },
   forwardedRef
 ): React.JSX.Element {
   const { ref, size } = useElementSize<HTMLDivElement>();
@@ -48,9 +67,15 @@ export const SketchyPanel = React.forwardRef<HTMLDivElement, SketchyPanelProps>(
   return (
     <div
       ref={setRefs}
-      className={`relative overflow-hidden ${className || ""}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className={cn("relative overflow-hidden p-1", className)}
+      onMouseEnter={() => {
+        setHovered(true)
+        onMouseEnter?.()
+      }}
+      onMouseLeave={() => {
+        setHovered(false)
+        onMouseLeave?.()
+      }}
       {...rest}
     >
       <div className="pointer-events-none absolute inset-0">
@@ -70,7 +95,7 @@ export const SketchyPanel = React.forwardRef<HTMLDivElement, SketchyPanelProps>(
           kind={kind}
         />
       </div>
-      <div className="relative overflow-auto p-1">
+      <div className="relative overflow-auto">
         {children}
       </div>
     </div>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
 import { clearAIKey, encryptAndSaveAIKey, hasStoredAIKey } from "@/lib/ai/aiKey";
 import { DEFAULT_STROKE_COLOR } from "@/components/colors/utils";
+import { ResetDialog } from "../sidebar/ResetDialog";
 
 export default function SettingsPage() {
   const [connected, setConnected] = useState<boolean | null>(null);
@@ -37,7 +38,7 @@ export default function SettingsPage() {
     try {
       await fetch("/api/github/logout", { method: "POST" });
       await refresh();
-    } catch { 
+    } catch {
       console.warn("Error disconnecting from GitHub");
     }
   };
@@ -136,6 +137,13 @@ export default function SettingsPage() {
           )
         }
       </div>
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
+          Reset Data
+        </h2>
+        <p className="text-sm text-muted-foreground">Reset all the application data to the initial state.</p>
+      </div>
+      <ResetDialog />
     </div>
   );
 }

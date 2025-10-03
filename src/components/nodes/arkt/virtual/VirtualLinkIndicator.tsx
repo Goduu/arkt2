@@ -53,7 +53,7 @@ export function VirtualLinkIndicator({ nodeId }: VirtualLinkIndicatorProps) {
                 <PopoverContent align="start" sideOffset={0} className="w-[260px] p-0 text-xs rounded-xs">
                     <SketchyPanel>
                         <div className="px-2 py-1 border-b text-[11px] font-medium">Linked via virtual nodes</div>
-                        <ul className="max-h-60 overflow-auto">
+                        <ul className="list-none max-h-60 overflow-auto">
                             {virtualLinksToThisNode.map((node, idx) => {
                                 const ancestors = getNodePathLabelsFromNode(node).slice(0, -1);
 

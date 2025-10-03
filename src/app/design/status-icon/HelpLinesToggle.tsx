@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Grid2X2Check } from "lucide-react"
 import { useCommandStore } from "../commandStore";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export const HelpLinesToggle = () => {
     const helpLinesCommand = useCommandStore((s) => s.commandMap["help-lines-toggle"]);
@@ -11,10 +12,13 @@ export const HelpLinesToggle = () => {
         <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
                 <Button
-                    variant="default"
                     size="icon"
                     onClick={() => toggleCommand("help-lines-toggle")}
-                    className={helpLinesCommand.status === "active" ? "opacity-100" : "opacity-50"}
+                    className={cn(
+                        helpLinesCommand.status === "active" ?
+                            "opacity-95" :
+                            "opacity-50 hover:opacity-100"
+                    )}
                 >
                     <Grid2X2Check />
                 </Button>

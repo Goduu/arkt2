@@ -24,8 +24,11 @@ export function ResetDialog() {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger title="Reset" data-testid="open-reset-dialog">
-                <RefreshCcw className="size-5 ml-1" />
+            <DialogTrigger title="Reset" data-testid="open-reset-dialog" asChild>
+                <Button variant="ghost" className="flex gap-2">
+                    <RefreshCcw className="size-5" />
+                    Reset
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -38,6 +41,6 @@ export function ResetDialog() {
                     <Button variant="destructive" onClick={handleReset}>Reset</Button>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }

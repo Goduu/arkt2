@@ -37,8 +37,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
       seed={seed}
       {...props}
       className={cn(
+        props.className,
         "py-2",
-        props.className && `${props.className}`
       )}
     >
       <InputBase {...props} ref={forwardedRef} data-testid={dataTestId} />

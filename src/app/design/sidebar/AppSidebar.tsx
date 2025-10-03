@@ -31,10 +31,8 @@ import SidenavTemplatesList from "./SidenavTemplatesList"
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced"
 import { useNewDraftNode } from "@/components/nodes/arkt/utils"
 import { ModeToggle } from "@/components/ModeToggle"
-import { ResetDialog } from "./ResetDialog"
 
 export function AppSidebar() {
-    // const { nodeTemplates, setPendingSpawn, setPendingCommand } = useAppStore()
     const activateCommand = useCommandStore((s) => s.activateCommand);
     const [templates] = useTemplatesStateSynced();
     const { getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
@@ -138,7 +136,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarSeparator />
+                <SidebarSeparator className="w-56!" />
 
                 <SidebarGroup>
                     <SidebarGroupLabel>Add</SidebarGroupLabel>
@@ -146,6 +144,7 @@ export function AppSidebar() {
                         <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton
+                                    fillStyle="dots"
                                     data-testid="add-text"
                                     tooltip="Add Text"
                                     onClick={() => activateCommand("add-node", { nodes: [getNewDraftTextNode()] })}
@@ -197,7 +196,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarSeparator />
+                <SidebarSeparator className="w-56!"/>
                 <SidebarGroup>
                     <SidebarGroupLabel>Templates</SidebarGroupLabel>
                     <SidebarGroupAction
@@ -225,9 +224,7 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter>
-                <ResetDialog />
-                <ModeToggle className="-ml-1" />
+            <SidebarFooter className="-ml-1">
                 <SidebarTrigger className="opacity-50 hover:opacity-100" />
             </SidebarFooter>
 

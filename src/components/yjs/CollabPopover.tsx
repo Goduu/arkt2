@@ -93,7 +93,7 @@ export function CollabPopover() {
                     </div>
 
                     <div className="mt-4">
-                        <ul className="space-y-2">
+                        <ul className="list-none space-y-2">
                             {participants.map((p) => (
                                 <li key={p.id} className="flex items-center gap-3 rounded-lg p-2 hover:bg-slate-500/10 transition-colors cursor-pointer" onClick={() => onStartEdit()}>
                                     <div className="h-7 w-7 rounded-full shadow-sm ring-2 ring-white flex items-center justify-center text-xs font-bold" style={{ backgroundColor: p.color }}>

@@ -12,6 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { SketchyPanel } from "../sketchy/SketchyPanel"
+import { DEFAULT_BUTTON_FILL_COLOR } from "../colors/types"
 
 function Command({
   className,
@@ -143,15 +145,27 @@ function CommandItem({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Item>) {
+  const [hovered, setHovered] = React.useState(false)
+
   return (
-    <CommandPrimitive.Item
-      data-slot="command-item"
-      className={cn(
-        "data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    />
+    <SketchyPanel
+      fillColor={DEFAULT_BUTTON_FILL_COLOR}
+      fillWeight={hovered ? 0.1 : 0}
+      fillStyle="dots"
+      hoverEffect
+      strokeWidth={0}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <CommandPrimitive.Item
+        data-slot="command-item"
+        className={cn(
+          "[&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+          className
+        )}
+        {...props}
+      />
+    </SketchyPanel>
   )
 }
 

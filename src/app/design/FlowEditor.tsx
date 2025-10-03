@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -190,6 +190,7 @@ export default function FlowEditor() {
 
   const proOptions = { hideAttribution: true };
 
+  const selectedNodes = useMemo(() => nodes.filter((node) => node.selected), [nodes]);
 
   return (
     <div className="flex flex-col h-full">
@@ -238,7 +239,7 @@ export default function FlowEditor() {
           <Cursors cursors={cursors} />
         </ReactFlow>
         <EdgeControls />
-        <NodeControls />
+        <NodeControls selectedNodes={selectedNodes} />
       </div>
     </div>
 
