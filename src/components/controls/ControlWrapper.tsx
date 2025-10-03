@@ -42,7 +42,7 @@ export function ControlWrapper({ children, title, testId }: ControlWrapperProps)
                                 className="p-3 space-y-3 text-sm overflow-hidden"
                                 data-testid={`${testId}-content`}
                             >
-                                <SketchySideBorder side="top" className="z-10" />
+                                <SketchySideBorder strokeWidth={1} side="top" className="z-10" />
                                 {children}
                             </div>
                         </AccordionContent>

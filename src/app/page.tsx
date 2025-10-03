@@ -12,19 +12,32 @@ import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
 import { useTheme } from "next-themes";
 import { ModeToggle } from "@/components/ModeToggle";
 import { useMounted } from "./useMounted";
-import Dot from "@/components/ui/dot";
 import { HomeExample } from "@/components/home/HomeExample";
 import { ReactFlowProvider } from "@xyflow/react";
 import GithubFileDialog from "@/components/controls/node-controls/GithubFileDialog";
+import DotGrid from "@/components/ui/dot-grid";
 
 export default function HomeLanding(): JSX.Element {
     const { resolvedTheme, theme } = useTheme();
     const mounted = useMounted();
 
     return (
-        <Dot >
+        <>
             <div className="min-h-screen w-full flex flex-col items-center">
                 {/* Hero */}
+                <div className="w-screen h-screen fixed top-0 left-0 -z-10">
+                    <DotGrid
+                        dotSize={1.5}
+                        gap={30}
+                        baseColor="#435164"
+                        activeColor="#aaa"
+                        proximity={120}
+                        shockRadius={250}
+                        shockStrength={5}
+                        resistance={750}
+                        returnDuration={0.5}
+                    />
+                </div>
                 <ModeToggle className="absolute top-4 right-4" />
                 <section className="container pt-12 md:pt-16 lg:pt-20 w-full max-w-9xl">
                     <div className="h-52 items-start flex">
@@ -105,7 +118,7 @@ export default function HomeLanding(): JSX.Element {
                 <Footer />
             </div >
             <GithubFileDialog />
-        </Dot>
+        </>
 
     );
 }

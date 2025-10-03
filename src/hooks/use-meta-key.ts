@@ -38,5 +38,3 @@ export function useAltKeyLabel(): "alt" | "opt" {
 
   return label;
 }
-
-
