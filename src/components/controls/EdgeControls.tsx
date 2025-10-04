@@ -24,7 +24,7 @@ export function EdgeControls() {
 
 
   return (
-    <ControlWrapper title="Edge options" testId="edge-options">
+    <ControlWrapper title="Edge options" testId="edge-options" selectedEdge={selectedEdges}>
       <div className="grid grid-cols-2 gap-4">
         <EdgeTypeSelector
           selectedStrokeType={algorithm}

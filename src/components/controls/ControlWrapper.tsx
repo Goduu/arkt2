@@ -7,23 +7,27 @@ import { SketchyPanel } from "../sketchy/SketchyPanel";
 import SketchySideBorder from "../sketchy/SketchySideBorder";
 import { ControlDrawer } from "./ControlDrawer";
 import { Button } from "../ui/button";
-import { FolderInput } from "lucide-react";
+import { FolderInput, Trash2 } from "lucide-react";
 import { NodeUnion } from "../nodes/types";
 import { ArktEdge } from "../edges/ArktEdge/type";
 import useUserDataStateSynced from "../yjs/useUserStateSynced";
 import { useReactFlow } from "@xyflow/react";
+import useNodesStateSynced from "../yjs/useNodesStateSynced";
+import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
 
 type ControlWrapperProps = {
     children: ReactNode;
     title: string;
     testId: string;
     selectedNodes?: NodeUnion[];
-    selectedEdge?: ArktEdge;
+    selectedEdge?: ArktEdge[];
 }
 
-export function ControlWrapper({ children, title, testId, selectedNodes }: ControlWrapperProps) {
+export function ControlWrapper({ children, title, testId, selectedNodes, selectedEdge }: ControlWrapperProps) {
     const { fitView } = useReactFlow();
     const { onDiagramDrillDown, onDiagramDrillToNode } = useUserDataStateSynced(fitView);
+    const [, , onNodesChange] = useNodesStateSynced();
+    const [, , onEdgesChange] = useEdgesStateSynced();
 
     const handleNavigateClick = () => {
         const firstSelectedNode = selectedNodes?.[0];
@@ -35,6 +39,17 @@ export function ControlWrapper({ children, title, testId, selectedNodes }: Contr
             onDiagramDrillToNode(data.virtualOf);
         }
         onDiagramDrillDown(firstSelectedNode.id, firstSelectedNode.data.label);
+    }
+
+    const handleDeleteClick = () => {
+        const firstSelectedNode = selectedNodes?.[0];
+        if (firstSelectedNode) {
+            onNodesChange([{ id: firstSelectedNode.id, type: "remove" }]);
+        };
+        const firstSelectedEdge = selectedEdge?.[0];
+        if (firstSelectedEdge) {
+            onEdgesChange([{ id: firstSelectedEdge.id, type: "remove" }]);
+        }
     }
 
     return (
@@ -78,6 +93,9 @@ export function ControlWrapper({ children, title, testId, selectedNodes }: Contr
             <div className="block md:hidden">
                 <ControlDrawer>
                     {children}
+                    <Button variant="outline" size="icon" className="absolute top-12 right-2" onClick={handleDeleteClick}>
+                        <Trash2 />
+                    </Button>
                 </ControlDrawer>
                 <Button variant="outline" size="icon" className="absolute top-12 right-2" onClick={handleNavigateClick}>
                     <FolderInput />
