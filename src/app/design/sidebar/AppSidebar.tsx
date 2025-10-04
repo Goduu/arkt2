@@ -35,7 +35,7 @@ import { ModeToggle } from "@/components/ModeToggle"
 export function AppSidebar() {
     const activateCommand = useCommandStore((s) => s.activateCommand);
     const [templates] = useTemplatesStateSynced();
-    const { getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
+    const { getNewDraftArktNode: getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
 
     const { resolvedTheme } = useTheme()
     const mounted = useMounted()

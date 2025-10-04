@@ -54,12 +54,12 @@ export default function HomeLanding(): JSX.Element {
                                         Sketch your architecture. Think in systems.
                                     </p>
                                     <h1 className="text-3xl font-semibold leading-tight md:text-5xl">
-                                        Your Ai-rktect for multi-level system diagrams
+                                        Your ArkTect for multi-level system diagrams
                                     </h1>
                                     <p className="text-sm md:text-base text-accent-foreground">
                                         Map complex architectures, explore deep links, and reason about change—fast.
                                     </p>
-                                    <div className="flex md:flex-col gap-3 sm:flex-row">
+                                    <div className="flex gap-3 sm:flex-row">
                                         <StartNowButton aria-label="(top CTA)" />
                                         <Link href="#features" className="w-full sm:w-auto">
                                             <Button variant="outline" className="sm:w-auto" aria-label="See features">

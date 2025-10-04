@@ -227,7 +227,7 @@ export default function FlowEditor() {
 
           {isDrawing && <Freehand setNodes={setNodes} setIsDrawing={setIsDrawing} />}
           <Background />
-          <Panel position="bottom-left" className='flex flex-col gap-2 justify-start'>
+          <Panel position="bottom-left" className='hidden md:flex flex-col gap-2 justify-start'>
             <HelpLinesToggle />
             <StatusIcon />
           </Panel>

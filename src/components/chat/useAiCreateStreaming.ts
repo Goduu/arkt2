@@ -57,7 +57,7 @@ export function useAiCreateStreaming(params: {
     const [templates] = useTemplatesStateSynced();
     const { currentUserData } = useUserDataStateSynced();
     const processedMsgRef = useRef<string | null>(null);
-    const { getNewDraftNode } = useNewDraftNode();
+    const { getNewDraftArktNode: getNewDraftNode } = useNewDraftNode();
     const activateCommand = useCommandStore((s) => s.activateCommand);
 
     useEffect(() => {

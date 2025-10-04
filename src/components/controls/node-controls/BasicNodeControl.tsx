@@ -63,7 +63,7 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
                     onChange={(next) => { onChange({ strokeColor: next }); }}
                 />
             </div>
-            <div className="text-[10px] whitespace-nowrap text-muted-foreground opacity-70 select-none">
+            <div className="hidden md:block text-[10px] whitespace-nowrap text-muted-foreground opacity-70 select-none">
                 <Kbd>{altKey}</Kbd>+
                 <Kbd>click</Kbd>
                 {` to navigate`}

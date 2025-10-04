@@ -11,7 +11,6 @@ export function TemplateButton({ tpl, onSpawn }: { tpl: TemplateData, onSpawn: (
                 onClick={() => onSpawn(tpl.id)}
             >
                 <div className="flex items-center gap-2">
-                    {/* {tpl.iconKey ? ( */}
                         <div className="relative size-6 -ml-1">
                             <TemplateIcon
                                 className="size-6"
@@ -20,7 +19,6 @@ export function TemplateButton({ tpl, onSpawn }: { tpl: TemplateData, onSpawn: (
                                 fillColor={tpl.fillColor}
                             />
                         </div>
-                    {/* ) : null} */}
                     <span className="group-data-[collapsible=icon]:hidden">{tpl.name}</span>
                 </div>
             </SidebarMenuButton>

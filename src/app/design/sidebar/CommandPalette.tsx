@@ -25,7 +25,7 @@ export function CommandPalette(): JSX.Element {
   const router = useRouter();
   const [nodeTemplates,] = useTemplatesStateSynced()
   const activateCommand = useCommandStore((s) => s.activateCommand);
-  const { getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
+  const { getNewDraftArktNode: getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
   const openCommandPaletteCommand = useCommandStore((s) => s.commandMap["open-command-palette"]);
   const isDraggingNodeCommand = useCommandStore((s) => s.commandMap["dragging-node"]);
   const isFreehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);

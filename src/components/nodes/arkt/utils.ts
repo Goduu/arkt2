@@ -8,15 +8,15 @@ import { ArktTextNode } from "../text/types";
 import { Integration } from "@/components/controls/IntegrationSelector";
 import { IntegrationNode } from "../integrations/type";
 
-export const useNewDraftNode = (): {
-    getNewDraftNode: (templateData?: TemplateData) => ArktNode,
+export const useNewDraftNode = (mobile: boolean = false): {
+    getNewDraftArktNode: (templateData?: TemplateData) => ArktNode,
     getNewDraftVirtualNode: (node: ArktNode) => ArktNode,
     getNewDraftTextNode: () => ArktTextNode,
     getNewDraftIntegrationNode: (integration: Integration) => IntegrationNode
 } => {
     const { currentUserData } = useUserDataStateSynced()
 
-    const getNewDraftNode = (templateData?: TemplateData) => {
+    const getNewDraftArktNode = (templateData?: TemplateData) => {
 
         return {
             id: nanoid(),
@@ -33,16 +33,13 @@ export const useNewDraftNode = (): {
                 textColor: DEFAULT_FILL_COLOR,
                 iconKey: templateData?.iconKey,
                 templateId: templateData?.id,
-                githubLink: "",
                 rotation: 0,
                 strokeWidth: 2,
                 fontSize: 12,
-                isDraft: true,
+                isDraft: mobile? false :true,
                 strokeColor: templateData?.strokeColor || DEFAULT_STROKE_COLOR,
-                isEphemeralExpansion: false,
-                originalId: "",
-            },
-        }
+            }
+        } satisfies ArktNode;
     }
 
     const getNewDraftVirtualNode = (node: ArktNode) => {
@@ -52,7 +49,7 @@ export const useNewDraftNode = (): {
             position: { x: -1000, y: -1000 },
             data: {
                 ...node.data,
-                isDraft: true,
+                isDraft: mobile? false :true,
                 pathId: currentUserData?.currentDiagramId || DEFAULT_PATH_ID,
                 virtualOf: node.id
             },
@@ -74,7 +71,7 @@ export const useNewDraftNode = (): {
                 rotation: 0,
                 fontSize: 12,
                 label: "New Text",
-                isDraft: true,
+                isDraft: mobile? false :true,
             },
         } satisfies ArktTextNode;
     }
@@ -93,7 +90,7 @@ export const useNewDraftNode = (): {
         } satisfies IntegrationNode;
     }
 
-    return { getNewDraftNode, getNewDraftVirtualNode, getNewDraftTextNode, getNewDraftIntegrationNode }
+    return { getNewDraftArktNode: getNewDraftArktNode, getNewDraftVirtualNode, getNewDraftTextNode, getNewDraftIntegrationNode }
 }
 
 export const DEFAULT_NODE_WIDTH = 90;

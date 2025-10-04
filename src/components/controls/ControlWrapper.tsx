@@ -6,14 +6,37 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { SketchyPanel } from "../sketchy/SketchyPanel";
 import SketchySideBorder from "../sketchy/SketchySideBorder";
 import { ControlDrawer } from "./ControlDrawer";
+import { Button } from "../ui/button";
+import { FolderInput } from "lucide-react";
+import { NodeUnion } from "../nodes/types";
+import { ArktEdge } from "../edges/ArktEdge/type";
+import useUserDataStateSynced from "../yjs/useUserStateSynced";
+import { useReactFlow } from "@xyflow/react";
 
 type ControlWrapperProps = {
     children: ReactNode;
     title: string;
     testId: string;
+    selectedNodes?: NodeUnion[];
+    selectedEdge?: ArktEdge;
 }
 
-export function ControlWrapper({ children, title, testId }: ControlWrapperProps) {
+export function ControlWrapper({ children, title, testId, selectedNodes }: ControlWrapperProps) {
+    const { fitView } = useReactFlow();
+    const { onDiagramDrillDown, onDiagramDrillToNode } = useUserDataStateSynced(fitView);
+
+    const handleNavigateClick = () => {
+        const firstSelectedNode = selectedNodes?.[0];
+        if (!firstSelectedNode) return;
+        if (firstSelectedNode.type !== "arktNode") return;
+        const data = firstSelectedNode.data;
+
+        if (data.virtualOf) {
+            onDiagramDrillToNode(data.virtualOf);
+        }
+        onDiagramDrillDown(firstSelectedNode.id, firstSelectedNode.data.label);
+    }
+
     return (
         <>
             <div
@@ -53,10 +76,12 @@ export function ControlWrapper({ children, title, testId }: ControlWrapperProps)
                 </SketchyPanel>
             </div >
             <div className="block md:hidden">
-
                 <ControlDrawer>
                     {children}
                 </ControlDrawer>
+                <Button variant="outline" size="icon" className="absolute top-12 right-2" onClick={handleNavigateClick}>
+                    <FolderInput />
+                </Button>
             </div>
         </>
     )

@@ -15,7 +15,7 @@ const MAX_RECENT_TEMPLATES = 5;
 
 export function SidenavTemplatesList({ nodeTemplates }: SidenavTemplatesListProps) {
     const activateCommand = useCommandStore((s) => s.activateCommand);
-    const { getNewDraftNode } = useNewDraftNode();
+    const { getNewDraftArktNode: getNewDraftNode } = useNewDraftNode();
     const templates = Object.values(nodeTemplates)
         .slice()
         .sort((a, b) => {

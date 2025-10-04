@@ -3,8 +3,10 @@ import FlowEditor from "./FlowEditor";
 import { Dialogs } from "@/components/Dialogs";
 import { TopBar } from "./top-bar/TopBar";
 import { Suspense } from "react";
+import MobileDock from "./MobileDock";
 
 export default function EditableEdgeFlow() {
+
     return (
         <ReactFlowProvider>
             <Suspense fallback={<div>Loading...</div>}>
@@ -12,6 +14,7 @@ export default function EditableEdgeFlow() {
                     <TopBar />
                     <FlowEditor />
                     <Dialogs />
+                    <MobileDock />
                 </div>
             </Suspense>
         </ReactFlowProvider>

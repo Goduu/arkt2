@@ -93,3 +93,23 @@ export const TbLineDashed = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M11 12h2" />
   </svg>
 )
+
+
+export const HiDotsHorizontal = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth={0}
+    aria-hidden="true"
+    viewBox="0 0 20 20"
+    {...props}
+  >
+    <path
+      stroke="none"
+      d="M6 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
+    />
+  </svg>
+)

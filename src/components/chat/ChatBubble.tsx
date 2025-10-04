@@ -279,7 +279,7 @@ export function ChatBubble() {
 
     return (
         <div className={cn(
-            "absolute bottom-2 right-0 transition-all duration-300 ease-in-out z-20",
+            "hidden md:block absolute bottom-2 right-0 transition-all duration-300 ease-in-out z-20",
             isOpen ? 'w-96' : 'w-15'
         )} data-testid="chat-bubble">
             {/* Messages Display */}

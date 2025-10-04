@@ -16,9 +16,6 @@ import { useNodeData } from './useNodeData';
 import { VirtualLinkIndicator } from './virtual/VirtualLinkIndicator';
 
 export const ArktNodeComponent = ({ id, selected, width, height, data }: NodeProps<ArktNode>) => {
-  if (selected) {
-    console.log("selected", data);
-  }
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<{ width: number; height: number }>({ width: width ?? 180, height: height ?? 80 });
   const { rotateControlRef } = useRotationHandler(id, "arktNode", selected);
