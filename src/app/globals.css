@@ -231,6 +231,19 @@ body,
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.react-flow.touch-flow .react-flow__handle {
+  width: 10px;
+  height: 10px;
+}
+ 
+.touch-flow .react-flow__handle-right {
+  --translate: translate(50%, -50%);
+}
+ 
+.touch-flow .react-flow__handle-left {
+  --translate: translate(-50%, -50%);
+}
+
 
 @layer base {
   * {

@@ -14,6 +14,7 @@ import { useTheme } from 'next-themes';
 import { TemplateIcon } from '@/components/templates/TemplateIcon';
 import { useNodeData } from './useNodeData';
 import { VirtualLinkIndicator } from './virtual/VirtualLinkIndicator';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const ArktNodeComponent = ({ id, selected, width, height, data }: NodeProps<ArktNode>) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -24,6 +25,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
   const { onDiagramDrillDown, onDiagramDrillToNode, currentUserData } = useUserDataStateSynced(fitView);
   const { fillColor, strokeColor, rotation, iconKey, strokeLineDash, label } = useNodeData(data);
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   const textColorClass = getTailwindTextClass(strokeColor, theme)
 
   const isSelectedByCurrentUser = selected && data.selectedBy === currentUserData?.id;
@@ -55,7 +57,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       }}
       onClick={handleClick}
       data-selected={isSelectedByCurrentUser ? "true" : "false"}
-      onDoubleClick={() => setIsEditing(true)}
+      onDoubleClick={() => !isMobile && setIsEditing(true)}
     >
       <NodeResizer
         color="#ff0071"
@@ -114,12 +116,12 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
 
       <div ref={rotateControlRef} />
 
-      <div className={(iconKey) && "-top-3 absolute left-1/2 -translate-x-1/2"}>
-        <Handle type="source" position={Position.Top} id="top" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
+      <div className={(iconKey) && "-top-4 md:-top-3 absolute left-1/2 -translate-x-1/2"}>
+        <Handle type="source" position={Position.Top} id="top" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
       </div>
-      <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
-      <Handle type="source" position={Position.Left} id="left" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
-      <Handle type="source" position={Position.Right} id="right" className="opacity-100 group-hover:opacity-100 md:opacity-5" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
+      <Handle type="source" position={Position.Left} id="left" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
+      <Handle type="source" position={Position.Right} id="right" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
     </div>
   );
 }

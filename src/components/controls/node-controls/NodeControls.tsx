@@ -34,7 +34,7 @@ export const NodeControls = memo(({ selectedNodes }: NodeControlsProps) => {
   const isVirtualNode = selectedNode?.data && "virtualOf" in selectedNode.data && selectedNode.data.virtualOf;
 
   if (!selectedNode || isVirtualNode) return null;
-  console.log("selectedNodes",selectedNode);
+
   return (
     <ControlWrapper title="Node options" testId="node-controls" selectedNodes={selectedNodes}>
       {selectedNode?.type === "arktNode" && (

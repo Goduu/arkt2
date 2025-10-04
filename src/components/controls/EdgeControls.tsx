@@ -11,20 +11,29 @@ import { StrokeWidth } from "./StrokeWidth";
 import { useEdgeControls } from "../edges/ArktEdge/useEdgeControls";
 import { Color } from "../colors/types";
 import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
+import { Input } from "../ui/input";
 
 
 export function EdgeControls() {
   const [edges,] = useEdgesStateSynced();
   const selectedEdges = edges.filter((edge) => edge.selected);
   const selectedEdge = selectedEdges[0];
-  const { strokeColor, algorithm, strokeWidth, fontSize, labelFill, direction } = selectedEdge?.data || {};
-  const { onEdgeUpdate,onEdgeMarkerChange } = useEdgeControls(selectedEdge?.id ?? "");
+  const { label, strokeColor, algorithm, strokeWidth, fontSize, labelFill, direction } = selectedEdge?.data || {};
+  const { onEdgeUpdate, onEdgeMarkerChange } = useEdgeControls(selectedEdge?.id ?? "");
 
   if (!selectedEdges.length) return null;
 
-
   return (
     <ControlWrapper title="Edge options" testId="edge-options" selectedEdge={selectedEdges}>
+      <div className="md:hidden" data-testid="basic-controls-label">
+        <label className="block text-xs text-muted-foreground mb-1">Label</label>
+        <Input
+          className="w-full px-2 py-1 bg-transparent resize-none"
+          value={label || ""}
+          onChange={(e) => onEdgeUpdate({ label: e.target.value })}
+          data-testid="basic-controls-label-input"
+        />
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <EdgeTypeSelector
           selectedStrokeType={algorithm}
@@ -39,13 +48,6 @@ export function EdgeControls() {
             onEdgeMarkerChange(dir)
           }}
         />
-        {/* TODO: separate animated to another component
-        <StrokeType value={[form ? "dashed" : null, animated ? "animated" : null].filter((v): v is string => typeof v === "string")}
-          onChange={(values: string[]) => {
-            commit({ form: values.includes("dashed") ? "dashed" : "solid", animated: values.includes("animated") })
-          }}
-        /> */}
-
       </div>
       <div className="flex flex-col gap-3">
         <div data-testid="edge-colors-group">

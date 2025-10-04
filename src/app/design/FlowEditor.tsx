@@ -47,6 +47,7 @@ import { IntegrationNodeComponent } from '@/components/nodes/integrations/Integr
 import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
 import { HelpLinesToggle } from './status-icon/HelpLinesToggle';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const nodeTypes = {
   arktNode: ArktNodeComponent,
@@ -62,6 +63,7 @@ export const edgeTypes = {
 const fitViewOptions = { padding: 0.4 };
 
 export default function FlowEditor() {
+  const isMobile = useIsMobile();
   const { getNodes } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
   const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
@@ -154,7 +156,6 @@ export default function FlowEditor() {
 
   const handleNodesChange: OnNodesChange<NodeUnion> = useCallback(
     (changes) => {
-      console.log("changes", changes);
       const prev = getNodes();
       if (!showHelpLines) {
         onNodesChange(changes);
@@ -198,6 +199,7 @@ export default function FlowEditor() {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          className={isMobile ? 'touch-flow' : ''}
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -218,6 +220,7 @@ export default function FlowEditor() {
           zoomOnScroll={!isDrawing}
           panOnScroll={!isDrawing}
           selectNodesOnDrag={!isDrawing}
+          connectOnClick={isMobile}
           // onSelect={handleSelectionChange}
           fitView
           fitViewOptions={fitViewOptions}

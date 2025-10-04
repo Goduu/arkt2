@@ -7,6 +7,7 @@ import { FontSizeSelector } from "../FontSizeSelector";
 import { useAltKeyLabel } from "@/hooks/use-meta-key";
 import { TemplateCombobox } from "@/components/templates/TemplateCombobox";
 import { Kbd } from "@/components/ui/kbd";
+import { Input } from "@/components/ui/input";
 
 type BasicNodeControlProps = {
     node: ArktNode;
@@ -17,11 +18,20 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
     node,
     onChange,
 }) => {
-    const { description, fillColor, strokeColor, fontSize, templateId } = node.data ?? {};
+    const { label, description, fillColor, strokeColor, fontSize, templateId } = node.data ?? {};
     const altKey = useAltKeyLabel();
 
     return (
         <>
+            <div className="md:hidden" data-testid="basic-controls-label">
+                <label className="block text-xs text-muted-foreground mb-1">Label</label>
+                <Input
+                    className="w-full px-2 py-1 bg-transparent resize-none"
+                    value={label}
+                    onChange={(e) => onChange({ label: e.target.value })}
+                    data-testid="basic-controls-label-input"
+                />
+            </div>
             <div data-testid="basic-controls-description">
                 <label className="block text-xs text-muted-foreground mb-1">Description</label>
                 <Textarea

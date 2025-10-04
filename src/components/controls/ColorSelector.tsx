@@ -6,6 +6,7 @@ import { getTailwindBgClass, SUPPORTED_TAILWIND_FAMILIES, TAILWIND_STROKE_COLORS
 import { TailwindFamily, TailwindIndicative } from "../colors/types";
 import { Color } from "../colors/types";
 import { useTheme } from "next-themes";
+import { Field, FieldLabel } from "../ui/field";
 
 type ColorSelectorProps = {
     label?: string;
@@ -26,13 +27,13 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
     };
 
     return (
-        <div data-testid={`color-selector-${indicative}`}>
-            <label className="block text-xs text-muted-foreground mb-1">{label ?? "Color"}</label>
+        <Field data-testid={`color-selector-${indicative}`}>
+            <FieldLabel htmlFor={`color-selector-${indicative}`} className="block text-xs text-muted-foreground mb-1">{label ?? "Color"}</FieldLabel>
 
             <div className="flex items-center">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button disabled={disabled} variant="ghost" size="icon" className="size-10" fillColor={{ family: selectedColor as TailwindFamily, indicative }}>
+                        <Button id={`color-selector-${indicative}`} disabled={disabled} variant="ghost" size="icon" className="size-10" fillColor={{ family: selectedColor as TailwindFamily, indicative }}>
                             <div className={`size-6 rounded-full border border-slate-200 ${selectedColor && getTailwindBgClass({ family: selectedColor, indicative }, theme)}`} />
                         </Button>
                     </PopoverTrigger>
@@ -87,6 +88,6 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
             </div>
 
 
-        </div>
+        </Field>
     );
 }

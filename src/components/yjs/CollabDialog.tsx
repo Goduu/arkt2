@@ -54,7 +54,7 @@ export function CollabDialog() {
         try {
             await prepareCollabShare(hash)
         } catch {
-           console.error('Failed to prepare collab share')
+            console.error('Failed to prepare collab share')
         }
 
         const params = new URLSearchParams(searchParams);
