@@ -27,11 +27,15 @@ export class DesignPagePO {
     return ArktNodePO.fromId(this.page, dataId);
   }
 
-  async createArktNode(label?: string): Promise<ArktNodePO> {
-    await this.sidenav.addNode.click();
+  async clickOnTheBox({xPadding = 200, yPadding = 200}: {xPadding?: number, yPadding?: number} = {}): Promise<void> {
     const box = await this.reactFlowCanvas.root.boundingBox();
     if (!box) throw new Error('React Flow canvas not found');
-    await this.page.mouse.click(box.x + 200, box.y + 200);
+    await this.page.mouse.click(box.x + xPadding, box.y + yPadding);
+  }
+  
+  async createArktNode(label?: string, x?: number, y?: number): Promise<ArktNodePO> {
+    await this.sidenav.addNode.click();
+    await this.clickOnTheBox({xPadding: x, yPadding: y});
 
     const nodeId = await this.reactFlowCanvas.getNodeIdByLabel("New Node")
     await expect(nodeId).toBeTruthy()
@@ -44,6 +48,10 @@ export class DesignPagePO {
     }
 
     return node;
+  }
+
+  async expectTemplateDialogClosed(): Promise<void> {
+    await expect(this.templateDialog.root).toBeHidden();
   }
 
 }

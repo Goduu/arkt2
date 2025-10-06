@@ -117,11 +117,11 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       <div ref={rotateControlRef} />
 
       <div className={(iconKey) && "-top-4 md:-top-3 absolute left-1/2 -translate-x-1/2"}>
-        <Handle type="source" position={Position.Top} id="top" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
+        <Handle data-testid="handler-top" type="source" position={Position.Top} id="top" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
       </div>
-      <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
-      <Handle type="source" position={Position.Left} id="left" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
-      <Handle type="source" position={Position.Right} id="right" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
+      <Handle data-testid="handler-bottom" type="source" position={Position.Bottom} id="bottom" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
+      <Handle data-testid="handler-left" type="source" position={Position.Left} id="left" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
+      <Handle data-testid="handler-right" type="source" position={Position.Right} id="right" className="opacity-90 group-hover:opacity-100 md:opacity-5" />
     </div>
   );
 }

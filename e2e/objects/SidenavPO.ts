@@ -63,6 +63,10 @@ export class SidenavPO {
   async getPathText(): Promise<string> {
     return (await this.list.innerText()).trim();
   }
+
+  async getTemplateButton(name: string): Promise<Locator> {
+    return this.root.getByTestId(`template-icon-${name}`);
+  }
 }
 
 

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { SketchyPanelProps } from "../sketchy/SketchyPanel"
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -131,7 +132,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
 function InputGroupInput({
   className,
   ...props
-}: React.ComponentProps<"input">) {
+}: SketchyPanelProps & React.ComponentProps<"input">) {
   return (
     <Input
       data-slot="input-group-control"
@@ -147,7 +148,7 @@ function InputGroupInput({
 function InputGroupTextarea({
   className,
   ...props
-}: React.ComponentProps<"textarea">) {
+}: SketchyPanelProps & React.ComponentProps<"textarea">) {
   return (
     <Textarea
       data-slot="input-group-control"

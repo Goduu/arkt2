@@ -15,4 +15,15 @@ test('create template', async ({ page }) => {
     await designPage.templateDialog.fillStrokeColor('green');
     await designPage.templateDialog.selectIcon('activity');
     await designPage.templateDialog.buttons.create.click();
+    await designPage.expectTemplateDialogClosed();
+
+    // USE TEMPLATE
+    const templateButton = await designPage.sidenav.getTemplateButton('Template1');
+    await expect(templateButton).toBeVisible();
+    await templateButton.click();
+    await designPage.clickOnTheBox();
+
+    // EXPECT NODE TO BE CREATED
+    const nodeId = await designPage.reactFlowCanvas.getNodeIdByLabel('New Node');
+    await expect(nodeId).toBeTruthy();
 });

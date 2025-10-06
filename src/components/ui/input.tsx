@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { SketchyPanel, SketchyPanelProps } from "../sketchy/SketchyPanel";
 import { useElementSize } from "../sketchy/hooks/useElementSize";
 
-type InputProps = React.ComponentProps<"input"> & SketchyPanelProps & {
+type InputProps = SketchyPanelProps & React.ComponentProps<"input"> & {
   hideStroke?: boolean;
   'data-testid'?: string;
 }
