@@ -38,7 +38,7 @@ export function DockSubmenu({ items, isOpen, onClose }: DockSubmenuProps) {
                                 }
                                 onClose();
                             }}
-                            className={`inline-flex items-center gap-2 rounded-xl border-2 border-neutral-700 bg-[#060010] px-3 py-2 text-sm text-white shadow-md hover:bg-neutral-900 focus:outline-none overflow-visible ${subItem.className ?? ''}`}
+                            className={`inline-flex items-center gap-2 rounded-xl border-2 border-neutral-700 bg-background px-3 py-2 text-sm shadow-md hover:bg-neutral-500 focus:outline-none overflow-visible ${subItem.className ?? ''}`}
                             role="menuitem"
                         >
                             <div className="relative w-6 h-6 shrink-0 grid place-items-center z-10 overflow-visible pointer-events-none">

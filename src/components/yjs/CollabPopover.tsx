@@ -69,7 +69,7 @@ export function CollabPopover() {
 
     if (!collab) {
         return (
-            <Button fillColor={{ family: "slate", indicative: "low" }} size="sm" variant="ghost" onClick={() => activateCommand("open-collab-dialog")}>
+            <Button size="sm" variant="ghost" onClick={() => activateCommand("open-collab-dialog")}>
                 <Share2 className="mr-2 h-4 w-4" />
                 <span className="hidden md:block">
                     Collab

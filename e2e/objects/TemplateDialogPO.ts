@@ -1,6 +1,6 @@
 import { ICONS } from '@/lib/icons/iconRegistry';
 import { Page, Locator } from '@playwright/test';
-import { ColorSelectorPO } from '../ColorSelectorPO';
+import { ColorSelectorPO } from './ColorSelectorPO';
 import { TailwindFamily } from '@/components/colors/types';
 import { IconSelectorPO } from './IconSelectorPO';
 

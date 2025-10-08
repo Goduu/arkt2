@@ -1,5 +1,5 @@
 import { Page, Locator } from '@playwright/test';
-import { ColorSelectorPO } from '../ColorSelectorPO';
+import { ColorSelectorPO } from './ColorSelectorPO';
 
 export class ControlsPO {
     readonly page: Page;

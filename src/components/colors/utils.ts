@@ -53,7 +53,7 @@ export const TAILWIND_FILL_COLORS: TailwindFamily[] = [
 
 // Legacy constants for backward compatibility (will be deprecated)
 export const DEFAULT_STROKE_COLOR: Color = { family: "slate", indicative: "high" };
-export const DEFAULT_FILL_COLOR: Color = { family: "base", indicative: "low" };
+export const DEFAULT_FILL_COLOR: Color = { family: "slate", indicative: "low" };
 export const DEFAULT_HOVER_FILL_COLOR: Color = { family: "slate", indicative: "low" };
 
 

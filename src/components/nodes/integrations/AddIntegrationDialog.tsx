@@ -42,17 +42,23 @@ export const AddIntegrationDialog = () => {
                 <div className="flex gap-2">
                     <Button
                         onClick={() => handleAddIntegration("github")}
-                        className="flex flex-col items-center p-4 gap-2 size-32"
+                        className="group flex flex-col items-center p-4 gap-2 size-32"
+                        variant="outline"
                     >
-                        <Github />
-                        GitHub
+                        <Github className="group-hover:scale-110" />
+                        <span className="group-hover:scale-110">
+                            GitHub
+                        </span>
                     </Button>
                     <Button
                         onClick={() => handleAddIntegration("figma")}
-                        className="flex flex-col items-center p-4 gap-2 size-32"
+                        className="group flex flex-col items-center p-4 gap-2 size-32"
+                        variant="outline"
                     >
-                        <Figma />
-                        Figma
+                        <Figma className="group-hover:scale-110" />
+                        <span className="group-hover:scale-110">
+                            Figma
+                        </span>
                     </Button>
                 </div>
             </DialogContent>

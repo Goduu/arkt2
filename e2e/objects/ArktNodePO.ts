@@ -1,12 +1,14 @@
 import { FONT_SIZES } from '@/components/controls/FontSizeSelector';
 import { Page, Locator, expect } from '@playwright/test';
 import { ControlsPO } from './ControlsPO';
+import { ArktEdgePO } from './ArktEdgePO';
 
 export class ArktNodePO {
   readonly page: Page;
   readonly root: Locator;
   readonly label: Locator;
   readonly labelEdit: Locator;
+  readonly id: string;
   readonly handlers: {
     top: Locator;
     bottom: Locator;
@@ -17,6 +19,7 @@ export class ArktNodePO {
 
   constructor(page: Page, id: string) {
     this.page = page;
+    this.id = id;
     this.root = page.locator(`[data-id="${id}"]`)
     this.label = this.root.getByTestId('arkt-node-label');
     this.labelEdit = this.root.getByTestId('arkt-node-label-edit');
@@ -29,7 +32,7 @@ export class ArktNodePO {
     this.controls = new ControlsPO(page);
   }
 
-  async createEdgeTo(node: ArktNodePO, startDirection: 'right' | 'left' | 'top' | 'bottom'): Promise<void> {
+  async createEdgeTo(node: ArktNodePO, startDirection: 'right' | 'left' | 'top' | 'bottom'): Promise<ArktEdgePO> {
     const srcBox = await this.handlers[startDirection].boundingBox();
     const destDirection = startDirection === 'right' ? 'left' : startDirection === 'left' ? 'right' : startDirection === 'top' ? 'bottom' : 'top';
     const dstRootBox = await node.root.boundingBox();
@@ -46,6 +49,8 @@ export class ArktNodePO {
     // Now move precisely to the left handler and drop
     await this.page.mouse.move(dstHandleBox.x + dstHandleBox.width / 2, dstHandleBox.y + dstHandleBox.height / 2);
     await this.page.mouse.up();
+
+    return await ArktEdgePO.create(this.page, this, node);
   }
 
   static fromId(page: Page, dataId: string): ArktNodePO {

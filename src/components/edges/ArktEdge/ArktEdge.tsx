@@ -46,9 +46,13 @@ export function EditableEdgeComponent({
   markerStart,
   markerEnd,
   data,
+  sourceHandleId,
+  targetHandleId
 }: EdgeProps<ArktEdge>) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { onControlPointsChange } = useEdgeControls(id);
+  const sourceId = sourceHandleId?.split("-")[0]
+  const targetId = targetHandleId?.split("-")[0]
 
   const sourceNode = useInternalNode(source);
   const targetNode = useInternalNode(target);
@@ -101,6 +105,7 @@ export function EditableEdgeComponent({
     <>
       <BaseEdge
         id={id}
+        data-testid={`edge-${sourceId}-${targetId}`}
         path={path}
         markerStart={markerStart}
         markerEnd={markerEnd}
@@ -112,6 +117,7 @@ export function EditableEdgeComponent({
       />
       <EdgeLabel
         id={id}
+        data-testid={`edge-label-${id}`}
         fontSize={data?.fontSize ?? 12}
         labelText={data?.label || ""}
         isEditing={isEditing}
