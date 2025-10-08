@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type MutableRefObject } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import useNodesStateSynced from "../yjs/useNodesStateSynced";
 import useEdgesStateSynced from "../yjs/useEdgesStateSynced";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
@@ -13,8 +13,9 @@ import type { ArktEdge } from "../edges/ArktEdge/type";
 import { useNewDraftNode } from "../nodes/arkt/utils";
 import type { TemplateData } from "../templates/types";
 import type { CreateDiagramOutput } from "@/lib/ai/tools/createDiagramTool";
-import { useCommandStore } from "@/app/design/commandStore";
 import { ArktUIMessage } from "@/lib/ai/aiTypes";
+import { normalizeDiagramInput } from "./functions/normalize";
+import { useReactFlow } from "@xyflow/react";
 
 type ToolEvent = { name?: string; atMs?: number; result?: unknown };
 
@@ -48,38 +49,39 @@ export function useAiCreateStreaming(params: {
     sdkMessages: Array<ArktUIMessage> | undefined;
     toolEvents: ToolEvent[] | undefined;
     endedAt: number | null | undefined;
-    assistantChatIdRef: MutableRefObject<string | null>;
-    assistantMsgIdRef: MutableRefObject<string | null>;
+    assistantChatIdRef: RefObject<string | null>;
+    assistantMsgIdRef: RefObject<string | null>;
 }) {
     const { sdkMessages, assistantChatIdRef, assistantMsgIdRef } = params;
     const [, setNodes] = useNodesStateSynced();
     const [, setEdges] = useEdgesStateSynced();
-    const [templates] = useTemplatesStateSynced();
+    const [templates] = useTemplatesStateSynced()
     const { currentUserData } = useUserDataStateSynced();
     const processedMsgRef = useRef<string | null>(null);
     const { getNewDraftArktNode: getNewDraftNode } = useNewDraftNode();
-    const activateCommand = useCommandStore((s) => s.activateCommand);
+    const { fitView } = useReactFlow();
 
     useEffect(() => {
-        const lastMessage = sdkMessages?.[sdkMessages.length - 1];
-        if (!lastMessage || lastMessage.role !== "assistant") return;
+        const processMessage = async () => {
+            const lastMessage = sdkMessages?.[sdkMessages.length - 1];
+            if (!lastMessage || lastMessage.role !== "assistant") return;
 
-        const chatId = assistantChatIdRef.current;
-        const msgId = assistantMsgIdRef.current;
-        if (!chatId || !msgId) return;
+            const chatId = assistantChatIdRef.current;
+            const msgId = assistantMsgIdRef.current;
+            if (!chatId || !msgId) return;
 
-        // Avoid double-processing the same assistant message
-        if (processedMsgRef.current === msgId) return;
+            // Avoid double-processing the same assistant message
+            if (processedMsgRef.current === msgId) return;
 
-        const state = useChatStore.getState();
-        const chat = state.aiChats[chatId];
-        const persistedTag = chat?.messages.find((m) => m.id === msgId)?.tag;
-        if (persistedTag !== "Create") return;
+            const state = useChatStore.getState();
+            const chat = state.aiChats[chatId];
+            const persistedTag = chat?.messages.find((m) => m.id === msgId)?.tag;
+            if (persistedTag !== "Create") return;
 
-        const lastMessagePart = lastMessage.parts?.find((p) => p.type === "text");
-        if (!lastMessagePart || lastMessagePart.state !== "done") return;
+            const lastMessagePart = lastMessage.parts?.find((p) => p.type === "text");
+            if (!lastMessagePart || lastMessagePart.state !== "done") return;
 
-        try {
+            try {
             const parsed: unknown = JSON.parse(lastMessagePart.text ?? "{}");
             if (!isCreateDiagramOutput(parsed)) return;
 
@@ -186,19 +188,30 @@ export function useAiCreateStreaming(params: {
 
                 createdEdges.push(edge);
             }
+            const { nodes, edges } = await normalizeDiagramInput({
+                nodes: createdNodes,
+                edges: createdEdges,
+                initialDiagramId: basePathId,
+                initialNodeId: null,
+            }, templates, false);
 
             // Append to state
-            if (createdEdges.length > 0) {
-                setEdges((prev) => [...prev, ...createdEdges]);
+            if (edges.length > 0) {
+                setEdges((prev) => [...prev, ...edges]);
             }
-            if (createdNodes.length > 0) {
-                activateCommand("add-node", { nodes: createdNodes });
+            if (nodes.length > 0) {
+                setNodes((prev) => [...prev, ...nodes]);
             }
 
+            fitView()
+
             processedMsgRef.current = msgId;
-        } catch (error) {
-            console.error("AI create: failed to parse/apply output", error);
-        }
+            } catch (error) {
+                console.error("AI create: failed to parse/apply output", error);
+            }
+        };
+
+        processMessage();
     }, [sdkMessages, templates, setNodes, setEdges, assistantChatIdRef, assistantMsgIdRef, currentUserData]);
 }
 

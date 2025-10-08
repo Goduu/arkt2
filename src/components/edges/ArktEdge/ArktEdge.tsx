@@ -100,7 +100,9 @@ export function EditableEdgeComponent({
   const labelCoordY = centralPlacedPoint?.y ?? labelY;
 
   const strokeColor = colorToHex(data?.strokeColor ?? DEFAULT_STROKE_COLOR);
-
+ if(selected){
+  console.log("selected", data);
+ }
   return (
     <>
       <BaseEdge

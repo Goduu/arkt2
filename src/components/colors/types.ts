@@ -18,4 +18,4 @@ export const ColorSchema = z.object({
 
 export type Color = z.infer<typeof ColorSchema>;
 
-export const DEFAULT_BUTTON_FILL_COLOR: Color = { family: "teal", indicative: "low" };
+export const DEFAULT_BUTTON_FILL_COLOR: Color = { family: "amber", indicative: "low" };
