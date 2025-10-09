@@ -1,4 +1,4 @@
-import { EdgeLabelRenderer } from "@xyflow/react";
+import { EdgeLabelOptions, EdgeLabelRenderer } from "@xyflow/react";
 import { cn } from "../../utils";
 import { DEFAULT_FILL_COLOR, DEFAULT_STROKE_COLOR, getTailwindTextClass } from "../../colors/utils";
 import { useEdgeControls } from "./useEdgeControls";
@@ -7,7 +7,7 @@ import { useTheme } from "next-themes";
 import { Color } from "@/components/colors/types";
 import { AutoGrowInput } from "../../ui/AutoGrowInput";
 
-type EdgeLabelProps = {
+type EdgeLabelProps = EdgeLabelOptions & {
     id: string;
     labelText: string;
     isEditing: boolean;
@@ -20,8 +20,9 @@ type EdgeLabelProps = {
     onBlur: () => void;
     onClick: () => void;
 }
-export const EdgeLabel = (
-    { id,
+export const EdgeLabel = (props: EdgeLabelProps) => {
+    const {
+        id,
         labelText,
         isEditing,
         labelX,
@@ -31,8 +32,9 @@ export const EdgeLabel = (
         fontSize = 12,
         selected,
         onBlur,
-        onClick
-    }: EdgeLabelProps) => {
+        onClick,
+    } = props;
+
     const inputRef = useRef<HTMLInputElement>(null);
     const { theme } = useTheme();
 

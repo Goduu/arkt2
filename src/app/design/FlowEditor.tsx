@@ -20,9 +20,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useCommandStore } from './commandStore';
 import { ConnectionLine } from '../../components/edges/ConnectionLine';
-import { DEFAULT_ALGORITHM } from '../../components/edges/ArktEdge/constants';
 import { ArktNodeComponent } from '../../components/nodes/arkt/ArktNode';
-import { ArktEdge, ControlPointData } from '../../components/edges/ArktEdge/type';
 import Cursors from '../../components/yjs/Cursors';
 import useCursorStateSynced from '../../components/yjs/useCursorStateSynced';
 import useNodesStateSynced from '../../components/yjs/useNodesStateSynced';
@@ -38,7 +36,6 @@ import { EditableEdgeComponent } from '../../components/edges/ArktEdge';
 import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
 import { EdgeControls } from '@/components/controls/EdgeControls';
 import { NodeControls } from '@/components/controls/node-controls/NodeControls';
-import { DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
 import { useDraggableNode } from '@/components/nodes/useDraggableNode';
 import { StatusIcon } from './status-icon/StatusIcon';
 import { ArchTextNodeComponent } from '@/components/nodes/text/ArchTextNode';
@@ -48,6 +45,7 @@ import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
 import { HelpLinesToggle } from './status-icon/HelpLinesToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { createEdgeFromConnection } from '@/components/edges/ArktEdge/path/utils';
 
 export const nodeTypes = {
   arktNode: ArktNodeComponent,
@@ -115,33 +113,8 @@ export default function FlowEditor() {
   const onConnect: OnConnect = useCallback(
     (connection) => {
       const { connectionLinePath } = useCommandStore.getState();
-      // We add a new edge based on the selected DEFAULT_ALGORITHM
-      // and transfer all the control points from the connectionLinePath
-      // in case the user has added any while creating the connection
-      const edge: ArktEdge = {
-        ...connection,
-        id: `${Date.now()}-${connection.source}-${connection.target}`,
-        type: 'arktEdge',
-        selected: true,
-        data: {
-          algorithm: DEFAULT_ALGORITHM,
-          pathId: currentPath || DEFAULT_PATH_ID,
-          strokeColor: DEFAULT_STROKE_COLOR,
-          strokeWidth: 2,
-          fontSize: 12,
-          labelFill: { family: "base", indicative: "low" },
-          direction: "none",
-          points: connectionLinePath.map(
-            (point, i) =>
-            ({
-              ...point,
-              id: window.crypto.randomUUID(),
-              prev: i === 0 ? undefined : connectionLinePath[i - 1],
-              active: true,
-            } satisfies ControlPointData)
-          ),
-        },
-      };
+
+      const edge = createEdgeFromConnection(connection, connectionLinePath, currentPath);
       takeSnapshot();
       setEdges((edges) => addEdge(edge, edges));
     },

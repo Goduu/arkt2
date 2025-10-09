@@ -114,6 +114,10 @@ function normalizeEdge(raw: RawEdge, nodes: ArktNode[]): ArktEdge | null {
   return edge;
 }
 
+/*
+Takes the input from the LLM and normalize nodes and edges.
+Also arrange them using elk layout.
+*/
 export const normalizeDiagramInput = async (
   input: RawDiagramInput,
   nodeTemplates: TemplateData[],

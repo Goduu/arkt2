@@ -35,20 +35,19 @@ const useIdsForInactiveControlPoints = (points: ControlPointData[]) => {
   }
 };
 
-export function EditableEdgeComponent({
-  id,
-  selected,
-  source,
-  sourceX,
-  sourceY,
-  target,
-  style,
-  markerStart,
-  markerEnd,
-  data,
-  sourceHandleId,
-  targetHandleId
-}: EdgeProps<ArktEdge>) {
+export function EditableEdgeComponent(props: EdgeProps<ArktEdge>) {
+  const {
+    id,
+    selected,
+    source,
+    target,
+    style,
+    markerStart,
+    markerEnd,
+    data,
+    sourceHandleId,
+    targetHandleId
+  } = props;
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { onControlPointsChange } = useEdgeControls(id);
   const sourceId = sourceHandleId?.split("-")[0]
@@ -80,8 +79,8 @@ export function EditableEdgeComponent({
   const controlPoints = getControlPoints(pathPoints, data?.algorithm, {
     fromSide: sourcePos,
     toSide: targetPos,
-  }
-  );
+  });
+
   const path = getPath(pathPoints, data?.algorithm, {
     fromSide: sourcePos,
     toSide: targetPos,
@@ -89,7 +88,7 @@ export function EditableEdgeComponent({
 
   const controlPointsWithIds = useIdsForInactiveControlPoints(controlPoints);
 
-  const [, labelX, labelY] = getEdgePath("bezier", sourceX, sourceY, targetOrigin.x, targetOrigin.y, sourcePos, targetPos);
+  const [, labelX, labelY] = getEdgePath("bezier", sourceOrigin.x, sourceOrigin.y, targetOrigin.x, targetOrigin.y, sourcePos, targetPos);
 
   // Prefer anchoring the label to the central user-placed control point (if any)
   const placedPoints = data?.points ?? [];
@@ -100,9 +99,7 @@ export function EditableEdgeComponent({
   const labelCoordY = centralPlacedPoint?.y ?? labelY;
 
   const strokeColor = colorToHex(data?.strokeColor ?? DEFAULT_STROKE_COLOR);
- if(selected){
-  console.log("selected", data);
- }
+
   return (
     <>
       <BaseEdge

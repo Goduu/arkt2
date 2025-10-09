@@ -1,7 +1,10 @@
-import type { InternalNode, Node, XYPosition } from '@xyflow/react';
-import { ControlPointData } from '../type';
+import type { Connection, InternalNode, Node, XYPosition } from '@xyflow/react';
+import { ArktEdge, ControlPointData } from '../type';
 
 import { getBezierPath, getSmoothStepPath, getStraightPath, Position } from '@xyflow/react';
+import { DEFAULT_STROKE_COLOR } from '@/components/colors/utils';
+import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
+import { DEFAULT_ALGORITHM } from '../constants';
 
 // returns the position (top,right,bottom or right) passed node compared to
 function getParams(nodeA: InternalNode<Node>, nodeB: InternalNode<Node>) {
@@ -127,4 +130,36 @@ export const getEdgePath = (shape: "bezier" | "smoothstep" | "step",
       targetPosition,
     });
   return getStraightPath({ sourceX, sourceY, targetX, targetY });
+}
+
+
+export const createEdgeFromConnection = (connection: Connection, connectionLinePath: XYPosition[], currentPath: string) => {
+  // We add a new edge based on the selected DEFAULT_ALGORITHM
+  // and transfer all the control points from the connectionLinePath
+  // in case the user has added any while creating the connection
+  const edge: ArktEdge = {
+    ...connection,
+    id: `${connection.source}-${connection.target}`,
+    type: 'arktEdge',
+    selected: true,
+    data: {
+      algorithm: DEFAULT_ALGORITHM,
+      pathId: currentPath || DEFAULT_PATH_ID,
+      strokeColor: DEFAULT_STROKE_COLOR,
+      strokeWidth: 2,
+      fontSize: 12,
+      labelFill: { family: "base", indicative: "low" },
+      direction: "none",
+      points: connectionLinePath.map(
+        (point, i) =>
+        ({
+          ...point,
+          id: window.crypto.randomUUID(),
+          prev: i === 0 ? undefined : connectionLinePath[i - 1],
+          active: true,
+        } satisfies ControlPointData)
+      ),
+    },
+  };
+  return edge
 }

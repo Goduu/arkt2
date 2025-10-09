@@ -43,12 +43,12 @@ const steps = [{
     Component: <HomeSketch />,
 }, {
     step: 2,
-    title: "Link your code",
-    copy: "Connect GitHub to browse files alongside your diagrams.",
+    title: "Link your tools",
+    copy: "Connect GitHub and Figma to browse files alongside your diagrams.",
     Component: <HomeGithub />,
 }, {
     step: 3,
     title: "Ask about impact",
-    copy: "Use ASK AI to explore change effects across your system and get suggestions.",
+    copy: "Use AI to instantly reveal how changes impact your entire system — and get smart, actionable suggestions.",
     Component: <HomeAskAi />
 }]
