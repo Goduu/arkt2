@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): React.JSX.Element {
+  const { id } = props;
   const { description } = props.data;
   const { resolvedTheme } = useTheme();
 
@@ -68,10 +69,10 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
         )}
       </Tooltip>
       <>
-        <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-5 group-hover:opacity-100" />
-        <Handle type="source" position={Position.Left} id="left" className="opacity-5 group-hover:opacity-100" />
-        <Handle type="source" position={Position.Right} id="right" className="opacity-5 group-hover:opacity-100" />
-        <Handle type="source" position={Position.Top} id="top" className="opacity-5 group-hover:opacity-100" />
+        <Handle type="source" position={Position.Bottom} id={`${id}-bottom`} className="opacity-5 group-hover:opacity-100" />
+        <Handle type="source" position={Position.Left} id={`${id}-left`} className="opacity-5 group-hover:opacity-100" />
+        <Handle type="source" position={Position.Right} id={`${id}-right`} className="opacity-5 group-hover:opacity-100" />
+        <Handle type="source" position={Position.Top} id={`${id}-top`} className="opacity-5 group-hover:opacity-100" />
       </>
     </div>
 
