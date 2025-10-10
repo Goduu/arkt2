@@ -1,8 +1,9 @@
-import { SketchyPanel, SketchyPanelProps } from '@/components/sketchy/SketchyPanel';
+import { SketchyPanelProps } from '@/components/sketchy/SketchyPanel';
 import React, { useState, useRef, useEffect, FC, RefObject, FocusEvent } from 'react';
 import { getTailwindTextClass } from '../colors/utils';
 import { useTheme } from 'next-themes';
 import { cn } from '../utils';
+import SketchyShape from '../sketchy/SketchyShape';
 
 type AutoGrowInputProps = SketchyPanelProps & {
     placeholder?: string;
@@ -68,14 +69,17 @@ export const AutoGrowInput: FC<AutoGrowInputProps> = ({
     const textClass = getTailwindTextClass(strokeColor, theme);
 
     return (
-        <SketchyPanel
-            fillColor={fillColor}
-            strokeColor={strokeColor}
-            fillStyle={fillStyle}
-            fillWeight={fillWeight}
-            roughness={roughness}
-            strokeWidth={hideStroke ? 0 : 2}
-        >
+        <>
+            <SketchyShape
+                kind="rectangle"
+                fillColor={fillColor}
+                strokeColor={strokeColor}
+                fillStyle={fillStyle}
+                fillWeight={fillWeight}
+                roughness={roughness}
+                strokeWidth={hideStroke ? 0 : 6}
+                className='absolute p-0 inset-0 z-0 size-full'
+            />
 
             <div className="relative flex items-center justify-center">
                 {/* Hidden span to measure text width */}
@@ -110,7 +114,7 @@ export const AutoGrowInput: FC<AutoGrowInputProps> = ({
                     }}
                 />
             </div>
-        </SketchyPanel>
+        </>
 
     );
 };

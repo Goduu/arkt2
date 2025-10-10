@@ -28,7 +28,7 @@ export const TemplateIcon = ({
     return (
         <div
             className={cn(
-                "relative inline-block align-middle shrink-0 p-1 backdrop-blur-md",
+                "relative inline-block align-middle shrink-0 p-1 backdrop-blur-md size-4",
                 className
             )}
         >
@@ -49,7 +49,6 @@ export const TemplateIcon = ({
                 {Icon && <Icon className={cn("h-4 w-4", iconColorClass)} aria-label={iconDefinition?.label} />}
             </div>
             {/* Fallback intrinsic size so the wrapper has dimensions when no size classes are passed */}
-            <span className="block h-4 w-4 opacity-0 select-none pointer-events-none" aria-hidden="true" />
 
         </div>
     )

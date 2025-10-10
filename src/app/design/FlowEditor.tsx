@@ -14,7 +14,9 @@ import {
   OnEdgesDelete,
   useReactFlow,
   OnNodesChange,
-  applyNodeChanges
+  applyNodeChanges,
+  OnConnectEnd,
+  Connection
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -46,6 +48,9 @@ import { useSearchParams } from 'next/navigation';
 import { HelpLinesToggle } from './status-icon/HelpLinesToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { createEdgeFromConnection } from '@/components/edges/ArktEdge/path/utils';
+import { useNewDraftNode } from '@/components/nodes/arkt/utils';
+import { ArktNode } from '@/components/nodes/arkt/types';
+import { ArktEdge } from '@/components/edges/ArktEdge/type';
 
 export const nodeTypes = {
   arktNode: ArktNodeComponent,
@@ -62,7 +67,7 @@ const fitViewOptions = { padding: 0.4 };
 
 export default function FlowEditor() {
   const isMobile = useIsMobile();
-  const { getNodes } = useReactFlow();
+  const { getNodes, screenToFlowPosition } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
   const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
   const { takeSnapshot } = useUndoRedo();
@@ -77,6 +82,7 @@ export default function FlowEditor() {
   const prevCollabRef = useRef<string | null>(null);
   const helpLinesStatus = useCommandStore((s) => s.commandMap["help-lines-toggle"].status);
   const showHelpLines = helpLinesStatus === "active"
+  const { getNewDraftArktNode } = useNewDraftNode();
 
   useCopyPaste();
 
@@ -141,6 +147,43 @@ export default function FlowEditor() {
     [getNodes, showHelpLines, updateHelperLines, onNodesChange]
   );
 
+  const onConnectEnd: OnConnectEnd = useCallback(
+    (event, connectionState) => {
+      // when a connection is dropped on the pane it's not valid
+      if (connectionState.isValid || !connectionState.fromNode?.id) {
+        return
+      }
+      // we need to remove the wrapper bounds, in order to get the correct position
+      const { clientX, clientY } ='changedTouches' in event ? event.changedTouches[0] : event;
+
+      const newNode: ArktNode = {
+        ...getNewDraftArktNode(),
+        position: screenToFlowPosition({
+          x: clientX,
+          y: clientY,
+        }),
+      }
+
+      const connection: Connection = {
+        source: connectionState.fromHandle?.nodeId || "",
+        target: connectionState.toHandle?.nodeId || "",
+        sourceHandle: connectionState.fromHandle?.id || "",
+        targetHandle: connectionState.toHandle?.id || ""
+      }
+
+      setNodes((nds) => nds.concat(newNode));
+      const newEdge: ArktEdge = {
+        ...createEdgeFromConnection(connection, [], currentPath),
+        source: connectionState.fromNode?.id,
+        target: newNode.id,
+      }
+      setEdges((eds) =>
+        eds.concat(newEdge),
+      );
+    },
+    [screenToFlowPosition],
+  );
+
   const onNodeDragStop = useCallback(() => {
     if (!showHelpLines) return
 
@@ -176,6 +219,7 @@ export default function FlowEditor() {
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onConnectEnd={onConnectEnd}
           onPointerMove={handleMouseMove}
           onNodeDragStart={onNodeDragStart}
           onNodeDragStop={onNodeDragStop}

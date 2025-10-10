@@ -110,7 +110,7 @@ export default function HomeLanding(): JSX.Element {
                         <div className="flex flex-col items-center gap-4 text-center md:flex-row md:justify-between md:text-left overflow-hidden h-36 md:h-full">
                             <div>
                                 <h3 className="text-xl font-semibold md:text-2xl">Build your first diagram in minutes</h3>
-                                <p className="text-sm opacity-80">Stay fast, stay playful, stay in control.</p>
+                                <p className="text-sm opacity-80">Stay fast, stay focused, stay in control.</p>
                             </div>
                             <StartNowButton aria-label="(bottom CTA)" />
                         </div>

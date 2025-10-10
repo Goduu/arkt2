@@ -5,11 +5,11 @@ import { Figma, Github } from "lucide-react";
 import { IntegrationNode } from "./type";
 import { NodeProps, Position } from "@xyflow/system";
 import { Handle, NodeResizer } from "@xyflow/react";
-import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
 import { useCommandStore } from "@/app/design/commandStore";
 import { DEFAULT_STROKE_COLOR, getTailwindTextClass } from "@/components/colors/utils";
 import { useTheme } from "next-themes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import SketchyShape from "@/components/sketchy/SketchyShape";
 
 export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): React.JSX.Element {
   const { id } = props;
@@ -32,48 +32,52 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
 
   const textClass = getTailwindTextClass(DEFAULT_STROKE_COLOR, resolvedTheme);
 
+  // Adjust stroke width based on zoom to maintain consistent visual appearance
+  // const adjustedStrokeWidth = React.useMemo(() => {
+  //   const baseStrokeWidth = 2;
+  //   return Math.max(0.5, baseStrokeWidth / viewport.zoom -1);
+  // }, [viewport.zoom]);
+
   return (
     <div
-      className="group"
+      className="group relative inline-block align-middle shrink-0 p-1 size-8"
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
       <NodeResizer
         isVisible={props.selected}
-        minWidth={30}
-        minHeight={30}
-        maxWidth={30}
-        maxHeight={30}
-        handleStyle={{ width: 0, height: 0 }}
+        shouldResize={() => false}
+        handleStyle={{ width: 0, height: 0, border: "transparent" }}
       />
-      <Tooltip delayDuration={500}>
-        <TooltipTrigger asChild>
-          <SketchyPanel
-            kind={"ellipse"}
-            strokeWidth={2}
-            className="cursor-pointer relative overflow-visible"
-          >
-            {props.data.type === "github" && (
-              <Github className={`p-1 size-6 ${textClass}`} />
-            )}
-            {props.data.type === "figma" && (
-              <Figma className={`p-1 size-6 ${textClass}`} />
-            )}
-
-          </SketchyPanel>
-        </TooltipTrigger>
-        {description && !props.dragging && (
-          <TooltipContent className="transition-all duration-500">
-            {description}
-          </TooltipContent>
-        )}
-      </Tooltip>
-      <>
-        <Handle type="source" position={Position.Bottom} id={`${id}-bottom`} className="opacity-5 group-hover:opacity-100" />
-        <Handle type="source" position={Position.Left} id={`${id}-left`} className="opacity-5 group-hover:opacity-100" />
-        <Handle type="source" position={Position.Right} id={`${id}-right`} className="opacity-5 group-hover:opacity-100" />
-        <Handle type="source" position={Position.Top} id={`${id}-top`} className="opacity-5 group-hover:opacity-100" />
-      </>
+      <SketchyShape
+        kind="ellipse"
+        strokeWidth={7}
+        strokeColor={DEFAULT_STROKE_COLOR}
+        className="absolute p-0 inset-0 z-0 size-full px-0.5 cursor-pointer overflow-visible"
+      />
+        <Tooltip delayDuration={500}>
+          <TooltipTrigger asChild>
+            <div className="relative inset-0 z-10 flex items-center justify-center">
+              {props.data.type === "github" && (
+                <Github className={`p-1 size-full ${textClass}`} />
+              )}
+              {props.data.type === "figma" && (
+                <Figma className={`p-1 size-full ${textClass}`} />
+              )}
+            </div>
+          </TooltipTrigger>
+          {description && !props.dragging && (
+            <TooltipContent className="transition-all duration-500">
+              {description}
+            </TooltipContent>
+          )}
+        </Tooltip>
+        <>
+          <Handle type="source" position={Position.Bottom} id={`${id}-bottom`} className="opacity-5 group-hover:opacity-100" />
+          <Handle type="source" position={Position.Left} id={`${id}-left`} className="opacity-5 group-hover:opacity-100" />
+          <Handle type="source" position={Position.Right} id={`${id}-right`} className="opacity-5 group-hover:opacity-100" />
+          <Handle type="source" position={Position.Top} id={`${id}-top`} className="opacity-5 group-hover:opacity-100" />
+        </>
     </div>
 
   );
