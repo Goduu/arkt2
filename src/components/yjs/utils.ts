@@ -13,7 +13,7 @@ export function stringToColor(str: string) {
   
     for (let i = 0; i < 3; i++) {
       const value = (hash >> (i * 8)) & 0xff;
-      colour += value.toString(16).substring(-2);
+      colour += value.toString(16).padStart(2, '0');
     }
   
     return colour.substring(0, 7);

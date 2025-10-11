@@ -70,13 +70,13 @@ function useEdgesStateSynced(): [
     };
 
     const initialEdges = Array.from(edgesMap.values()).filter(
-      (edge) => edge && edge.id
+      (edge) => edge && edge.id && edge.data?.pathId === currentDiagramId
     );
     setEdges(initialEdges);
     edgesMap.observe(observer);
 
     return () => edgesMap.unobserve(observer);
-  }, [setEdges]);
+  }, [setEdges, currentDiagramId]);
 
   return [edges, setEdgesSynced, onEdgesChange];
 }

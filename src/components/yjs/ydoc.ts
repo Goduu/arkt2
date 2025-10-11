@@ -54,7 +54,7 @@ export async function getProvider() {
 
     if (provider && currentRoomName !== roomName) {
         try {
-            disconnectProvider();
+            await disconnectProvider();
         } catch {
             // ignore
         }
@@ -73,7 +73,7 @@ export async function getProvider() {
         ydoc,
         {
             signaling: [signalingServerUrl],
-            maxConns: 5,
+            maxConns: 10,
             filterBcConns: true,
             peerOpts: {
                 config: {
@@ -110,7 +110,7 @@ export async function getProvider() {
     return provider;
 }
 
-export function disconnectProvider() {
+export async function disconnectProvider() {
     try {
         // Remove this client's presence from shared maps immediately
         const selfId = ydoc.clientID.toString();
@@ -132,7 +132,7 @@ export function disconnectProvider() {
         }
         if (idbPersistence) {
             try {
-                idbPersistence.destroy();
+                await idbPersistence.destroy();
             } catch {
                 // ignore
             }
@@ -243,7 +243,7 @@ if (typeof window !== 'undefined') {
 
     // Ensure we disconnect from signaling and peers when leaving the page
     const cleanup = () => {
-        disconnectProvider();
+        void disconnectProvider();
     };
 
     window.addEventListener('beforeunload', cleanup);

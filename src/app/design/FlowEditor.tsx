@@ -97,15 +97,20 @@ export default function FlowEditor() {
     const collab = searchParams.get('collab');
     const prev = prevCollabRef.current;
 
-    if (prev && prev !== collab) {
-      // Leaving previous room: disconnect to remove presence immediately
-      disconnectProvider();
+    const handleCollabChange = async () => {
+
+      if (prev && prev !== collab) {
+        // Leaving previous room: disconnect to remove presence immediately
+        await disconnectProvider();
+      }
+
+      // Entering a room (or staying in the same one): ensure provider is connected
+      await getProvider();
+
+      prevCollabRef.current = collab;
     }
 
-    // Entering a room (or staying in the same one): ensure provider is connected
-    void getProvider();
-
-    prevCollabRef.current = collab;
+    handleCollabChange();
   }, [searchParams]);
 
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -154,7 +159,7 @@ export default function FlowEditor() {
         return
       }
       // we need to remove the wrapper bounds, in order to get the correct position
-      const { clientX, clientY } ='changedTouches' in event ? event.changedTouches[0] : event;
+      const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event;
 
       const newNode: ArktNode = {
         ...getNewDraftArktNode(),
