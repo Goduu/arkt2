@@ -4,12 +4,13 @@ import * as React from "react";
 import { Figma, Github } from "lucide-react";
 import { IntegrationNode } from "./type";
 import { NodeProps, Position } from "@xyflow/system";
-import { Handle, NodeResizer } from "@xyflow/react";
+import { NodeResizer } from "@xyflow/react";
 import { useCommandStore } from "@/app/design/commandStore";
 import { DEFAULT_STROKE_COLOR, getTailwindTextClass } from "@/components/colors/utils";
 import { useTheme } from "next-themes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import SketchyShape from "@/components/sketchy/SketchyShape";
+import { NodeHandler } from "../NodeHandler";
 
 export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): React.JSX.Element {
   const { id } = props;
@@ -31,12 +32,6 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
   }
 
   const textClass = getTailwindTextClass(DEFAULT_STROKE_COLOR, resolvedTheme);
-
-  // Adjust stroke width based on zoom to maintain consistent visual appearance
-  // const adjustedStrokeWidth = React.useMemo(() => {
-  //   const baseStrokeWidth = 2;
-  //   return Math.max(0.5, baseStrokeWidth / viewport.zoom -1);
-  // }, [viewport.zoom]);
 
   return (
     <div
@@ -73,10 +68,10 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
           )}
         </Tooltip>
         <>
-          <Handle type="source" position={Position.Bottom} id={`${id}-bottom`} className="opacity-5 group-hover:opacity-100" />
-          <Handle type="source" position={Position.Left} id={`${id}-left`} className="opacity-5 group-hover:opacity-100" />
-          <Handle type="source" position={Position.Right} id={`${id}-right`} className="opacity-5 group-hover:opacity-100" />
-          <Handle type="source" position={Position.Top} id={`${id}-top`} className="opacity-5 group-hover:opacity-100" />
+          <NodeHandler type="source" position={Position.Bottom} id={`${id}-bottom`} />
+          <NodeHandler type="source" position={Position.Left} id={`${id}-left`} />
+          <NodeHandler type="source" position={Position.Right} id={`${id}-right`} />
+          <NodeHandler type="source" position={Position.Top} id={`${id}-top`} />
         </>
     </div>
 
