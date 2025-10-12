@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import ydoc from './ydoc';
-import useUserDataStateSynced from './useUserStateSynced';
 import { DEFAULT_PATH_ID } from './constants';
 import { TemplateData } from '../templates/types';
+import useUserDataStateSynced from './useUserStateSynced';
 
 // We are using nodesMap as the one source of truth for the nodes.
 // This means that we are doing all changes to the nodes in the map object.

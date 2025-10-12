@@ -8,8 +8,8 @@ import {
 import ydoc from './ydoc';
 import { edgesMap } from './useEdgesStateSynced';
 import { NodeUnion } from '../nodes/types';
-import useUserDataStateSynced from './useUserStateSynced';
 import { DEFAULT_PATH_ID } from './constants';
+import useUserDataStateSynced from './useUserStateSynced';
 
 // We are using nodesMap as the one source of truth for the nodes.
 // This means that we are doing all changes to the nodes in the map object.
@@ -103,7 +103,7 @@ function useNodesStateSynced(): [
       } else if (change.type === "select") {
         const updatedNode = nextNodes.find((n) => n.id === change.id);
         if (!updatedNode) return;
-        const selectedBy = change.selected ? currentUserData?.id : undefined;
+        const selectedBy = change.selected ? ydoc.clientID.toString() : undefined;
         // Update discriminated union safely without type assertions
         switch (updatedNode.type) {
           case 'arktNode':
@@ -138,7 +138,7 @@ function useNodesStateSynced(): [
         }
       }
     }
-  }, [nodesMap, currentUserData?.id]);
+  }, [nodesMap, currentUserData?.currentDiagramId]);
 
   // here we are observing the nodesMap and updating the nodes state whenever the map changes.
   useEffect(() => {

@@ -8,12 +8,12 @@ import { Doc, encodeStateAsUpdate, applyUpdate } from 'yjs';
 
 const ydoc = new Doc();
 
-// Please replace this with your own signaling server.
-// We are only hosting a very small and limited instance.
-// Head over to https://github.com/yjs/y-websocket-server for more information
-// on how to set up your own signaling server.
 
-const signalingServerUrl = process.env.NEXT_PUBLIC_YJS_SIGNALING ?? 'ws://localhost:4444'
+const signalingServerUrls = (process.env.NEXT_PUBLIC_YJS_SIGNALING ?? 'ws://localhost:4444')
+.split(',')
+.map(s => s.trim())
+.filter(Boolean);
+const yjsPassword = process.env.NEXT_PUBLIC_YJS_PASSWORD;
 
 // Function to get room name from URL or use default
 function getRoomName(): string {
@@ -72,14 +72,16 @@ export async function getProvider() {
         roomName,
         ydoc,
         {
-            signaling: [signalingServerUrl],
-            maxConns: 10,
+            signaling: signalingServerUrls,
+            password: yjsPassword || undefined,
+            maxConns: 6,
             filterBcConns: true,
             peerOpts: {
                 config: {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
                         { urls: 'stun:stun1.l.google.com:19302' },
+                        // { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }
                         // Add a free TURN server for better connectivity
                         // {
                         //     urls: 'turn:openrelay.metered.ca:80',

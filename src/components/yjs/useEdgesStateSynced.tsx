@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import {type OnEdgesChange, applyEdgeChanges } from '@xyflow/react';
+import { type OnEdgesChange, applyEdgeChanges } from '@xyflow/react';
 
 import ydoc from './ydoc';
 import { ArktEdge } from '../edges/ArktEdge/type';
-import useUserDataStateSynced from './useUserStateSynced';
 import { DEFAULT_PATH_ID } from './constants';
+import useUserDataStateSynced from './useUserStateSynced';
 
 // Please see the comments in useNodesStateSynced.ts.
 // This is the same thing but for edges.

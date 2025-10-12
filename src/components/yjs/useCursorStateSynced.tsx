@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 
 import ydoc from './ydoc';
@@ -36,27 +36,28 @@ export function useCursorStateSynced() {
     }
   }, []);
 
-  const onMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
+  const rafRef = useRef<number | null>(null);
+  const lastPosRef = useRef<{ x: number; y: number } | null>(null);
 
-      const currentClientId = ydoc.clientID.toString();
-      const currentCursorColor = stringToColor(localUserId);
+  const flushCursor = useCallback(() => {
+    rafRef.current = null;
+    if (!lastPosRef.current) return;
+    const { x, y } = lastPosRef.current;
+    const currentClientId = ydoc.clientID.toString();
+    const currentCursorColor = stringToColor(localUserId);
+    cursorsMap.set(currentClientId, {
+      id: currentClientId, name: localName, color: currentCursorColor,
+      x, y, timestamp: Date.now(),
+    });
+  }, [localUserId, localName]);
 
-      cursorsMap.set(currentClientId, {
-        id: currentClientId,
-        name: localName,
-        color: currentCursorColor,
-        x: position.x,
-        y: position.y,
-        timestamp: Date.now(),
-      });
-    },
-    [screenToFlowPosition, localUserId, localName]
-  );
+  const onMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+    lastPosRef.current = position;
+    if (rafRef.current == null) {
+      rafRef.current = requestAnimationFrame(flushCursor);
+    }
+  }, [screenToFlowPosition, flushCursor]);
 
   useEffect(() => {
     const timer = window.setInterval(flush, MAX_IDLE_TIME);

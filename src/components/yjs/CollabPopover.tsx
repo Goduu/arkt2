@@ -12,6 +12,7 @@ import { stringToColor } from "./utils";
 import ydoc from "./ydoc";
 import { copyCurrentDocToLocalRoom, disconnectProvider } from "./ydoc";
 import { usePathname, useRouter } from "next/navigation";
+import { useMounted } from "@/app/useMounted";
 
 export function CollabPopover() {
     const searchParams = useSearchParams();
@@ -21,6 +22,7 @@ export function CollabPopover() {
     const activateCommand = useCommandStore((s) => s.activateCommand);
     const { usersData } = useUserDataStateSynced()
     const [cursors, , , localName, updateLocalUserName] = useCursorStateSynced()
+    const mounted = useMounted();
 
     const [isEditing, setIsEditing] = useState(false);
     const [draftName, setDraftName] = useState(localName);
@@ -66,6 +68,11 @@ export function CollabPopover() {
         params.delete('collab');
         router.push(`${pathname}${params.size ? `?${params.toString()}` : ''}`);
     }, [searchParams, router, pathname]);
+
+     // Avoid SSR hydration mismatches from Popover (Radix useId) by only rendering it client-side
+     if (collab && !mounted) {
+        return null;
+    }
 
     if (!collab) {
         return (
