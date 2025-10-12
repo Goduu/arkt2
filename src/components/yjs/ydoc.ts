@@ -13,6 +13,7 @@ const ydoc = new Doc();
 // Timing constants for async operations
 const PROVIDER_DISCONNECT_DELAY = 50; // Wait time after provider disconnect before destroying persistence
 const INDEXEDDB_WRITE_DELAY = 10; // Wait time to ensure IndexedDB writes are flushed
+const WEBRTC_SYNC_TIMEOUT = 15000; // Maximum time to wait for WebRTC sync (15 seconds)
 
 export type AwarenessState = SelectionState & CursorAwarenessState
 // Awareness type definition
@@ -72,7 +73,7 @@ let currentRoomName: string | null = null;
 let idbPersistence: IndexeddbPersistence | null = null;
 let providerInitPromise: Promise<WebrtcProvider | null> | null = null;
 
-async function setupPersistence(roomName: string) {
+async function setupPersistence(roomName: string, waitForSync = true) {
     if (idbPersistence) {
         try {
             await idbPersistence.destroy();
@@ -85,12 +86,43 @@ async function setupPersistence(roomName: string) {
     idbPersistence = new IndexeddbPersistence(roomName, ydoc);
 
     // Wait for persistence to sync using proper promise
-    await new Promise<void>((resolve) => {
-        if (idbPersistence!.synced) {
-            resolve();
-        } else {
-            idbPersistence!.once('synced', () => resolve());
-        }
+    if (waitForSync) {
+        await new Promise<void>((resolve) => {
+            if (idbPersistence!.synced) {
+                resolve();
+            } else {
+                idbPersistence!.once('synced', () => resolve());
+            }
+        });
+    }
+}
+
+/**
+ * Wait for WebRTC provider to sync with peers or timeout
+ * Returns true if synced, false if timed out
+ */
+async function waitForWebRTCSync(provider: WebrtcProvider): Promise<boolean> {
+    return new Promise((resolve) => {
+        let resolved = false;
+        
+        const timeoutId = setTimeout(() => {
+            if (!resolved) {
+                resolved = true;
+                provider.off('synced', syncHandler);
+                console.warn('WebRTC sync timed out after', WEBRTC_SYNC_TIMEOUT, 'ms - continuing with partial sync');
+                resolve(false);
+            }
+        }, WEBRTC_SYNC_TIMEOUT);
+        
+        const syncHandler = () => {
+            if (!resolved) {
+                resolved = true;
+                clearTimeout(timeoutId);
+                resolve(true);
+            }
+        };
+        
+        provider.on('synced', syncHandler);
     });
 }
 
@@ -121,72 +153,133 @@ export async function getProvider() {
             }
 
             const { WebrtcProvider } = await import('y-webrtc');
-            await setupPersistence(roomName);
-
-            // Ensure user data is initialized for both local and collab modes
-            const userId = ydoc.clientID.toString();
-            const usersDataMap = ydoc.getMap('usersData');
-
-            // Initialize user data if needed (persistence already synced in setupPersistence)
-            if (!usersDataMap.has(userId)) {
-                const { DEFAULT_PATH_ID, DEFAULT_PATH_LABEL } = await import('./constants');
-                usersDataMap.set(userId, {
-                    id: userId,
-                    currentDiagramId: DEFAULT_PATH_ID,
-                    currentDiagramPath: [{ id: DEFAULT_PATH_ID, label: DEFAULT_PATH_LABEL }],
-                    timestamp: Date.now(),
-                });
-            }
-
-            // if (roomName === 'local') {
-            //     currentRoomName = roomName;
-            //     return null;
-            // }
-
             const isLocal = roomName === 'local';
 
-            provider = new WebrtcProvider(
-                roomName,
-                ydoc,
-                {
-                    signaling: isLocal ? [] : signalingServerUrls,
-                    password: yjsPassword || undefined,
-                    maxConns: isLocal ? 0 : 6,
-                    filterBcConns: true,
-                    peerOpts: {
-                        config: {
-                            iceServers: [
-                                { urls: 'stun:stun.l.google.com:19302' },
-                                { urls: 'stun:stun1.l.google.com:19302' },
-                            ]
-                        },
-                    }
+            // DIFFERENT INITIALIZATION ORDER FOR COLLAB VS LOCAL ROOMS
+            if (isLocal) {
+                // LOCAL MODE: IndexedDB is the source of truth
+                // Load IndexedDB first, then create provider
+                await setupPersistence(roomName, true);
+                
+                // Initialize user data if needed
+                const userId = ydoc.clientID.toString();
+                const usersDataMap = ydoc.getMap('usersData');
+                if (!usersDataMap.has(userId)) {
+                    const { DEFAULT_PATH_ID, DEFAULT_PATH_LABEL } = await import('./constants');
+                    usersDataMap.set(userId, {
+                        id: userId,
+                        currentDiagramId: DEFAULT_PATH_ID,
+                        currentDiagramPath: [{ id: DEFAULT_PATH_ID, label: DEFAULT_PATH_LABEL }],
+                        timestamp: Date.now(),
+                    });
                 }
-            );
+            } else {
+                // COLLABORATION MODE: WebRTC peers are the source of truth
+                // Create provider first, sync with peers, then setup IndexedDB as cache
+                provider = new WebrtcProvider(
+                    roomName,
+                    ydoc,
+                    {
+                        signaling: signalingServerUrls,
+                        password: yjsPassword || undefined,
+                        maxConns: 6,
+                        filterBcConns: true,
+                        peerOpts: {
+                            config: {
+                                iceServers: [
+                                    { urls: 'stun:stun.l.google.com:19302' },
+                                    { urls: 'stun:stun1.l.google.com:19302' },
+                                ]
+                            },
+                        }
+                    }
+                );
 
-            // Guard against race conditions: Check if room hasn't changed during async operations
-            if (currentRoomName && currentRoomName !== roomName) {
-                // Another room change happened, discard this result
-                provider.disconnect();
-                provider.destroy();
-                return null;
+                // Guard against race conditions: Check if room hasn't changed during async operations
+                if (currentRoomName && currentRoomName !== roomName) {
+                    // Another room change happened, discard this result
+                    provider.disconnect();
+                    provider.destroy();
+                    provider = null;
+                    return null;
+                }
+
+                // Use the provider's awareness instance
+                awareness = provider.awareness;
+
+                try {
+                    provider.on('status', (event: { connected: boolean }) => {
+                        console.info('WebRTC status:', event);
+                    });
+                    provider.on('peers', (event: unknown) => {
+                        console.info('WebRTC peers:', event);
+                    });
+                    provider.on('synced', (event: unknown) => {
+                        console.info('WebRTC sync:', event);
+                    });
+                } catch {
+                    console.error('Error initializing WebRTC provider');
+                }
+
+                // CRITICAL: Wait for WebRTC to sync before continuing
+                // This ensures we get the shared state from peers before loading local cache
+                console.info('Waiting for WebRTC sync with peers...');
+                const synced = await waitForWebRTCSync(provider);
+                if (synced) {
+                    console.info('WebRTC synced successfully with peers');
+                } else {
+                    console.warn('WebRTC sync timed out - proceeding anyway');
+                }
+
+                // Now setup IndexedDB as a secondary cache (don't wait for it to load)
+                // This prevents overwriting the synced state with stale local data
+                await setupPersistence(roomName, false);
+
+                // Initialize user data if needed (after sync, so we don't overwrite peer data)
+                const userId = ydoc.clientID.toString();
+                const usersDataMap = ydoc.getMap('usersData');
+                if (!usersDataMap.has(userId)) {
+                    const { DEFAULT_PATH_ID, DEFAULT_PATH_LABEL } = await import('./constants');
+                    usersDataMap.set(userId, {
+                        id: userId,
+                        currentDiagramId: DEFAULT_PATH_ID,
+                        currentDiagramPath: [{ id: DEFAULT_PATH_ID, label: DEFAULT_PATH_LABEL }],
+                        timestamp: Date.now(),
+                    });
+                }
             }
 
-            // Use the provider's awareness instance
-            awareness = provider.awareness;
+            // Create provider for local mode (no signaling, no connections)
+            if (isLocal) {
+                provider = new WebrtcProvider(
+                    roomName,
+                    ydoc,
+                    {
+                        signaling: [],
+                        password: yjsPassword || undefined,
+                        maxConns: 0,
+                        filterBcConns: true,
+                        peerOpts: {
+                            config: {
+                                iceServers: [
+                                    { urls: 'stun:stun.l.google.com:19302' },
+                                    { urls: 'stun:stun1.l.google.com:19302' },
+                                ]
+                            },
+                        }
+                    }
+                );
 
-            try {
-                provider.on('status', (event: { connected: boolean }) => {
-                    console.info('WebRTC status:', event);
-                });
-                provider.on('peers', (event: unknown) => {
-                    console.info('WebRTC peers:', event);
-                });
-                provider.on('synced', (event: unknown) => {
-                    console.info('WebRTC sync:', event);
-                });
-            } catch {
-                console.error('Error initializing WebRTC provider');
+                // Guard against race conditions
+                if (currentRoomName && currentRoomName !== roomName) {
+                    provider.disconnect();
+                    provider.destroy();
+                    provider = null;
+                    return null;
+                }
+
+                // Use the provider's awareness instance
+                awareness = provider.awareness;
             }
 
             currentRoomName = roomName;
