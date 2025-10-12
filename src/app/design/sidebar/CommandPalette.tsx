@@ -20,6 +20,7 @@ import { useNewDraftNode } from "@/components/nodes/arkt/utils";
 import useTemplatesStateSynced from "@/components/yjs/useTemplatesStateSynced";
 import useNodesStateSynced from "@/components/yjs/useNodesStateSynced";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import useUndoRedo from "@/app/hooks/useUndoRedo";
 
 export function CommandPalette(): JSX.Element {
   const router = useRouter();
@@ -31,6 +32,7 @@ export function CommandPalette(): JSX.Element {
   const isFreehandModeCommand = useCommandStore((s) => s.commandMap["freehand-mode"]);
   const removeCommand = useCommandStore((s) => s.removeCommand);
   const [, setNodes] = useNodesStateSynced()
+  useUndoRedo();
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -63,6 +65,8 @@ export function CommandPalette(): JSX.Element {
         setOpen((prev) => !prev);
         return;
       }
+
+      // Undo/Redo
 
       // Do not trigger shortcuts while the palette is open
       if (open) return;
@@ -119,7 +123,6 @@ export function CommandPalette(): JSX.Element {
           activateCommand("open-import-dialog")
           return
         }
-
       }
 
       // Non-shift single-key shortcuts
@@ -153,7 +156,7 @@ export function CommandPalette(): JSX.Element {
     };
     window.addEventListener("keydown", down);
     return () => window.removeEventListener("keydown", down);
-  }, [activateCommand, getNewDraftNode, getNewDraftTextNode, open, router]);
+  }, [activateCommand, getNewDraftNode, getNewDraftTextNode, open, router, isDraggingNodeCommand, isFreehandModeCommand, removeCommand, setNodes]);
 
   const templates = useMemo(() => {
     return Object.values(nodeTemplates).sort((a, b) => (b.lastUsedAt ?? b.updatedAt) - (a.lastUsedAt ?? a.updatedAt));

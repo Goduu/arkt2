@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import ydoc from './ydoc';
@@ -7,9 +9,8 @@ import { ArktNode } from '../nodes/arkt/types';
 import { FitView } from '@xyflow/react';
 import { DEFAULT_PATH_ID, DEFAULT_PATH_LABEL } from './constants';
 
+// Use Y.Map for diagram navigation - this is core app state, not ephemeral presence
 const usersDataMap = ydoc.getMap<UserData>('usersData');
-
-const MAX_IDLE_TIME = 60000;
 
 export type UserData = {
   id: string;
@@ -46,7 +47,7 @@ export function useUserDataStateSynced(fitView?: FitView) {
     }
     // Normalize in case it's missing the default at index 0
     const normalized = normalizePath(existing.currentDiagramPath);
-    if (normalized !== existing.currentDiagramPath || !existing.currentDiagramId) {
+    if (JSON.stringify(normalized) !== JSON.stringify(existing.currentDiagramPath) || !existing.currentDiagramId) {
       usersDataMap.set(id, {
         ...existing,
         currentDiagramId: existing.currentDiagramId || DEFAULT_PATH_ID,
@@ -56,26 +57,19 @@ export function useUserDataStateSynced(fitView?: FitView) {
     }
   }, [normalizePath]);
 
-  // Flush any data that have gone stale.
-  const flush = useCallback(() => {
-    const now = Date.now();
-
-    for (const [id, userData] of usersDataMap) {
-      if (now - userData.timestamp > MAX_IDLE_TIME && id !== ydoc.clientID.toString()) {
-        usersDataMap.delete(id);
-      }
-    }
-  }, []);
 
   const onChangeNodeLabel = useCallback((nodeId: string, label: string) => {
     const currentUserData = usersDataMap.get(ydoc.clientID.toString());
     if (currentUserData) {
-      currentUserData.currentDiagramPath.forEach(path => {
-        if (path.id === nodeId) {
-          path.label = label;
-        }
+      // Create new array with updated path to avoid direct mutation
+      const updatedPath = currentUserData.currentDiagramPath.map(path =>
+        path.id === nodeId ? { ...path, label } : path
+      );
+      usersDataMap.set(ydoc.clientID.toString(), {
+        ...currentUserData,
+        currentDiagramPath: updatedPath,
+        timestamp: Date.now(),
       });
-      usersDataMap.set(ydoc.clientID.toString(), currentUserData);
     }
   }, []);
 
@@ -93,7 +87,7 @@ export function useUserDataStateSynced(fitView?: FitView) {
       });
       fitView?.();
     },
-    [normalizePath]
+    [normalizePath, fitView]
   );
 
   const onDiagramDrillUp = useCallback(() => {
@@ -109,7 +103,7 @@ export function useUserDataStateSynced(fitView?: FitView) {
       timestamp: Date.now(),
     });
     fitView?.();
-  }, [normalizePath]);
+  }, [normalizePath, fitView]);
 
   // Drill to a specific index within the currentDiagramPath array (inclusive)
   const onDiagramDrillToIndex = useCallback((index: number) => {
@@ -128,14 +122,14 @@ export function useUserDataStateSynced(fitView?: FitView) {
       fitView?.();
     }
     // If we don't have user data yet, no-op
-  }, [normalizePath]);
+  }, [normalizePath, fitView]);
 
   // Drill directly to a node by id, rebuilding full path and ensuring home is first
   const onDiagramDrillToNode = useCallback((targetNodeId: string) => {
     const nodesMap = ydoc.getMap<NodeUnion>('nodes');
 
     const node = nodesMap.get(targetNodeId);
-    const isArktNode = (n: NodeUnion | undefined): n is ArktNode => !!n && (n as ArktNode).type === 'arktNode';
+    const isArktNode = (n: NodeUnion | undefined): n is ArktNode => !!n && n.type === 'arktNode';
     if (!isArktNode(node)) return;
 
     const ancestorIds = getAncestorIdsFromNode(node); // [parentId, grandParentId, ...]
@@ -157,24 +151,21 @@ export function useUserDataStateSynced(fitView?: FitView) {
       timestamp: Date.now(),
     });
     fitView?.();
-  }, [normalizePath]);
+  }, [normalizePath, fitView]);
 
   useEffect(() => {
-    const timer = window.setInterval(flush, MAX_IDLE_TIME);
     const observer = () => {
       setUsersData([...usersDataMap.values()]);
     };
 
-    flush();
     ensureInitial();
     setUsersData([...usersDataMap.values()]);
     usersDataMap.observe(observer);
 
     return () => {
       usersDataMap.unobserve(observer);
-      window.clearInterval(timer);
     };
-  }, [flush, ensureInitial]);
+  }, [ensureInitial]);
 
   const currentUserData = useMemo(() => {
     const data = usersData.find((userData) => userData.id === ydoc.clientID.toString());

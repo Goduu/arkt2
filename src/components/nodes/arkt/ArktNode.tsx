@@ -16,6 +16,8 @@ import { useNodeData } from './useNodeData';
 import { VirtualLinkIndicator } from './virtual/VirtualLinkIndicator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { NodeHandler } from '../NodeHandler';
+import useSelectionAwareness from '../../yjs/useSelectionAwareness';
+import { getRemoteSelectionStyle, RemoteSelectionBadges } from '../../yjs/RemoteSelection';
 
 export const ArktNodeComponent = ({ id, selected, width, height, data }: NodeProps<ArktNode>) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -23,14 +25,19 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
   const { rotateControlRef } = useRotationHandler(id, "arktNode", selected);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { fitView } = useReactFlow();
-  const { onDiagramDrillDown, onDiagramDrillToNode, currentUserData } = useUserDataStateSynced(fitView);
+  const { onDiagramDrillDown, onDiagramDrillToNode } = useUserDataStateSynced(fitView);
   const { fillColor, strokeColor, rotation, iconKey, strokeLineDash, label } = useNodeData(data);
   const { theme } = useTheme();
   const isMobile = useIsMobile();
   const textColorClass = getTailwindTextClass(strokeColor, theme)
 
-  const isSelectedByCurrentUser = selected && data.selectedBy === currentUserData?.id;
+  const { selectedByNodeId, localSelectedNodeIds } = useSelectionAwareness();
+  const remoteClients = selectedByNodeId.get(id) || [];
+  const isRemotelySelected = remoteClients.length > 0;
+  const remoteStyle = getRemoteSelectionStyle(remoteClients);
 
+  // Node is selected by current user if ReactFlow says it's selected (local selection state)
+  const isSelectedByCurrentUser = selected && localSelectedNodeIds.has(id);
   const { onNodeUpdate: onLabelChange } = useArktNodeControls(id);
 
   useRedrawSketch({ containerRef, setSize });
@@ -55,6 +62,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       )}
       style={{
         transform: `rotate(${rotation}deg)`,
+        ...(isRemotelySelected ? remoteStyle : {}),
       }}
       onClick={handleClick}
       data-selected={isSelectedByCurrentUser ? "true" : "false"}
@@ -68,6 +76,7 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       />
 
       <VirtualLinkIndicator nodeId={id} />
+      {isRemotelySelected && <RemoteSelectionBadges remoteClients={remoteClients} />}
 
       <SketchyShape
         className="absolute inset-0 pointer-events-none"

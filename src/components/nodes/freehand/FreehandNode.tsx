@@ -5,6 +5,8 @@ import { pointsToPath } from './path';
 import type { FreehandNodeType, Points } from './types';
 import { colorToHex } from '@/components/colors/utils';
 import { useRotationHandler } from '../useRotationHandler';
+import useSelectionAwareness from '../../yjs/useSelectionAwareness';
+import { getRemoteSelectionStyle, RemoteSelectionBadges } from '../../yjs/RemoteSelection';
 
 export function FreehandNodeComponent({
     id,
@@ -15,6 +17,9 @@ export function FreehandNodeComponent({
     dragging,
 }: NodeProps<FreehandNodeType>) {
     const { rotateControlRef } = useRotationHandler(id, "freehand", selected);
+    const { selectedByNodeId } = useSelectionAwareness();
+    const remoteClients = selectedByNodeId.get(id) || [];
+    const remoteStyle = getRemoteSelectionStyle(remoteClients);
 
     const { fillColor, strokeColor, rotation } = data;
     const scaleX = (width ?? 1) / data.initialSize.width;
@@ -34,6 +39,7 @@ export function FreehandNodeComponent({
         <div className='relative w-full h-full overflow-visible'
             style={{
                 transform: `rotate(${rotation}deg)`,
+                ...(remoteClients.length ? remoteStyle : {}),
             }}
         >
             <NodeResizer isVisible={selected && !dragging} handleStyle={{ width: 0, height: 0 }} />
@@ -60,6 +66,7 @@ export function FreehandNodeComponent({
             </div>
 
             <div ref={rotateControlRef} />
+            {remoteClients.length > 0 && <RemoteSelectionBadges remoteClients={remoteClients} />}
 
         </div>
     );

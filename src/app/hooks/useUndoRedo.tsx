@@ -1,82 +1,80 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Edge, Node, useReactFlow } from '@xyflow/react';
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { UndoManager } from 'yjs';
+import ydoc from '@/components/yjs/ydoc';
+import { nodesMap } from '@/components/yjs/useNodesStateSynced';
+import { edgesMap } from '@/components/yjs/useEdgesStateSynced';
 
 type UseUndoRedoOptions = {
-    maxHistorySize: number;
-    enableShortcuts: boolean;
+    enableShortcuts?: boolean;
 };
 
 type UseUndoRedo = (options?: UseUndoRedoOptions) => {
     undo: () => void;
     redo: () => void;
-    takeSnapshot: () => void;
     canUndo: boolean;
     canRedo: boolean;
 };
 
-type HistoryItem = {
-    nodes: Node[];
-    edges: Edge[];
-};
-
 const defaultOptions: UseUndoRedoOptions = {
-    maxHistorySize: 100,
     enableShortcuts: true,
 };
 
-// https://redux.js.org/usage/implementing-undo-history
+/**
+ * Yjs-compatible undo/redo hook that uses Yjs's built-in UndoManager.
+ * This ensures each user only undoes their own changes in collaborative editing.
+ * 
+ * maxHistorySize is not used by Yjs UndoManager (kept for API compatibility).
+ */
 export const useUndoRedo: UseUndoRedo = ({
-    maxHistorySize = defaultOptions.maxHistorySize,
     enableShortcuts = defaultOptions.enableShortcuts,
 } = defaultOptions) => {
-    // the past and future arrays store the states that we can jump to
-    const [past, setPast] = useState<HistoryItem[]>([]);
-    const [future, setFuture] = useState<HistoryItem[]>([]);
+    const undoManagerRef = useRef<UndoManager | null>(null);
+    const [canUndo, setCanUndo] = useState(false);
+    const [canRedo, setCanRedo] = useState(false);
 
-    const { setNodes, setEdges, getNodes, getEdges } = useReactFlow();
+    // Initialize UndoManager
+    useEffect(() => {
+        // Create UndoManager that tracks both nodes and edges
+        // trackedOrigins ensures we only track changes from this client
+        const undoManager = new UndoManager([nodesMap, edgesMap], {
+            trackedOrigins: new Set([ydoc.clientID]),
+            captureTimeout: 500, // Group rapid changes within 500ms
+        });
 
-    const takeSnapshot = useCallback(() => {
-        // push the current graph to the past state
-        setPast((past) => [
-            ...past.slice(past.length - maxHistorySize + 1, past.length),
-            { nodes: getNodes(), edges: getEdges() },
-        ]);
+        undoManagerRef.current = undoManager;
 
-        // whenever we take a new snapshot, the redo operations need to be cleared to avoid state mismatches
-        setFuture([]);
-    }, [getNodes, getEdges, maxHistorySize]);
+        // Update can undo/redo state
+        const updateState = () => {
+            setCanUndo(undoManager.undoStack.length > 0);
+            setCanRedo(undoManager.redoStack.length > 0);
+        };
+
+        // Listen to stack changes
+        undoManager.on('stack-item-added', updateState);
+        undoManager.on('stack-item-popped', updateState);
+        undoManager.on('stack-cleared', updateState);
+
+        updateState();
+
+        return () => {
+            undoManager.stopCapturing();
+            undoManager.clear();
+        };
+    }, []);
 
     const undo = useCallback(() => {
-        // get the last state that we want to go back to
-        const pastState = past[past.length - 1];
-
-        if (pastState) {
-            // first we remove the state from the history
-            setPast((past) => past.slice(0, past.length - 1));
-            // we store the current graph for the redo operation
-            setFuture((future) => [
-                ...future,
-                { nodes: getNodes(), edges: getEdges() },
-            ]);
-            // now we can set the graph to the past state
-            setNodes(pastState.nodes);
-            setEdges(pastState.edges);
+        if (undoManagerRef.current && undoManagerRef.current.undoStack.length > 0) {
+            undoManagerRef.current.undo();
         }
-    }, [setNodes, setEdges, getNodes, getEdges, past]);
+    }, []);
 
     const redo = useCallback(() => {
-        const futureState = future[future.length - 1];
-
-        if (futureState) {
-            setFuture((future) => future.slice(0, future.length - 1));
-            setPast((past) => [...past, { nodes: getNodes(), edges: getEdges() }]);
-            setNodes(futureState.nodes);
-            setEdges(futureState.edges);
+        if (undoManagerRef.current && undoManagerRef.current.redoStack.length > 0) {
+            undoManagerRef.current.redo();
         }
-    }, [setNodes, setEdges, getNodes, getEdges, future]);
+    }, []);
 
     useEffect(() => {
-        // this effect is used to attach the global event handlers
         if (!enableShortcuts) {
             return;
         }
@@ -87,11 +85,13 @@ export const useUndoRedo: UseUndoRedo = ({
                 (event.ctrlKey || event.metaKey) &&
                 event.shiftKey
             ) {
+                event.preventDefault();
                 redo();
             } else if (
                 event.key?.toLowerCase() === 'z' &&
                 (event.ctrlKey || event.metaKey)
             ) {
+                event.preventDefault();
                 undo();
             }
         };
@@ -106,9 +106,8 @@ export const useUndoRedo: UseUndoRedo = ({
     return {
         undo,
         redo,
-        takeSnapshot,
-        canUndo: !past.length,
-        canRedo: !future.length,
+        canUndo,
+        canRedo,
     };
 };
 

@@ -7,12 +7,7 @@ import {
   ConnectionMode,
   OnConnect,
   Panel,
-  addEdge, MiniMap,
-  OnNodeDrag,
-  SelectionDragHandler,
-  OnNodesDelete,
-  OnEdgesDelete,
-  useReactFlow,
+  addEdge, MiniMap, useReactFlow,
   OnNodesChange,
   applyNodeChanges,
   OnConnectEnd,
@@ -27,13 +22,12 @@ import Cursors from '../../components/yjs/Cursors';
 import useCursorStateSynced from '../../components/yjs/useCursorStateSynced';
 import useNodesStateSynced from '../../components/yjs/useNodesStateSynced';
 import useEdgesStateSynced from '../../components/yjs/useEdgesStateSynced';
-import useUndoRedo from '../hooks/useUndoRedo';
 import useCopyPaste from '../hooks/useCopyPast';
 import { useHelperLines } from '../../components/helper-lines/useHelperLines';
 import { FreehandNodeComponent } from '../../components/nodes/freehand/FreehandNode';
 import { Freehand } from '../../components/nodes/freehand/Freehand';
 import { NodeUnion } from '../../components/nodes/types';
-import useUserDataStateSynced from '../../components/yjs/useUserStateSynced';
+import { useUserData } from '../../components/yjs/UserDataContext';
 import { EditableEdgeComponent } from '../../components/edges/ArktEdge';
 import { DEFAULT_PATH_ID } from '@/components/yjs/constants';
 import { EdgeControls } from '@/components/controls/EdgeControls';
@@ -70,9 +64,9 @@ export default function FlowEditor() {
   const { getNodes, screenToFlowPosition } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
   const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
-  const { takeSnapshot } = useUndoRedo();
   const { rebuildIndex, updateHelperLines, HelperLines } = useHelperLines();
-  const { currentUserData } = useUserDataStateSynced();
+  const userData = useUserData();
+  const currentUserData = userData?.currentUserData
   const currentPath = currentUserData?.currentDiagramId || DEFAULT_PATH_ID;
   const [isDrawing, setIsDrawing] = useState(false);
   const [, cursors, onMouseMove] = useCursorStateSynced();
@@ -94,23 +88,33 @@ export default function FlowEditor() {
 
   // Ensure Yjs provider is initialized when the collab room changes via client-side navigation
   useEffect(() => {
+    let cancelled = false;
     const collab = searchParams.get('collab');
     const prev = prevCollabRef.current;
 
     const handleCollabChange = async () => {
+      if (cancelled) return;
 
       if (prev && prev !== collab) {
         // Leaving previous room: disconnect to remove presence immediately
         await disconnectProvider();
       }
 
+      if (cancelled) return;
+
       // Entering a room (or staying in the same one): ensure provider is connected
       await getProvider();
 
-      prevCollabRef.current = collab;
-    }
+      if (!cancelled) {
+        prevCollabRef.current = collab;
+      }
+    };
 
     handleCollabChange();
+
+    return () => {
+      cancelled = true;
+    };
   }, [searchParams]);
 
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -120,23 +124,15 @@ export default function FlowEditor() {
     }
   }, [onMouseMove]);
 
-
   const onConnect: OnConnect = useCallback(
     (connection) => {
       const { connectionLinePath } = useCommandStore.getState();
 
       const edge = createEdgeFromConnection(connection, connectionLinePath, currentPath);
-      takeSnapshot();
       setEdges((edges) => addEdge(edge, edges));
     },
-    [setEdges]
+    [setEdges, currentPath]
   );
-
-  const onNodeDragStart: OnNodeDrag = useCallback(() => {
-    // 👇 make dragging a node undoable
-    takeSnapshot();
-    // 👉 you can place your event handlers here
-  }, [takeSnapshot]);
 
   const handleNodesChange: OnNodesChange<NodeUnion> = useCallback(
     (changes) => {
@@ -195,21 +191,6 @@ export default function FlowEditor() {
     rebuildIndex(getNodes());
   }, [getNodes, rebuildIndex, showHelpLines]);
 
-  const onSelectionDragStart: SelectionDragHandler = useCallback(() => {
-    // 👇 make dragging a selection undoable
-    takeSnapshot();
-  }, [takeSnapshot]);
-
-  const onNodesDelete: OnNodesDelete = useCallback(() => {
-    // 👇 make deleting nodes undoable
-    takeSnapshot();
-  }, [takeSnapshot]);
-
-  const onEdgesDelete: OnEdgesDelete = useCallback(() => {
-    // 👇 make deleting edges undoable
-    takeSnapshot();
-  }, [takeSnapshot]);
-
   const proOptions = { hideAttribution: true };
 
   const selectedNodes = useMemo(() => nodes.filter((node) => node.selected), [nodes]);
@@ -226,11 +207,7 @@ export default function FlowEditor() {
           onConnect={onConnect}
           onConnectEnd={onConnectEnd}
           onPointerMove={handleMouseMove}
-          onNodeDragStart={onNodeDragStart}
           onNodeDragStop={onNodeDragStop}
-          onSelectionDragStart={onSelectionDragStart}
-          onNodesDelete={onNodesDelete}
-          onEdgesDelete={onEdgesDelete}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           elevateNodesOnSelect
@@ -243,7 +220,6 @@ export default function FlowEditor() {
           panOnScroll={!isDrawing}
           selectNodesOnDrag={!isDrawing}
           connectOnClick={isMobile}
-          // onSelect={handleSelectionChange}
           fitView
           fitViewOptions={fitViewOptions}
           snapToGrid={showHelpLines}

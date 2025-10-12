@@ -8,6 +8,8 @@ import { NodeProps } from "@xyflow/system";
 import { ArktTextNode } from "./types";
 import { DEFAULT_FILL_COLOR, getTailwindTextClass } from "@/components/colors/utils";
 import { AutoGrowInput } from "@/components/ui/AutoGrowInput";
+import useSelectionAwareness from "@/components/yjs/useSelectionAwareness";
+import { getRemoteSelectionStyle, RemoteSelectionBadges } from "@/components/yjs/RemoteSelection";
 
 export type ArchTextNodeData = {
     label: string;
@@ -22,6 +24,9 @@ export type ArchTextNodeData = {
 
 export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX.Element {
     const { id } = props;
+    const { selectedByNodeId } = useSelectionAwareness();
+    const remoteClients = selectedByNodeId.get(id) || [];
+    const remoteStyle = getRemoteSelectionStyle(remoteClients);
     const [isEditing, setIsEditing] = React.useState<boolean>(false);
     const rf = useReactFlow();
     const label = props.data.label
@@ -50,6 +55,7 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                 "group relative rounded-md inline-block select-none",
                 textClass,
             )}
+            style={remoteClients.length ? remoteStyle : undefined}
             data-testid="arch-text-node"
             data-editing={isEditing ? "true" : "false"}
             onDoubleClick={(e) => {
@@ -98,6 +104,7 @@ export function ArchTextNodeComponent(props: NodeProps<ArktTextNode>): React.JSX
                         data-testid="text-inline-input"
                     />
                 </div>
+                {remoteClients.length > 0 && <RemoteSelectionBadges remoteClients={remoteClients} />}
             </div>
         </div>
     );

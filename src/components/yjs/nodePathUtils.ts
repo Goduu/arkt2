@@ -11,9 +11,22 @@ function isArktNode(node: NodeUnion | undefined): node is ArktNode {
     return !!node && node.type === 'arktNode';
 }
 
+/**
+ * Traverses up the node hierarchy to get all ancestor node IDs.
+ * Walks from the given node to the root (home), collecting parent IDs.
+ * 
+ * @param node - The starting node
+ * @returns Array of ancestor IDs from immediate parent to root [parentId, grandparentId, ...]
+ * 
+ * @example
+ * // For a node with path: home -> folder1 -> folder2 -> currentNode
+ * getAncestorIdsFromNode(currentNode) // returns [folder2.id, folder1.id]
+ */
 export function getAncestorIdsFromNode(node: ArktNode): string[] {
     const ancestorIds: string[] = [];
     let currentDiagramId = node.data.pathId;
+    
+    // Walk up the tree until we reach the root (DEFAULT_PATH_ID) or hit a non-ArktNode
     while (currentDiagramId && currentDiagramId !== DEFAULT_PATH_ID) {
         const parentNode = nodesMap.get(currentDiagramId);
         if (!isArktNode(parentNode)) break;

@@ -11,9 +11,14 @@ import { useTheme } from "next-themes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import SketchyShape from "@/components/sketchy/SketchyShape";
 import { NodeHandler } from "../NodeHandler";
+import useSelectionAwareness from "@/components/yjs/useSelectionAwareness";
+import { getRemoteSelectionStyle, RemoteSelectionBadges } from "@/components/yjs/RemoteSelection";
 
 export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): React.JSX.Element {
   const { id } = props;
+  const { selectedByNodeId } = useSelectionAwareness();
+  const remoteClients = selectedByNodeId.get(id) || [];
+  const remoteStyle = getRemoteSelectionStyle(remoteClients);
   const { description } = props.data;
   const { resolvedTheme } = useTheme();
 
@@ -36,6 +41,7 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
   return (
     <div
       className="group relative inline-block align-middle shrink-0 p-1 size-8"
+      style={remoteClients.length ? remoteStyle : undefined}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
@@ -67,6 +73,7 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
             </TooltipContent>
           )}
         </Tooltip>
+        {remoteClients.length > 0 && <RemoteSelectionBadges remoteClients={remoteClients} />}
         <>
           <NodeHandler type="source" position={Position.Bottom} id={`${id}-bottom`} />
           <NodeHandler type="source" position={Position.Left} id={`${id}-left`} />

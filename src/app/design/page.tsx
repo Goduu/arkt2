@@ -1,9 +1,9 @@
 import { ReactFlowProvider } from "@xyflow/react";
-import FlowEditor from "./FlowEditor";
 import { Dialogs } from "@/components/Dialogs";
 import { TopBar } from "./top-bar/TopBar";
 import { Suspense } from "react";
 import MobileDock from "./MobileDock";
+import { FlowEditorWithProvider } from "./FlowEditorWithProvider";
 
 export default function EditableEdgeFlow() {
 
@@ -12,7 +12,7 @@ export default function EditableEdgeFlow() {
             <Suspense fallback={<div>Loading...</div>}>
                 <div className="relative h-screen flex flex-col" data-testid="design-page">
                     <TopBar />
-                    <FlowEditor />
+                    <FlowEditorWithProvider />
                     <Dialogs />
                     <MobileDock />
                 </div>
