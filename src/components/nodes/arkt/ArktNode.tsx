@@ -31,13 +31,13 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
   const isMobile = useIsMobile();
   const textColorClass = getTailwindTextClass(strokeColor, theme)
 
-  const { selectedByNodeId, localSelectedNodeIds } = useSelectionAwareness();
+  const { selectedByNodeId } = useSelectionAwareness();
   const remoteClients = selectedByNodeId.get(id) || [];
   const isRemotelySelected = remoteClients.length > 0;
   const remoteStyle = getRemoteSelectionStyle(remoteClients);
-
-  // Node is selected by current user if ReactFlow says it's selected (local selection state)
-  const isSelectedByCurrentUser = selected && localSelectedNodeIds.has(id);
+  // Node is selected by current user if ReactFlow says it's selected
+  // ReactFlow's 'selected' prop is the source of truth for local selection
+  const isSelectedByCurrentUser = selected;
   const { onNodeUpdate: onLabelChange } = useArktNodeControls(id);
 
   useRedrawSketch({ containerRef, setSize });

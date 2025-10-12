@@ -63,7 +63,7 @@ export function CollabPopover() {
 
     const onDisconnect = useCallback(async () => {
         await copyCurrentDocToLocalRoom().catch(() => undefined);
-        disconnectProvider();
+        await disconnectProvider();
         const params = new URLSearchParams(searchParams);
         params.delete('collab');
         router.push(`${pathname}${params.size ? `?${params.toString()}` : ''}`);

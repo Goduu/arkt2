@@ -164,6 +164,14 @@ export async function getProvider() {
                 }
             );
 
+            // Guard against race conditions: Check if room hasn't changed during async operations
+            if (currentRoomName && currentRoomName !== roomName) {
+                // Another room change happened, discard this result
+                provider.disconnect();
+                provider.destroy();
+                return null;
+            }
+
             // Use the provider's awareness instance
             awareness = provider.awareness;
 

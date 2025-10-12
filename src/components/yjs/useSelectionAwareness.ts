@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { awareness } from './ydoc';
-import { SelectionState } from './types';
 import { useSearchParams } from 'next/navigation';
 
 export type ClientSelection = {
@@ -28,8 +27,9 @@ export function useSelectionAwareness(): UseSelectionAwarenessResult {
   const searchParams = useSearchParams();
   const collab = searchParams.get("collab")
 
+  // Compute function now reads awareness directly (not closed over stale reference)
   const compute = useCallback((): UseSelectionAwarenessResult => {
-    const entries = Array.from(awareness.getStates().entries()) as Array<[number, SelectionState]>;
+    const entries = Array.from(awareness.getStates().entries())
     const selfId = awareness.clientID.toString();
 
     const remoteSelections: ClientSelection[] = [];
@@ -61,6 +61,11 @@ export function useSelectionAwareness(): UseSelectionAwarenessResult {
     return { localSelectedNodeIds, remoteSelections, selectedByNodeId };
   }, []);
 
+  // Re-trigger version update when collab room changes to force recomputation
+  useEffect(() => {
+    setVersion((v) => v + 1);
+  }, [collab]);
+
   useEffect(() => {
     // Debounce awareness changes to avoid excessive re-renders during rapid selections
     const onChange = () => {
@@ -79,7 +84,7 @@ export function useSelectionAwareness(): UseSelectionAwarenessResult {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, []);
+  }, [collab]); // Re-subscribe when collab changes (awareness instance changes)
 
   // Memoize result and check if meaningful change occurred
   return useMemo(() => {
@@ -92,12 +97,16 @@ export function useSelectionAwareness(): UseSelectionAwarenessResult {
         prev.localSelectedNodeIds.size === newResult.localSelectedNodeIds.size &&
         Array.from(prev.localSelectedNodeIds).every(id => newResult.localSelectedNodeIds.has(id));
 
+      // Compare remote selections by clientId, not by index position
+      const prevClientsMap = new Map(prev.remoteSelections.map(s => [s.clientId, s]));
+      const newClientsMap = new Map(newResult.remoteSelections.map(s => [s.clientId, s]));
+      
       const remoteUnchanged =
         prev.remoteSelections.length === newResult.remoteSelections.length &&
-        prev.remoteSelections.every((prevSel, idx) => {
-          const newSel = newResult.remoteSelections[idx];
-          return newSel &&
-            prevSel.clientId === newSel.clientId &&
+        Array.from(prevClientsMap.keys()).every(clientId => {
+          const prevSel = prevClientsMap.get(clientId);
+          const newSel = newClientsMap.get(clientId);
+          return newSel && prevSel &&
             prevSel.nodeIds.size === newSel.nodeIds.size &&
             Array.from(prevSel.nodeIds).every(id => newSel.nodeIds.has(id));
         });
@@ -108,9 +117,14 @@ export function useSelectionAwareness(): UseSelectionAwarenessResult {
     }
 
     lastResultRef.current = newResult;
-    console.log('collab',newResult)
+    
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('collab', newResult);
+    }
+    
     return newResult;
-  }, [version, compute, collab]);
+  }, [version, compute]);
 }
 
 export default useSelectionAwareness;

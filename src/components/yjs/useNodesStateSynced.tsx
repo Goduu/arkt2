@@ -11,6 +11,7 @@ import { edgesMap } from './useEdgesStateSynced';
 import { NodeUnion } from '../nodes/types';
 import { DEFAULT_PATH_ID } from './constants';
 import { useUserData } from './UserDataContext';
+import { useSearchParams } from 'next/navigation';
 
 // We are using nodesMap as the one source of truth for the nodes.
 // This means that we are doing all changes to the nodes in the map object.
@@ -25,6 +26,8 @@ function useNodesStateSynced(): [
   // Context may be undefined on landing page or non-collaborative views
   const userData = useUserData();
   const currentDiagramId = userData?.currentUserData?.currentDiagramId || DEFAULT_PATH_ID
+  const searchParams = useSearchParams();
+  const collab = searchParams.get('collab');
 
   const [nodes, setNodes] = useState<NodeUnion[]>([]);
 
@@ -134,10 +137,10 @@ function useNodesStateSynced(): [
     }
   }, [getChildrenNodes]);
 
-  // Clear selection when changing diagrams to prevent stale selections
+  // Clear selection when changing diagrams or collab rooms to prevent stale selections
   useEffect(() => {
     awareness.setLocalStateField('selection', { nodes: [] });
-  }, [currentDiagramId]);
+  }, [currentDiagramId, collab]);
 
   // here we are observing the nodesMap and updating the nodes state whenever the map changes.
   useEffect(() => {
