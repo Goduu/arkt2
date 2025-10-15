@@ -6,6 +6,7 @@ import { useState, useMemo } from "react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 
 type Props = {
   label?: string;
@@ -35,8 +36,9 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
   }
 
   return (
-    <div data-testid="icon-selector">
-      <label className="block text-xs text-muted-foreground mb-1">{label}</label>
+    <Field data-testid="icon-selector">
+      <FieldLabel htmlFor="icon-selector">{label}</FieldLabel>
+      <FieldContent>
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
@@ -75,6 +77,7 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
           More
         </Button>
       </div>
+      </FieldContent>
 
       <CommandDialog
         open={isDialogOpen}
@@ -88,7 +91,7 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
         <CommandList className="h-72 overflow-y-scroll">
           <CommandEmpty>No icons found.</CommandEmpty>
           <CommandGroup heading="All Icons" className="pt-2">
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(40px,1fr))] gap-2 p-1">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(40px,1fr))] gap-2">
               {ICONS.map((def) => {
                 const I = def.Icon;
                 return (
@@ -99,7 +102,7 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
                       handleSelect(def.key);
                       setDialogOpen(false);
                     }}
-                    className="size-10 flex flex-col items-center justify-center gap-2"
+                    className="size-8 flex flex-col items-center justify-center gap-2"
                   >
                     <I className="h-6 w-6" />
                   </CommandItem>
@@ -114,7 +117,7 @@ export function IconSelector({ label = "Icon", value, onChange }: Props): React.
           </Button>
         </DialogFooter>
       </CommandDialog>
-    </div>
+    </Field>
   );
 }
 

@@ -5,6 +5,7 @@ import { AppSidebar } from "./sidebar/AppSidebar";
 import CommandPalette from "./sidebar/CommandPalette";
 import { UserDataProvider } from "@/components/yjs/UserDataContext";
 import { Suspense } from "react";
+import LoadingPage from "./LoadingPage";
 
 
 export default function RootLayout({
@@ -13,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <UserDataProvider>
         <SidebarProvider defaultOpen={true}>
           <AppSidebar />

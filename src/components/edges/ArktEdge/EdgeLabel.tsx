@@ -81,7 +81,7 @@ export const EdgeLabel = (props: EdgeLabelProps) => {
                             ref={inputRef}
                             fillStyle="solid"
                             className={cn(
-                                "outline-none m-0 py-0 z-10",
+                                "outline-none m-0 py-0 z-10 px-2",
                                 isEditing ? "w-full nodrag nowheel pointer-events-auto" : "w-full pointer-events-none",
                                 textClass,
                             )}

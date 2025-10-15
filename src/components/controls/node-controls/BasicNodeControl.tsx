@@ -8,6 +8,10 @@ import { useAltKeyLabel } from "@/hooks/use-meta-key";
 import { TemplateCombobox } from "@/components/templates/TemplateCombobox";
 import { Kbd } from "@/components/ui/kbd";
 import { Input } from "@/components/ui/input";
+import { FolderSymlink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import useUserDataStateSynced from "@/components/yjs/useUserStateSynced";
+import { useReactFlow } from "@xyflow/react";
 
 type BasicNodeControlProps = {
     node: ArktNode;
@@ -20,6 +24,9 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
 }) => {
     const { label, description, fillColor, strokeColor, fontSize, templateId } = node.data ?? {};
     const altKey = useAltKeyLabel();
+    const { fitView } = useReactFlow();
+    const { onDiagramDrillDown, onDiagramDrillToNode } = useUserDataStateSynced(fitView);
+
 
     return (
         <>
@@ -35,7 +42,7 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
             <div data-testid="basic-controls-description">
                 <label className="block text-xs text-muted-foreground mb-1">Description</label>
                 <Textarea
-                    className="w-full px-2 py-1 bg-transparent resize-none"
+                    className="w-full p-3 bg-transparent resize-none"
                     rows={3}
                     value={description}
                     onChange={(e) => onChange({ description: e.target.value })}
@@ -73,10 +80,20 @@ export const BasicNodeControl: FC<BasicNodeControlProps> = ({
                     onChange={(next) => { onChange({ strokeColor: next }); }}
                 />
             </div>
-            <div className="hidden md:block text-[10px] whitespace-nowrap text-muted-foreground opacity-70 select-none">
+            <div className="hidden md:flex text-[10px] items-center flex-column gap-1 whitespace-nowrap text-muted-foreground opacity-70 select-none">
                 <Kbd>{altKey}</Kbd>+
                 <Kbd>click</Kbd>
                 {` to navigate`}
+                <Button
+                    onClick={() => {
+                        if (node.data.virtualOf) {
+                            onDiagramDrillToNode(node.data.virtualOf);
+                        }
+                        onDiagramDrillDown(node.id, node.data.label);
+                    }}
+                    variant="ghost" size="icon">
+                    <FolderSymlink className="size-4" />
+                </Button>
             </div>
         </>
     );

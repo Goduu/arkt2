@@ -49,7 +49,7 @@ export const AutoGrowInput: FC<AutoGrowInputProps> = ({
     useEffect(() => {
         if (spanRef.current) {
             const textWidth = spanRef.current.offsetWidth;
-            const newWidth = Math.max(minWidth, Math.min(maxWidth, textWidth + 10)); // Add padding
+            const newWidth = Math.max(minWidth, Math.min(maxWidth, textWidth + 16)); // Add padding
             setInputWidth(newWidth);
         }
     }, [value, minWidth, maxWidth, fontSize]);

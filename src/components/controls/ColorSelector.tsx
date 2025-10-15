@@ -28,7 +28,7 @@ export function ColorSelector({ label, onChange, value, defaultOptions = TAILWIN
 
     return (
         <Field data-testid={`color-selector-${indicative}`}>
-            <FieldLabel htmlFor={`color-selector-${indicative}`} className="block text-xs text-muted-foreground mb-1">{label ?? "Color"}</FieldLabel>
+            <FieldLabel htmlFor={`color-selector-${indicative}`}>{label ?? "Color"}</FieldLabel>
 
             <div className="flex items-center">
                 <Popover>

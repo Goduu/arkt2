@@ -63,7 +63,6 @@ export const useNewDraftNode = (mobile: boolean = false): {
             position: { x: -1000, y: -1000 },
             width: 110,
             height: 38,
-            // style: { width: 106, height: 36 },
             data: {
                 pathId: currentUserData?.currentDiagramId || DEFAULT_PATH_ID,
                 fillColor: DEFAULT_FILL_COLOR,

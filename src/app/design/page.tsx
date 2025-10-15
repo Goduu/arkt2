@@ -5,12 +5,13 @@ import { Suspense } from "react";
 import MobileDock from "./MobileDock";
 import { FlowEditorWithProvider } from "./FlowEditorWithProvider";
 import { ChatSheet } from "@/components/chat/ChatSheet";
+import LoadingPage from "./LoadingPage";
 
 export default function EditableEdgeFlow() {
 
     return (
         <ReactFlowProvider>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<LoadingPage />}>
                 <div className="relative h-screen flex flex-col" data-testid="design-page">
                     <TopBar />
                     <FlowEditorWithProvider />

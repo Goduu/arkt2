@@ -35,7 +35,7 @@ import { ModeToggle } from "@/components/ModeToggle"
 export function AppSidebar() {
     const activateCommand = useCommandStore((s) => s.activateCommand);
     const [templates] = useTemplatesStateSynced();
-    const { getNewDraftArktNode: getNewDraftNode, getNewDraftTextNode } = useNewDraftNode();
+    const { getNewDraftArktNode, getNewDraftTextNode } = useNewDraftNode();
 
     const { resolvedTheme } = useTheme()
     const mounted = useMounted()
@@ -167,7 +167,7 @@ export function AppSidebar() {
                                 <SidebarMenuButton
                                     data-testid="add-node"
                                     tooltip="Add Node"
-                                    onClick={() => activateCommand("add-node", { nodes: [getNewDraftNode()] })}>
+                                    onClick={() => activateCommand("add-node", { nodes: [getNewDraftArktNode()] })}>
                                     <Layers />
                                     <span>Add node</span>
                                 </SidebarMenuButton>
