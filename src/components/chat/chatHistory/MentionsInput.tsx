@@ -219,6 +219,29 @@ export function MentionsInput({ mentions = [], placeholder = "Type @ to mention"
         emitChange();
     }
 
+    function handlePaste(e: React.ClipboardEvent<HTMLDivElement>): void {
+        e.preventDefault();
+        const text = e.clipboardData.getData('text/plain');
+        
+        // Insert plain text at current caret position
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            const textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+            
+            // Move caret to end of inserted text
+            range.setStartAfter(textNode);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+        
+        // Trigger input handling to evaluate mentions
+        handleInput();
+    }
+
     function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>): void {
         if (!isOpen) return;
         if (e.key === "Escape") {
@@ -252,6 +275,7 @@ export function MentionsInput({ mentions = [], placeholder = "Type @ to mention"
                     )}
                     onInput={handleInput}
                     onKeyDown={handleKeyDown}
+                    onPaste={handlePaste}
                     style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
                     suppressContentEditableWarning={true}
                     data-placeholder={placeholder}
