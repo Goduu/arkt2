@@ -22,6 +22,7 @@ export type SketchyPanelProps = React.PropsWithChildren<
     fillStyle?: FillStyle;
     seed?: number;
     kind?: SketchyShapeKind;
+    hideStroke?: boolean;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
     onClick?: () => void;
@@ -44,6 +45,7 @@ export const SketchyPanel = React.forwardRef<HTMLDivElement, SketchyPanelProps>(
     kind,
     onMouseEnter,
     onMouseLeave,
+    hideStroke = false,
     ...rest
   },
   forwardedRef
@@ -84,7 +86,7 @@ export const SketchyPanel = React.forwardRef<HTMLDivElement, SketchyPanelProps>(
           width={size.width}
           height={size.height}
           strokeColor={strokeColor}
-          strokeWidth={strokeWidth}
+          strokeWidth={hideStroke ? 0 : strokeWidth}
           roughness={roughness}
           className="w-full h-full"
           strokeLineDash={strokeLineDash}

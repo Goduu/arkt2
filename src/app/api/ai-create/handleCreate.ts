@@ -8,7 +8,6 @@ import { convertToModelMessages, Output, streamText } from "ai";
 const MODEL = "gpt-4o";
 export function handleCreate(
     uiMessages: ArktUIMessage[],
-    userPrompt: string,
     contextJson: string,
     provider: OpenAIProvider
 ): Response {
@@ -19,7 +18,6 @@ export function handleCreate(
         {
             role: "user" as const,
             content: [
-                { type: "text" as const, text: `User question:\n${userPrompt || "(empty)"}` },
                 { type: "text" as const, text: `Context JSON (diagrams, rootId, mentions, availableTemplates):\n${contextJson}` },
             ],
         },

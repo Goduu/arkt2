@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { JSX, useEffect, useRef, useState } from "react";
 import { History } from "lucide-react";
 import { AiSettingsDialog } from "./AiSettingsDialog";
@@ -35,14 +35,17 @@ export function ChatHistoryDialog(): JSX.Element {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button data-testid="ask-ai-open" size="icon" className="gap-2 font-bold">
+        <Button variant="ghost" data-testid="ask-ai-open" size="icon" className="gap-2 font-bold">
           <History className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent data-testid="ask-ai-dialog" className="sm:max-w-5xl max-h-screen overflow-y-scroll">
         <DialogHeader>
           <div className="flex items-center justify-between pr-3">
-            <DialogTitle>Chat history</DialogTitle>
+            <div className="flex flex-col">
+              <DialogTitle>Chat history</DialogTitle>
+              <DialogDescription>See your chat history, their token usage and models used.</DialogDescription>
+            </div>
             <AiSettingsDialog hasStoredKey={hasStoredKey} setHasStoredKey={setHasStoredKey} open={settingsOpen} setOpen={setSettingsOpen} />
           </div>
         </DialogHeader>

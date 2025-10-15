@@ -29,16 +29,17 @@ export function AiSettingsDialog({ hasStoredKey, setHasStoredKey, open, setOpen,
                 </DialogTrigger>
             )}
             <DialogContent className="sm:max-w-md">
+                <DialogDescription hidden>AI Settings</DialogDescription>
                 <DialogHeader>
                     <DialogTitle>AI Settings</DialogTitle>
                     <DialogDescription>Configure your OpenAI key. It is encrypted and stored locally; only encrypted data is sent to the API.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
                     <div className="text-sm font-medium">OpenAI Key</div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full">
                         <Input
                             type="password"
-                            className=" rounded border px-2 py-1 bg-transparent"
+                            className="rounded border px-2 py-1 bg-transparent w-full"
                             placeholder={hasStoredKey ? "Key saved (hidden)" : "Enter your key"}
                             value={apiKeyInput}
                             onChange={(e) => setApiKeyInput(e.target.value)}

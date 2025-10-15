@@ -96,6 +96,7 @@ export function ImportDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) { setIsOpen(false); reset(); } }}>
       <DialogContent className="flex flex-col gap-4">
+        <DialogDescription hidden>Import snapshot</DialogDescription>
         <DialogHeader>
           <DialogTitle>Import snapshot</DialogTitle>
           <DialogDescription>

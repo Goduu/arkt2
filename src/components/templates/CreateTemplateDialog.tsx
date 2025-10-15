@@ -7,7 +7,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { useCommandStore } from "@/app/design/commandStore";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -111,6 +112,7 @@ export function CreateTemplateDialog(): React.JSX.Element | null {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className=" p-0" showCloseButton={false} data-testid="create-template-dialog">
+        <DialogDescription hidden>Create template</DialogDescription>
         <DialogHeader className="px-3 py-2 border-b">
           <DialogTitle className="text-sm font-medium">
             {mode === "edit" ? "Edit template" : "Create template"}

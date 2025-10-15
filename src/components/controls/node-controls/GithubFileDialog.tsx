@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Loader2, RefreshCw, Copy, Download, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -107,6 +107,7 @@ export function GithubFileDialog() {
     return (
         <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
             <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
+                <DialogDescription hidden>GitHub File</DialogDescription>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <span className="truncate">{fileName || "GitHub File"}</span>

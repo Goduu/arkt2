@@ -8,24 +8,21 @@ import { ArktUIMessage } from "@/lib/ai/aiTypes";
 const MODEL = "gpt-4o";
 
 export function handleAsk(uiMessages: ArktUIMessage[],
-     userPrompt: string,
-     contextJson: string,
-     provider: OpenAIProvider,
-     githubToken?: string,
-    ): Response {
+    contextJson: string,
+    provider: OpenAIProvider,
+    githubToken?: string,
+): Response {
     // Stream text with tools
     const tools = buildGithubFetchTool(githubToken);
     const modelMessages = uiMessages
         ? convertToModelMessages(uiMessages)
-        : [
-            {
-                role: "user" as const,
-                content: [
-                    { type: "text" as const, text: `User question:\n${userPrompt || "(empty)"}` },
-                    { type: "text" as const, text: `Context JSON (diagrams, rootId, mentions, tag):\n${contextJson}` },
-                ],
-            },
-        ];
+        : [];
+    modelMessages.push({
+        role: "user" as const,
+        content: [
+            { type: "text" as const, text: `Context (diagrams, rootId, mentions, tag):\n${contextJson}` },
+        ],
+    });
 
     const result = streamText({
         model: provider(MODEL),

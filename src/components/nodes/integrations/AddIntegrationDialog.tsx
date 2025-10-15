@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Figma, Github } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCommandStore } from "@/app/design/commandStore";
 import { NodeUnion } from "../types";
@@ -36,6 +36,7 @@ export const AddIntegrationDialog = () => {
             onOpenChange={setIsOpen}
         >
             <DialogContent>
+                <DialogDescription hidden>Add Integration</DialogDescription>
                 <DialogHeader>
                     <DialogTitle>Add Integration</DialogTitle>
                 </DialogHeader>

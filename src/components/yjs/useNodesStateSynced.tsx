@@ -30,6 +30,7 @@ function useNodesStateSynced(): [
   const collab = searchParams.get('collab');
 
   const [nodes, setNodes] = useState<NodeUnion[]>([]);
+  console.log('nodes', nodes);
 
   const setNodesSynced = useCallback(
     (nodesOrUpdater: React.SetStateAction<NodeUnion[]>) => {

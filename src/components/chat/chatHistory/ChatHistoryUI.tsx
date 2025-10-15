@@ -57,6 +57,7 @@ export function ChatHistoryUI() {
               strokeWidth={active?.id === chat.id ? 3 : 2}
               strokeColor={active?.id === chat.id ? { family: "slate", indicative: "middle" } : undefined}
               hoverEffect
+              className="py-2 px-4"
             >
               <div data-testid="chat-item" className={`group rounded-md text-sm cursor-pointer`} onClick={() => setCurrentChat(chat.id)}>
                 {renamingId === chat.id ? (
@@ -89,14 +90,14 @@ export function ChatHistoryUI() {
           )}
         </div>
       </SketchyPanel>
-      <SketchyPanel className="flex-1 rounded-md bg-card p-2 h-full min-h-0 flex flex-col">
+      <SketchyPanel className="flex-1 rounded-md bg-card py-2 px-4 h-full min-h-0 flex flex-col">
         {!active ? (
           <div className="text-sm text-muted-foreground">Select a chat to see the history.</div>
         ) : (
           <div ref={scrollRef} className="flex-1 overflow-y-auto">
             <div className="space-y-3">
               {active.messages.map((message) => (
-                <SketchyPanel key={message.id} className={`max-w-[80%] rounded-md p-1 ${message.role === 'user' ? 'ml-auto bg-primary/5' : 'mr-auto bg-muted/40'}`}>
+                <SketchyPanel key={message.id} className={`max-w-[80%] rounded-md py-2 px-4 ${message.role === 'user' ? 'ml-auto bg-primary/5' : 'mr-auto bg-muted/40'}`}>
                   <div className="text-[11px] text-muted-foreground mb-1">{message.role === 'user' ? 'You' : 'Assistant'} • {new Date(message.createdAt).toLocaleTimeString()}</div>
                   <div className="whitespace-pre-wrap text-sm leading-relaxed" data-testid={`${message.role}-message`}>
                     {message.content}

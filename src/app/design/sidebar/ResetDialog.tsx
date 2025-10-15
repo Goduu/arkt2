@@ -31,6 +31,7 @@ export function ResetDialog() {
                 </Button>
             </DialogTrigger>
             <DialogContent>
+                <DialogDescription hidden>Reset data</DialogDescription>
                 <DialogHeader>
                     <DialogTitle>Reset</DialogTitle>
                     <DialogDescription>

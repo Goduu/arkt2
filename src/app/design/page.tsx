@@ -4,6 +4,7 @@ import { TopBar } from "./top-bar/TopBar";
 import { Suspense } from "react";
 import MobileDock from "./MobileDock";
 import { FlowEditorWithProvider } from "./FlowEditorWithProvider";
+import { ChatSheet } from "@/components/chat/ChatSheet";
 
 export default function EditableEdgeFlow() {
 
@@ -15,6 +16,7 @@ export default function EditableEdgeFlow() {
                     <FlowEditorWithProvider />
                     <Dialogs />
                     <MobileDock />
+                    <ChatSheet />
                 </div>
             </Suspense>
         </ReactFlowProvider>

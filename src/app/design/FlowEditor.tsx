@@ -35,7 +35,6 @@ import { NodeControls } from '@/components/controls/node-controls/NodeControls';
 import { useDraggableNode } from '@/components/nodes/useDraggableNode';
 import { StatusIcon } from './status-icon/StatusIcon';
 import { ArchTextNodeComponent } from '@/components/nodes/text/ArchTextNode';
-import { ChatBubble } from '@/components/chat/ChatBubble';
 import { IntegrationNodeComponent } from '@/components/nodes/integrations/IntegrationNode';
 import { getProvider, disconnectProvider } from '@/components/yjs/ydoc';
 import { useSearchParams } from 'next/navigation';
@@ -236,7 +235,6 @@ export default function FlowEditor() {
             <HelperLines />
           }
           <MiniMap className='hidden md:block' bgColor='transparent' maskColor='transparent' maskStrokeColor='#888' />
-          <ChatBubble />
           <Cursors cursors={cursors} />
         </ReactFlow>
         <EdgeControls />

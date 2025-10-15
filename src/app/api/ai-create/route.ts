@@ -11,7 +11,6 @@ export async function POST(req: Request): Promise<Response> {
     try {
         // Parse and validate request body
         const body = await req.json();
-        const userPrompt = typeof body?.prompt === 'string' ? String(body?.prompt ?? "").trim() : "";
 
         const diagram: Record<string, DiagramLite> | undefined = body?.data?.diagram;
         const rootId: string | undefined = body?.data?.rootId;
@@ -43,11 +42,11 @@ export async function POST(req: Request): Promise<Response> {
         const uiMessages: ArktUIMessage[] = Array.isArray(body?.messages) ? body.messages : [];
         // Build messages for the model
         if (tag === "Create") {
-            return handleCreate(uiMessages, userPrompt, contextJson, provider);
+            return handleCreate(uiMessages, contextJson, provider);
         }
         const githubToken = extractGithubToken(req);
 
-        return handleAsk(uiMessages, userPrompt, contextJson, provider, githubToken);
+        return handleAsk(uiMessages, contextJson, provider, githubToken);
 
 
     } catch (error) {

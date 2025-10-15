@@ -7,7 +7,7 @@ import { SketchyPanel } from "@/components/sketchy/SketchyPanel";
 import { TemplatePreview } from "./TemplatePreview";
 import useTemplatesStateSynced from "../yjs/useTemplatesStateSynced";
 import { useCommandStore } from "@/app/design/commandStore";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function TemplatesManagerDialog(): JSX.Element | null {
   const [isOpen, setIsTemplatesManagerOpen] = useState<boolean>(false);
@@ -41,6 +41,7 @@ export function TemplatesManagerDialog(): JSX.Element | null {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-[90vw] p-0" showCloseButton>
+        <DialogDescription hidden>Templates</DialogDescription>
         <DialogHeader className="px-3 py-2 pr-10 border-b">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-sm font-medium">Templates</DialogTitle>
