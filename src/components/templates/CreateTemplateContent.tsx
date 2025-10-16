@@ -25,6 +25,7 @@ type CreateTemplateContentProps = {
   setIconKey: (iconKey: IconKey | undefined) => void;
   setStrokeColor: (strokeColor: Color) => void;
 }
+
 export function CreateTemplateContent(props: CreateTemplateContentProps): React.JSX.Element | null {
   const {
     name,
@@ -50,36 +51,36 @@ export function CreateTemplateContent(props: CreateTemplateContentProps): React.
   return (
     <FieldSet className="flex flex-col gap-2 md:p-4">
       <FieldGroup className="flex px-1 gap-0 md:gap-4 ">
-          <Field>
-            <FieldLabel htmlFor="create-template-dialog-name">Name</FieldLabel>
-            <Input
-              id="create-template-dialog-name"
-              data-testid="create-template-dialog-name"
-              className="w-full px-2 py-1" value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <FieldError>
-              {isDuplicateName && (
-                <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
-              )}
-            </FieldError>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="create-template-dialog-description">Description</FieldLabel>
-            <FieldDescription>This description will give more context about this template to the AI.</FieldDescription>
-            <Textarea
-              id="create-template-dialog-description"
-              data-testid="create-template-dialog-description"
-              rows={2}
-              className="w-full px-2 py-1" value={description}
-              onChange={(e) => "target" in e && setDescription(e.target.value)}
-            />
-            <FieldError>
-              {isDuplicateName && (
-                <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
-              )}
-            </FieldError>
-          </Field>
+        <Field>
+          <FieldLabel htmlFor="create-template-dialog-name">Name</FieldLabel>
+          <Input
+            id="create-template-dialog-name"
+            data-testid="create-template-dialog-name"
+            className="w-full px-2 py-1" value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <FieldError>
+            {isDuplicateName && (
+              <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
+            )}
+          </FieldError>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="create-template-dialog-description">Description</FieldLabel>
+          <FieldDescription>This description will give more context about this template to the AI.</FieldDescription>
+          <Textarea
+            id="create-template-dialog-description"
+            data-testid="create-template-dialog-description"
+            rows={2}
+            className="w-full px-2 py-1" value={description}
+            onChange={(e) => "target" in e && setDescription(e.target.value)}
+          />
+          <FieldError>
+            {isDuplicateName && (
+              <div className="text-xs text-destructive mt-1">A template with this name already exists.</div>
+            )}
+          </FieldError>
+        </Field>
         <ColorSelector
           data-testid="create-template-dialog-fill-color"
           label="Fill color"
@@ -95,7 +96,7 @@ export function CreateTemplateContent(props: CreateTemplateContentProps): React.
           onChange={setStrokeColor}
           indicative="high"
         />
-      <IconSelector data-testid="create-template-dialog-icon-key" label="Icon" value={iconKey} onChange={setIconKey} />
+        <IconSelector data-testid="create-template-dialog-icon-key" label="Icon" value={iconKey} onChange={setIconKey} />
       </FieldGroup>
     </FieldSet>
   );

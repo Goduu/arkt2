@@ -75,10 +75,10 @@ export function IntegrationNodeComponent(props: NodeProps<IntegrationNode>): Rea
         </Tooltip>
         {remoteClients.length > 0 && <RemoteSelectionBadges remoteClients={remoteClients} />}
         <>
-          <NodeHandler type="source" position={Position.Bottom} id={`${id}-bottom`} />
-          <NodeHandler type="source" position={Position.Left} id={`${id}-left`} />
-          <NodeHandler type="source" position={Position.Right} id={`${id}-right`} />
-          <NodeHandler type="source" position={Position.Top} id={`${id}-top`} />
+          <NodeHandler type="source" position={Position.Bottom} id={`${id}`} />
+          <NodeHandler type="source" position={Position.Left} id={`${id}`} />
+          <NodeHandler type="source" position={Position.Right} id={`${id}`} />
+          <NodeHandler type="source" position={Position.Top} id={`${id}`} />
         </>
     </div>
 

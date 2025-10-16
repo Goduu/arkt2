@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { JSX, RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { MentionOption } from "./types";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
@@ -12,10 +12,10 @@ type MentionsInputProps = {
     onChange?: (value: string, mentions: MentionOption[]) => void;
     dataTestIds?: { editor?: string };
     className?: string;
-    ref?: React.RefObject<HTMLDivElement | null>;
+    ref?: RefObject<HTMLDivElement | null>;
 };
 
-export function MentionsInput({ mentions = [], placeholder = "Type @ to mention", onChange, dataTestIds, className, ref }: MentionsInputProps): React.JSX.Element {
+export function MentionsInput({ mentions = [], placeholder = "Type @ to mention", onChange, dataTestIds, className, ref }: MentionsInputProps): JSX.Element {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [filteredMentions, setFilteredMentions] = useState<MentionOption[]>(mentions);
 

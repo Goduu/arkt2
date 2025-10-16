@@ -33,7 +33,7 @@ export const useDraggableNode = () => {
         }
     }, [addNodeCommand]);
 
-    const mouseMoveHandler = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const mouseMoveHandler = (event: React.MouseEvent<HTMLDivElement>) => {
         if (draggingNodesRef.current.length === 0) return;
 
         const currentPosition = screenToFlowPosition({

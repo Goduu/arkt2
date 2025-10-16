@@ -127,11 +127,11 @@ export const ArktNodeComponent = ({ id, selected, width, height, data }: NodePro
       <div ref={rotateControlRef} />
 
       <div className={(iconKey) && "-top-4 md:-top-3 absolute left-1/2 -translate-x-1/2"}>
-        <NodeHandler data-testid="handler-top" type="source" position={Position.Top} id={`${id}-top`} />
+        <NodeHandler data-testid="handler-top" type="source" position={Position.Top} id={`${id}`} />
       </div>
-      <NodeHandler data-testid="handler-bottom" type="source" position={Position.Bottom} id={`${id}-bottom`} />
-      <NodeHandler data-testid="handler-left" type="source" position={Position.Left} id={`${id}-left`} />
-      <NodeHandler data-testid="handler-right" type="source" position={Position.Right} id={`${id}-right`} />
+      <NodeHandler data-testid="handler-bottom" type="source" position={Position.Bottom} id={`${id}`} />
+      <NodeHandler data-testid="handler-left" type="source" position={Position.Left} id={`${id}`} />
+      <NodeHandler data-testid="handler-right" type="source" position={Position.Right} id={`${id}`} />
     </div>
   );
 }

@@ -17,8 +17,6 @@ export type Cursor = {
   timestamp: number;
 };
 
-
-
 export function useCursorStateSynced() {
   const [cursors, setCursors] = useState<Cursor[]>([]);
   const { screenToFlowPosition } = useReactFlow();

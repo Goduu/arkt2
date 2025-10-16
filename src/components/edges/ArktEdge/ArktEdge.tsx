@@ -99,6 +99,7 @@ export function EditableEdgeComponent(props: EdgeProps<ArktEdge>) {
   const labelCoordY = centralPlacedPoint?.y ?? labelY;
 
   const strokeColor = colorToHex(data?.strokeColor ?? DEFAULT_STROKE_COLOR);
+  console.log("props", props);
 
   return (
     <>

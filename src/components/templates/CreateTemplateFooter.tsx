@@ -34,7 +34,7 @@ export function CreateTemplateFooter(props: CreateTemplateFooterProps): React.JS
     strokeColor,
     templates,
     setTemplates,
-     } = props;
+  } = props;
 
   const handleDeleteTemplate = (id: string) => {
     if (!id) return;
@@ -59,7 +59,7 @@ export function CreateTemplateFooter(props: CreateTemplateFooterProps): React.JS
     handleClose();
   }
 
-  
+
 
   const normalizedName = (name ?? "").trim();
   const isDuplicateName = useMemo(() => {
@@ -70,23 +70,23 @@ export function CreateTemplateFooter(props: CreateTemplateFooterProps): React.JS
 
   return (
     <div className="md:p-4">
-      {mode === "edit" ? (
-        <Button
-          variant="destructive"
-          className="z-10"
-          onClick={() => {
-            if (!templateId) return;
+      <div className="flex gap-2 w-full">
+        {mode === "edit" ? (
+          <Button
+            variant="destructive"
+            className="z-10 l-0"
+            onClick={() => {
+              if (!templateId) return;
 
-            const ok = window.confirm("Delete this template? This cannot be undone.");
-            if (!ok) return;
-            handleDeleteTemplate(templateId);
-            handleClose();
-          }}
-        >
-          Delete
-        </Button>
-      ) : <div />}
-      <div className="flex gap-2">
+              const ok = window.confirm("Delete this template? This cannot be undone.");
+              if (!ok) return;
+              handleDeleteTemplate(templateId);
+              handleClose();
+            }}
+          >
+            Delete
+          </Button>
+        ) : <div />}
         <Button
           data-testid="template-dialog-cancel"
           variant="ghost"
